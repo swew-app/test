@@ -1,0 +1,36 @@
+{
+    "name": "swew/test",
+    "description": "A framework that is designed to fix the fatal flaw of other frameworks.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "AVIL13",
+            "email": "avil@swew.app"
+        }
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "SWEW\\Test\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ],
+        "exclude-from-classmap": [
+            "spec",
+            "/Tests/",
+            "/test/",
+            "/tests/"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {}
+}
