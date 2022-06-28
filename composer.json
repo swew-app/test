@@ -9,14 +9,19 @@
         }
     ],
     "config": {
-        "sort-packages": true
+        "platform": {
+            "php": "8.1.0"
+        },
+        "sort-packages": true,
+        "optimize-autoloader": true
     },
     "autoload": {
         "psr-4": {
             "SWEW\\Test\\": "src/"
         },
         "files": [
-            "src/helpers.php"
+            "src/helpers.php",
+            "src/dd.php"
         ],
         "exclude-from-classmap": [
             "spec",
@@ -32,5 +37,24 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "require": {}
+    "require": {
+        "php": ">=8.1",
+        "webmozart/assert": "^1.11"
+    },
+    "require-dev": {
+        "laravel/pint": "^0.2.0",
+        "phpstan/phpstan": "^1.7",
+        "vimeo/psalm": "^4.23"
+    },
+    "scripts": {
+        "test": "php ./tests/Suite/RunTest.php",
+        "static": "./vendor/bin/psalm",
+        "stan": "vendor/bin/phpstan analyse src",
+        "code-check": "./vendor/bin/pint",
+        "check": [
+            "@static",
+            "@stan",
+            "@code-check"
+        ]
+    }
 }

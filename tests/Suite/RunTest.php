@@ -1,0 +1,11 @@
+<?php
+
+require __DIR__ . '/../../vendor/autoload.php';
+
+use SWEW\Test\Runner\TestManager;
+
+chdir(__DIR__);
+
+TestManager::init();
+
+TestManager::run();
