@@ -67,87 +67,179 @@ it('toBeLessThanOrEqual', function () {
 });
 
 it('toContain', function () {
-    expect(0)->toContain(1);
-    expect(0)->not()->toContain(0);
-})->only();
+    expect(0)->toContain(0);
+    expect('102')->toContain('0');
+    expect(0)->not()->toContain(1);
+});
 
 it('toHaveCount', function () {
-})->skip();
+    expect([0, 1, 2])->toHaveCount(3);
+    expect([0, 1, 2])->not()->toHaveCount(1);
+});
+
 it('toHaveProperty', function () {
-})->skip();
-it('toHaveProperties', function () {
-})->skip();
+    class MyClass
+    {
+        public $test;
+    }
+    $item = new MyClass();
+
+    expect($item)->toHaveProperty('test');
+    expect($item)->not()->toHaveProperty('test-x');
+});
+
 it('toMatchArray', function () {
-})->skip();
+    $arr1 = [1, 2];
+    $arr2 = [1, 2];
+
+    expect($arr1)->toMatchArray($arr2);
+});
+
 it('toMatchObject', function () {
-})->skip();
+    class MyClass1
+    {
+        public $test;
+    }
+    class MyClass2
+    {
+        public $test;
+    }
+    $item1 = new MyClass2();
+    $item2 = new MyClass2();
+
+    expect($item1)->toMatchObject($item2);
+    expect($item1)->not()->toMatchObject(new MyClass1());
+});
+
 it('toEqual', function () {
-})->skip();
-it('toEqualCanonicalizing', function () {
-})->skip();
+    expect(1)->toEqual(1);
+    expect(1)->not()->toEqual(12);
+});
+
 it('toEqualWithDelta', function () {
-})->skip();
+    expect(14)->toEqualWithDelta(10, 5);
+});
+
 it('toBeIn', function () {
-})->skip();
-it('toBeInfinite', function () {
-})->skip();
+    expect(200)->toBeIn([200, 301, 302]);
+    expect(201)->not()->toBeIn([200, 301, 302]);
+});
+
 it('toBeInstanceOf', function () {
-})->skip();
+    class MyClass3
+    {
+        public $test;
+    }
+
+    expect(new MyClass3())->toBeInstanceOf(MyClass3::class);
+});
+
 it('toBeBool', function () {
-})->skip();
+    expect(true)->toBeBool();
+});
+
 it('toBeCallable', function () {
-})->skip();
+    $controller = fn () => '1';
+
+    expect($controller)->toBeCallable();
+});
+
 it('toBeFloat', function () {
-})->skip();
+    expect(10.2)->toBeFloat();
+});
+
 it('toBeInt', function () {
-})->skip();
+    expect(101)->toBeInt();
+});
+
 it('toBeIterable', function () {
-})->skip();
+    expect([1, 2, 3])->toBeIterable();
+});
+
 it('toBeNumeric', function () {
-})->skip();
+    expect('10')->toBeNumeric();
+});
+
 it('toBeObject', function () {
-})->skip();
+    $object = new stdClass();
+
+    expect($object)->toBeObject();
+});
+
 it('toBeResource', function () {
-})->skip();
+    $handle = fopen('php://memory', 'r+');
+    expect($handle)->toBeResource();
+});
+
 it('toBeScalar', function () {
-})->skip();
+    expect('1')->toBeScalar();
+    expect(1)->toBeScalar();
+    expect(1.0)->toBeScalar();
+    expect(true)->toBeScalar();
+    expect([1, '1'])->not()->toBeScalar();
+});
+
 it('toBeString', function () {
-})->skip();
+    expect('$string')->toBeString();
+});
+
 it('toBeJson', function () {
-})->skip();
-it('toBeNan', function () {
-})->skip();
+    expect('{"hello":"world"}')->toBeJson();
+});
+
 it('toBeNull', function () {
-})->skip();
+    expect(null)->toBeNull();
+});
+
 it('toHaveKey', function () {
-})->skip();
+    expect(['name' => 'Nuno', 'surname' => 'Maduro'])->toHaveKey('name');
+});
+
 it('toHaveKeys', function () {
-})->skip();
+    expect(['id' => 1, 'name' => 'Nuno'])->toHaveKeys(['id', 'name']);
+});
+
 it('toHaveLength', function () {
-})->skip();
+    expect('Pest')->toHaveLength(4);
+    expect(['Nuno', 'Maduro'])->toHaveLength(2);
+});
+
 it('toBeReadableDirectory', function () {
-})->skip();
+    expect('/tmp')->toBeReadableDirectory();
+})->only();
+
 it('toBeWritableDirectory', function () {
 })->skip();
+
 it('toStartWith', function () {
 })->skip();
+
 it('toThrow', function () {
 })->skip();
+
 it('toEndWith', function () {
 })->skip();
+
 it('toMatch', function () {
 })->skip();
+
 it('toMatchConstraint', function () {
 })->skip();
+
 it('dd', function () {
 })->skip();
+
 it('each', function () {
 })->skip();
+
 it('json', function () {
 })->skip();
+
 it('sequence', function () {
 })->skip();
+
 it('unless', function () {
 })->skip();
+
 it('when', function () {
 })->skip();

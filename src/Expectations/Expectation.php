@@ -155,213 +155,354 @@ final class Expectation
         return $this;
     }
 
-    public function toContain(): self
+    public function toContain(mixed $value): self
     {
-        // TODO
+        if ($this->isNot) {
+            Assert::notContains($this->expectValue, $value, $this->message);
+        } else {
+            Assert::contains($this->expectValue, $value, $this->message);
+        }
+
         return $this;
     }
 
-    public function toHaveCount(): self
+    public function toHaveCount(int $number): self
     {
-        // TODO
+        if ($this->isNot) {
+            Assert::notEq(
+                \count($this->expectValue),
+                $number,
+                \sprintf(
+                    $this->message ?: 'Expected an array to contain %d elements. Got: %d.',
+                    $number,
+                    \count($this->expectValue)
+                )
+            );
+        } else {
+            Assert::count($this->expectValue, $number, $this->message);
+        }
+
         return $this;
     }
 
-    public function toHaveProperty(): self
+    public function toHaveProperty(string $property): self
     {
-        // TODO
+        if ($this->isNot) {
+            Assert::propertyNotExists($this->expectValue, $property, $this->message);
+        } else {
+            Assert::propertyExists($this->expectValue, $property, $this->message);
+        }
+
         return $this;
     }
 
-    public function toHaveProperties(): self
+    public function toMatchArray(array $array): self
     {
-        // TODO
+        if ($this->isNot) {
+            throw new Exception('The method "toMatchArray" cannot be used with "not()"');
+        }
+
+        if (is_object($this->expectValue) && method_exists($this->expectValue, 'toArray')) {
+            $valueAsArray = $this->expectValue->toArray();
+        } else {
+            $valueAsArray = (array) $this->expectValue;
+        }
+
+        foreach ($array as $key => $value) {
+            Assert::keyExists($valueAsArray, $key);
+
+            Assert::eq(
+                $value,
+                $valueAsArray[$key],
+                sprintf(
+                    'Failed asserting that an array has a key %s with the value %s.',
+                    $key,
+                    $valueAsArray[$key],
+                ),
+            );
+        }
+
         return $this;
     }
 
-    public function toMatchArray(): self
+    public function toMatchObject(mixed $object): self
     {
-        // TODO
+        if ($this->isNot) {
+            Assert::notEq($this->expectValue, $object, $this->message);
+        } else {
+            Assert::eq($this->expectValue, $object, $this->message);
+        }
+
         return $this;
     }
 
-    public function toMatchObject(): self
+    public function toEqual(mixed $value): self
     {
-        // TODO
+        if ($this->isNot) {
+            Assert::notEq($this->expectValue, $value, $this->message);
+        } else {
+            Assert::eq($this->expectValue, $value, $this->message);
+        }
+
         return $this;
     }
 
-    public function toEqual(): self
+    public function toEqualWithDelta(float $min, float $max): self
     {
-        // TODO
+        if ($this->isNot) {
+            throw new Exception('The method "toEqualWithDelta" cannot be used with "not()"');
+        }
+
+        Assert::range($this->expectValue, $min, $min + $max, $this->message);
+
         return $this;
     }
 
-    public function toEqualCanonicalizing(): self
+    public function toBeIn(array $array): self
     {
-        // TODO
+        if ($this->isNot) {
+            if (\in_array($this->expectValue, $array, true)) {
+                throw new Exception($this->message);
+            }
+        } else {
+            Assert::inArray($this->expectValue, $array, $this->message);
+        }
+
         return $this;
     }
 
-    public function toEqualWithDelta(): self
+    public function toBeInstanceOf(mixed $class): self
     {
-        // TODO
-        return $this;
-    }
+        if ($this->isNot) {
+            Assert::notInstanceOf($this->expectValue, $class, $this->message);
+        } else {
+            Assert::isInstanceOf($this->expectValue, $class, $this->message);
+        }
 
-    public function toBeIn(): self
-    {
-        // TODO
-        return $this;
-    }
-
-    public function toBeInfinite(): self
-    {
-        // TODO
-        return $this;
-    }
-
-    public function toBeInstanceOf(): self
-    {
-        // TODO
         return $this;
     }
 
     public function toBeBool(): self
     {
-        // TODO
+        if ($this->isNot) {
+            throw new Exception('The method "toBeBool" cannot be used with "not()"');
+        }
+
+        Assert::boolean($this->expectValue, $this->message);
+
         return $this;
     }
 
     public function toBeCallable(): self
     {
-        // TODO
+        if ($this->isNot) {
+            throw new Exception('The method "toBeCallable" cannot be used with "not()"');
+        }
+
+        Assert::isCallable($this->expectValue, $this->message);
+
         return $this;
     }
 
     public function toBeFloat(): self
     {
-        // TODO
+        if ($this->isNot) {
+            throw new Exception('The method "toBeFloat" cannot be used with "not()"');
+        }
+
+        Assert::float($this->expectValue, $this->message);
+
         return $this;
     }
 
     public function toBeInt(): self
     {
-        // TODO
+        if ($this->isNot) {
+            throw new Exception('The method "toBeInt" cannot be used with "not()"');
+        }
+
+        Assert::integer($this->expectValue, $this->message);
+
         return $this;
     }
 
     public function toBeIterable(): self
     {
-        // TODO
+        if ($this->isNot) {
+            throw new Exception('The method "toBeIterable" cannot be used with "not()"');
+        }
+
+        Assert::isIterable($this->expectValue, $this->message);
+
         return $this;
     }
 
     public function toBeNumeric(): self
     {
-        // TODO
+        if ($this->isNot) {
+            throw new Exception('The method "toBeNumeric" cannot be used with "not()"');
+        }
+
+        Assert::numeric($this->expectValue, $this->message);
+
         return $this;
     }
 
     public function toBeObject(): self
     {
-        // TODO
+        if ($this->isNot) {
+            throw new Exception('The method "toBeObject" cannot be used with "not()"');
+        }
+
+        Assert::object($this->expectValue, $this->message);
+
         return $this;
     }
 
     public function toBeResource(): self
     {
-        // TODO
+        if ($this->isNot) {
+            throw new Exception('The method "toBeResource" cannot be used with "not()"');
+        }
+
+        Assert::resource($this->expectValue, $this->message);
+
         return $this;
     }
 
     public function toBeScalar(): self
     {
-        // TODO
+        if ($this->isNot) {
+            if (\is_scalar($this->expectValue)) {
+                throw new Exception($this->message);
+            }
+        } else {
+            Assert::scalar($this->expectValue, $this->message);
+        }
+
         return $this;
     }
 
     public function toBeString(): self
     {
-        // TODO
+        if ($this->isNot) {
+            if (\is_string($this->expectValue)) {
+                throw new Exception($this->message);
+            }
+        } else {
+            Assert::string($this->expectValue, $this->message);
+        }
+
         return $this;
     }
 
     public function toBeJson(): self
     {
-        // TODO
-        return $this;
-    }
+        if ($this->isNot) {
+            throw new Exception('The method "toBeJson" cannot be used with "not()"');
+        }
 
-    public function toBeNan(): self
-    {
-        // TODO
+        Assert::string($this->expectValue, $this->message);
+
+        $json = json_decode($this->expectValue, true);
+
+        if (is_null($json)) {
+            throw new Exception(
+                \sprintf(
+                    $this->message ?: 'Expected JSON. Got: %s',
+                    $this->expectValue
+                )
+            );
+        }
+
         return $this;
     }
 
     public function toBeNull(): self
     {
-        // TODO
+        if ($this->isNot) {
+            Assert::notNull($this->expectValue, $this->message);
+        } else {
+            Assert::null($this->expectValue, $this->message);
+        }
+
         return $this;
     }
 
-    public function toHaveKey(): self
+    public function toHaveKey(string|int $key): self
     {
-        // TODO
+        if ($this->isNot) {
+            Assert::keyNotExists($this->expectValue, $key, $this->message);
+        } else {
+            Assert::keyExists($this->expectValue, $key, $this->message);
+        }
+
         return $this;
     }
 
-    public function toHaveKeys(): self
+    public function toHaveKeys(array $keys): self
     {
-        // TODO
+        foreach ($keys as $key) {
+            $this->toHaveKey($key);
+        }
+
         return $this;
     }
 
-    public function toHaveLength(): self
+    public function toHaveLength(int $length): self
     {
-        // TODO
+        if ($this->isNot) {
+            throw new Exception('The method "toHaveLength" cannot be used with "not()"');
+        }
+
+        if (is_array($this->expectValue)) {
+            Assert::count($this->expectValue, $length, $this->message);
+        } else {
+            Assert::length($this->expectValue, $length, $this->message);
+        }
+
         return $this;
     }
 
     public function toBeReadableDirectory(): self
     {
-        // TODO
+        throw new Exception('// TODO');
         return $this;
     }
 
     public function toBeWritableDirectory(): self
     {
-        // TODO
+        throw new Exception('// TODO');
         return $this;
     }
 
     public function toStartWith(): self
     {
-        // TODO
+        throw new Exception('// TODO');
         return $this;
     }
 
     public function toThrow(): self
     {
-        // TODO
+        throw new Exception('// TODO');
         return $this;
     }
 
     public function toEndWith(): self
     {
-        // TODO
+        throw new Exception('// TODO');
         return $this;
     }
 
     public function toMatch(): self
     {
-        // TODO
+        throw new Exception('// TODO');
         return $this;
     }
 
     public function toMatchConstraint(): self
     {
-        // TODO
+        throw new Exception('// TODO');
         return $this;
     }
 
@@ -379,31 +520,31 @@ final class Expectation
 
     public function each(): self
     {
-        // TODO
+        throw new Exception('// TODO');
         return $this;
     }
 
     public function json(): self
     {
-        // TODO
+        throw new Exception('// TODO');
         return $this;
     }
 
     public function sequence(): self
     {
-        // TODO
+        throw new Exception('// TODO');
         return $this;
     }
 
     public function unless(): self
     {
-        // TODO
+        throw new Exception('// TODO');
         return $this;
     }
 
     public function when(): self
     {
-        // TODO
+        throw new Exception('// TODO');
         return $this;
     }
 }
