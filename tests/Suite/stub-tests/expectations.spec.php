@@ -142,7 +142,7 @@ it('toBeBool', function () {
 });
 
 it('toBeCallable', function () {
-    $controller = fn() => '1';
+    $controller = fn () => '1';
 
     expect($controller)->toBeCallable();
 });
@@ -221,13 +221,13 @@ it('toStartWith', function () {
 });
 
 it('toThrow', function () {
-    expect(fn() => throw new Exception('Something happened.'))->toThrow(Exception::class);
+    expect(fn () => throw new Exception('Something happened.'))->toThrow(Exception::class);
 
-    expect(fn() => throw new Exception('Something happened.'))->toThrow('Something happened.');
+    expect(fn () => throw new Exception('Something happened.'))->toThrow('Something happened.');
 
-    expect(fn() => throw new Exception('Something happened.'))->toThrow(Exception::class, 'Something happened.');
+    expect(fn () => throw new Exception('Something happened.'))->toThrow(Exception::class, 'Something happened.');
 
-    expect(fn($x, $y) => $x + $y)->not()->toThrow(Exception::class);
+    expect(fn ($x, $y) => $x + $y)->not()->toThrow(Exception::class);
 });
 
 it('toEndWith', function () {
@@ -243,7 +243,7 @@ it('toMatch', function () {
 });
 
 it('each', function () {
-    expect([1, 2, 3])->each(fn($number) => $number->toBeLessThan(4));
+    expect([1, 2, 3])->each(fn ($number) => $number->toBeLessThan(4));
 });
 
 it('json', function () {

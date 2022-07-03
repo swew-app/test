@@ -57,7 +57,7 @@ final class TestManager
             }
         }
 
-        $list = $hasOnlyFilteredTests ? array_filter(self::$queue, fn ($s) => $s->isOnly) : self::$queue;
+        $list = $hasOnlyFilteredTests ? array_filter(self::$queue, fn ($s): bool => $s->isOnly) : self::$queue;
 
         foreach ($list as $suite) {
             self::$currentSuite = $suite;

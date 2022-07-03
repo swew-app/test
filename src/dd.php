@@ -2,11 +2,7 @@
 
 declare(strict_types=1);
 
-
 if (!function_exists('__dump')) {
-    /**
-     * @return void
-     */
     function __dump(): void
     {
         $str = '';

@@ -62,13 +62,21 @@ final class Suite
 
     public function stopLogData(): LogData
     {
+        if (is_null($this->logData)) {
+            throw new \Exception('Empty LogData');
+        }
+
         return $this->logData->stop(memory_get_usage());
     }
 
     private function executeTestCase(array $params = []): void
     {
         $fn = $this->testCase;
-        $fn->bindTo($this)(...$params);
+        $boundFn = $fn->bindTo($this);
+
+        if (!empty($boundFn)) {
+            $boundFn(...$params);
+        }
     }
 
 

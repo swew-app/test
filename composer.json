@@ -20,7 +20,7 @@
             "SWEW\\Test\\": "src/"
         },
         "files": [
-            "src/helpers.php",
+            "src/Functions.php",
             "src/dd.php"
         ],
         "exclude-from-classmap": [
@@ -48,7 +48,7 @@
     },
     "scripts": {
         "test": "php ./tests/Suite/RunTest.php",
-        "static": "./vendor/bin/psalm",
+        "static": "./vendor/bin/psalm --no-cache",
         "stan": "vendor/bin/phpstan analyse src",
         "code-check": "./vendor/bin/pint",
         "check": [

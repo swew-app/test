@@ -12,13 +12,15 @@ final class Expectation
 {
     private bool $isNot = false;
 
-    function __construct(
+    public function __construct(
         private readonly mixed $expectValue,
         private string         $message = ''
-    )
-    {
+    ) {
         $suite = TestManager::getCurrentSuite();
-        $suite->stopLogData();
+
+        if (!is_null($suite)) {
+            $suite->stopLogData();
+        }
     }
 
     public function not(): self
@@ -505,6 +507,7 @@ final class Expectation
                 $expression = $this->expectValue;
                 $expression();
             } catch (Exception|\Throwable $e) {
+                /** @var class-string<Exception> $class */
                 Assert::notInstanceOf($e, $class, $this->message);
             }
 
@@ -512,6 +515,7 @@ final class Expectation
         } // END NOT
 
         if (class_exists($class, false)) {
+            /** @var class-string<Exception> $class */
             Assert::throws($this->expectValue, $class, $this->message);
         } elseif ($message === '') {
             $message = $class;
@@ -555,7 +559,7 @@ final class Expectation
         return $this;
     }
 
-    public function each(Callable $callback = null): self
+    public function each(callable $callback = null): self
     {
         if ($this->isNot) {
             throw new Exception('The method "each" cannot be used with "not()"');
