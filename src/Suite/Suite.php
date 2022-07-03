@@ -90,6 +90,13 @@ final class Suite
         return $this;
     }
 
+    public function todo(): self
+    {
+        $this->isTodo = true;
+
+        return $this;
+    }
+
     public function only(): self
     {
         $this->isOnly = true;

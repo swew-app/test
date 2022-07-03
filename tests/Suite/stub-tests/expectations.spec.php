@@ -82,6 +82,7 @@ it('toHaveProperty', function () {
     {
         public $test;
     }
+
     $item = new MyClass();
 
     expect($item)->toHaveProperty('test');
@@ -100,10 +101,12 @@ it('toMatchObject', function () {
     {
         public $test;
     }
+
     class MyClass2
     {
         public $test;
     }
+
     $item1 = new MyClass2();
     $item2 = new MyClass2();
 
@@ -139,7 +142,7 @@ it('toBeBool', function () {
 });
 
 it('toBeCallable', function () {
-    $controller = fn () => '1';
+    $controller = fn() => '1';
 
     expect($controller)->toBeCallable();
 });
@@ -224,7 +227,7 @@ it('toThrow', function () {
 
     expect(fn() => throw new Exception('Something happened.'))->toThrow(Exception::class, 'Something happened.');
 
-    expect(fn ($x, $y) => $x + $y)->not()->toThrow(Exception::class);
+    expect(fn($x, $y) => $x + $y)->not()->toThrow(Exception::class);
 });
 
 it('toEndWith', function () {
@@ -240,10 +243,15 @@ it('toMatch', function () {
 });
 
 it('each', function () {
-    expect([1, 2, 3])->each(fn ($number) => $number->toBeLessThan(4));
-})->only();
+    expect([1, 2, 3])->each(fn($number) => $number->toBeLessThan(4));
+});
 
 it('json', function () {
-    // TODO:
-})->skip();
+    $json = '{"name":"Nuno","credit":1000.00}';
 
+    expect($json)
+        ->json()
+        ->toHaveCount(2)
+        ->name->toBe('Nuno')
+        ->credit->toBeFloat();
+})->todo();
