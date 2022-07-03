@@ -9,7 +9,7 @@ use SWEW\Test\Suite\Suite;
 
 final class TestManager
 {
-    public static function init()
+    public static function init(): void
     {
         $configFile = getcwd() . DIRECTORY_SEPARATOR . 'swew-test.json';
 
@@ -42,20 +42,22 @@ final class TestManager
 
     private static ?Suite $currentSuite = null;
 
-    public static function run()
+    public static function run(): array
     {
+        clear_cli();
+
         $results = [];
 
-        $hasOnlyTest = false;
+        $hasOnlyFilteredTests = false;
 
         foreach (self::$queue as $suite) {
             if ($suite->isOnly) {
-                $hasOnlyTest = true;
+                $hasOnlyFilteredTests = true;
                 break;
             }
         }
 
-        $list = $hasOnlyTest ? array_filter(self::$queue, fn ($s) => $s->isOnly) : self::$queue;
+        $list = $hasOnlyFilteredTests ? array_filter(self::$queue, fn ($s) => $s->isOnly) : self::$queue;
 
         foreach ($list as $suite) {
             self::$currentSuite = $suite;
@@ -64,12 +66,10 @@ final class TestManager
             self::$currentSuite = null;
         }
 
-        dd($results);
-
         return $results;
     }
 
-    public static function getCurrentSuite(): Suite
+    public static function getCurrentSuite(): Suite|null
     {
         return self::$currentSuite;
     }

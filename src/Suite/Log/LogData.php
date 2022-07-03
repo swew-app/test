@@ -18,6 +18,8 @@ final class LogData
 
     public bool $isSkip = false;
 
+    public bool $isTodo = false;
+
     public bool $isExcepted = false;
 
     public ?Exception $exception = null;

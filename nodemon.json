@@ -1,7 +1,7 @@
 {
     "ignore": ["vendor"],
     "watch": ["src", "tests"],
-    "exec": "php ./tests/Suite/RunTest.php",
+    "exec": "clear && php ./tests/Suite/RunTest.php",
     "ext": "php",
     "delay": 1000
 }

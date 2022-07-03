@@ -206,40 +206,44 @@ it('toHaveLength', function () {
 
 it('toBeReadableDirectory', function () {
     expect('/tmp')->toBeReadableDirectory();
-})->only();
+});
 
 it('toBeWritableDirectory', function () {
-})->skip();
+    expect('/tmp')->toBeWritableDirectory();
+});
 
 it('toStartWith', function () {
-})->skip();
+    expect('12345')->toStartWith('123');
+    expect('12345')->not()->toStartWith('0123');
+});
 
 it('toThrow', function () {
-})->skip();
+    expect(fn() => throw new Exception('Something happened.'))->toThrow(Exception::class);
+
+    expect(fn() => throw new Exception('Something happened.'))->toThrow('Something happened.');
+
+    expect(fn() => throw new Exception('Something happened.'))->toThrow(Exception::class, 'Something happened.');
+
+    expect(fn ($x, $y) => $x + $y)->not()->toThrow(Exception::class);
+});
 
 it('toEndWith', function () {
-})->skip();
+    expect('Hello World')->toEndWith('World');
+
+    expect('Hello World')->not()->toEndWith('hi');
+});
 
 it('toMatch', function () {
-})->skip();
+    expect('Hello World')->toMatch('/^hello wo.*$/i');
 
-it('toMatchConstraint', function () {
-})->skip();
-
-it('dd', function () {
-})->skip();
+    expect('Hello World')->not()->toMatch('/^hi$/i');
+});
 
 it('each', function () {
-})->skip();
+    expect([1, 2, 3])->each(fn ($number) => $number->toBeLessThan(4));
+})->only();
 
 it('json', function () {
+    // TODO:
 })->skip();
 
-it('sequence', function () {
-})->skip();
-
-it('unless', function () {
-})->skip();
-
-it('when', function () {
-})->skip();

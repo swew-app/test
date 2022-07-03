@@ -13,6 +13,8 @@ final class Suite
 
     private bool $isSkip = false;
 
+    private bool $isTodo = false;
+
     private ?LogData $logData = null;
 
     public bool $isOnly = false;
@@ -29,6 +31,12 @@ final class Suite
 
         if ($this->isSkip) {
             $this->logData->isSkip = true;
+
+            return $this->stopLogData();
+        }
+
+        if ($this->isTodo) {
+            $this->logData->isTodo = true;
 
             return $this->stopLogData();
         }

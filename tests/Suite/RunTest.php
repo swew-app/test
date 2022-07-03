@@ -8,4 +8,6 @@ chdir(__DIR__);
 
 TestManager::init();
 
-TestManager::run();
+$res = TestManager::run();
+
+dd($res);

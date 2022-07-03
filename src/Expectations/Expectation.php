@@ -14,8 +14,9 @@ final class Expectation
 
     function __construct(
         private readonly mixed $expectValue,
-        private string $message = ''
-    ) {
+        private string         $message = ''
+    )
+    {
         $suite = TestManager::getCurrentSuite();
         $suite->stopLogData();
     }
@@ -205,7 +206,7 @@ final class Expectation
         if (is_object($this->expectValue) && method_exists($this->expectValue, 'toArray')) {
             $valueAsArray = $this->expectValue->toArray();
         } else {
-            $valueAsArray = (array) $this->expectValue;
+            $valueAsArray = (array)$this->expectValue;
         }
 
         foreach ($array as $key => $value) {
@@ -466,61 +467,110 @@ final class Expectation
 
     public function toBeReadableDirectory(): self
     {
-        throw new Exception('// TODO');
+        if ($this->isNot) {
+            throw new Exception('The method "toBeReadableDirectory" cannot be used with "not()"');
+        }
+
+        Assert::readable($this->expectValue, $this->message);
+
         return $this;
     }
 
     public function toBeWritableDirectory(): self
     {
-        throw new Exception('// TODO');
-        return $this;
-    }
-
-    public function toStartWith(): self
-    {
-        throw new Exception('// TODO');
-        return $this;
-    }
-
-    public function toThrow(): self
-    {
-        throw new Exception('// TODO');
-        return $this;
-    }
-
-    public function toEndWith(): self
-    {
-        throw new Exception('// TODO');
-        return $this;
-    }
-
-    public function toMatch(): self
-    {
-        throw new Exception('// TODO');
-        return $this;
-    }
-
-    public function toMatchConstraint(): self
-    {
-        throw new Exception('// TODO');
-        return $this;
-    }
-
-    public function dd(...$arguments): Expectation
-    {
-        if (function_exists('dd')) {
-            return $this;
-            dd($this->value, ...$arguments);
+        if ($this->isNot) {
+            throw new Exception('The method "toBeWritableDirectory" cannot be used with "not()"');
         }
 
-        var_dump($this->value);
+        Assert::writable($this->expectValue, $this->message);
 
-        exit(1);
+        return $this;
     }
 
-    public function each(): self
+    public function toStartWith(string $str): self
     {
-        throw new Exception('// TODO');
+        if ($this->isNot) {
+            Assert::notStartsWith($this->expectValue, $str, $this->message);
+        } else {
+            Assert::startsWith($this->expectValue, $str, $this->message);
+        }
+
+        return $this;
+    }
+
+    public function toThrow(string $class = 'Exception', string $message = ''): self
+    {
+        if ($this->isNot) {
+            try {
+                $expression = $this->expectValue;
+                $expression();
+            } catch (Exception|\Throwable $e) {
+                Assert::notInstanceOf($e, $class, $this->message);
+            }
+
+            return $this;
+        } // END NOT
+
+        if (class_exists($class, false)) {
+            Assert::throws($this->expectValue, $class, $this->message);
+        } elseif ($message === '') {
+            $message = $class;
+        }
+
+        if ($message !== '') {
+            $errorMessage = '';
+
+            try {
+                $expression = $this->expectValue;
+                $expression();
+            } catch (Exception|\Throwable $e) {
+                $errorMessage = $e->getMessage();
+            }
+
+            Assert::same($message, $errorMessage, $this->message);
+        }
+
+        return $this;
+    }
+
+    public function toEndWith(string $str): self
+    {
+        if ($this->isNot) {
+            Assert::notEndsWith($this->expectValue, $str, $this->message);
+        } else {
+            Assert::endsWith($this->expectValue, $str, $this->message);
+        }
+
+        return $this;
+    }
+
+    public function toMatch(string $pattern): self
+    {
+        if ($this->isNot) {
+            Assert::notRegex($this->expectValue, $pattern, $this->message);
+        } else {
+            Assert::regex($this->expectValue, $pattern, $this->message);
+        }
+
+        return $this;
+    }
+
+    public function each(Callable $callback = null): self
+    {
+        if ($this->isNot) {
+            throw new Exception('The method "each" cannot be used with "not()"');
+        }
+
+        if (!is_iterable($this->expectValue)) {
+            throw new Exception('Expectation value is not iterable.');
+        }
+
+        if (is_callable($callback)) {
+            foreach ($this->expectValue as $item) {
+                $callback(expect($item));
+            }
+        }
+
         return $this;
     }
 

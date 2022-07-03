@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 
 if (!function_exists('__dump')) {
-    function __dump()
+    /**
+     * @return void
+     */
+    function __dump(): void
     {
         $str = '';
         try {
@@ -25,7 +28,7 @@ if (!function_exists('__dump')) {
         $file = $backtrace[1]['file'];
 
         if (defined('STDIN')) {
-            echo "\n 🔍\033[0;33m >>>\033[0;36m $file\033[0m:$line\n";
+            echo "\n 🔍\033[0;33m ⮕ \033[0;36m$file\033[0m:$line\n";
             echo $str . "\n";
             return;
         }
@@ -41,7 +44,7 @@ if (!function_exists('__dump')) {
 }
 
 if (!function_exists('d')) {
-    function d()
+    function d(): void
     {
         $args = func_get_args();
         __dump(...$args);
@@ -49,10 +52,17 @@ if (!function_exists('d')) {
 }
 
 if (!function_exists('dd')) {
-    function dd()
+    function dd(): void
     {
         $args = func_get_args();
         __dump(...$args);
         die(0);
+    }
+}
+
+if (!function_exists('clear_cli')) {
+    function clear_cli(): void
+    {
+        exec('clear && printf \'\e[3J\'');
     }
 }
