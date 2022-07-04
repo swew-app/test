@@ -8,6 +8,9 @@ use SWEW\Test\Exceptions\Exception;
 use SWEW\Test\Runner\TestManager;
 use Webmozart\Assert\Assert;
 
+/**
+ * @property Expectation $not
+ */
 final class Expectation
 {
     private bool $isNot = false;
@@ -21,6 +24,17 @@ final class Expectation
         if (!is_null($suite)) {
             $suite->stopLogData();
         }
+    }
+
+    public function __get(string $name): self
+    {
+        if ($name !== 'not') {
+            trigger_error('Call unimplemented property');
+        }
+
+        $this->isNot = true;
+
+        return  $this;
     }
 
     public function not(): self
