@@ -24,7 +24,7 @@ if (!function_exists('__dump')) {
         $file = $backtrace[1]['file'];
 
         if (defined('STDIN')) {
-            echo "\n 🔍\033[0;33m ⮕ \033[0;36m$file\033[0m:$line\n";
+            echo "\n 🔍\033[0;33m ⮕ \033[0;36m$file\033[90m:$line\033[0m\n";
             echo $str . "\n";
             return;
         }
@@ -59,6 +59,9 @@ if (!function_exists('dd')) {
 if (!function_exists('clear_cli')) {
     function clear_cli(): void
     {
+        if (PHP_OS_FAMILY === 'Windows') {
+            return;
+        }
         exec('clear && printf \'\e[3J\'');
     }
 }
