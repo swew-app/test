@@ -5,23 +5,9 @@ declare(strict_types=1);
 use SWEW\Test\Expectations\Expectation;
 use SWEW\Test\Suite\Suite;
 use SWEW\Test\Runner\TestManager;
+use SWEW\Test\Suite\SuiteHook;
 
-/*
-https://www.php.net/manual/ru/function.getrusage.php
-
-----
-
-https://www.php.net/manual/ru/function.memory-get-usage.php
-
-echo memory_get_usage() . "\n"; // 36640
-$a = str_repeat("Hello", 4242);
-echo memory_get_usage() . "\n"; // 57960
-unset($a);
-echo memory_get_usage() . "\n"; // 36744
-
-*/
-
-$_exit = function (String $name): void {
+$_exit = function (string $name): void {
     fwrite(STDERR, "The global function `{$name}()`s can't be created because of some naming collisions with another library.\n");
 };
 
@@ -45,4 +31,40 @@ if (!function_exists('expect')) {
     }
 } else {
     $_exit('expect');
+}
+
+if (!function_exists('beforeAll')) {
+    function beforeAll(Closure $closure): void
+    {
+        TestManager::addHook(SuiteHook::BeforeAll, $closure);
+    }
+} else {
+    $_exit('beforeAll');
+}
+
+if (!function_exists('beforeEach')) {
+    function beforeEach(Closure $closure): void
+    {
+        TestManager::addHook(SuiteHook::BeforeEach, $closure);
+    }
+} else {
+    $_exit('beforeEach');
+}
+
+if (!function_exists('afterEach')) {
+    function afterEach(Closure $closure): void
+    {
+        TestManager::addHook(SuiteHook::AfterEach, $closure);
+    }
+} else {
+    $_exit('afterEach');
+}
+
+if (!function_exists('afterAll')) {
+    function afterAll(Closure $closure): void
+    {
+        TestManager::addHook(SuiteHook::AfterAll, $closure);
+    }
+} else {
+    $_exit('afterAll');
 }

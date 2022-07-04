@@ -6,9 +6,16 @@ namespace SWEW\Test\Runner;
 
 use SWEW\Test\Exceptions\Exception;
 use SWEW\Test\Suite\Suite;
+use SWEW\Test\Suite\SuiteGroup;
+use SWEW\Test\Suite\SuiteHook;
+use Closure;
 
 final class TestManager
 {
+    private static array $suiteGroupList = [];
+
+    private static SuiteGroup $currentSuiteGroup;
+
     public static function init(): void
     {
         $configFile = getcwd() . DIRECTORY_SEPARATOR . 'swew-test.json';
@@ -23,7 +30,7 @@ final class TestManager
 
         self::checkConfigValidation($config);
 
-        self::$queue = [];
+        self::$suiteGroupList = [];
 
         $testFiles = self::loadTestFilePaths($config['paths']);
 
@@ -32,15 +39,17 @@ final class TestManager
         }
     }
 
-    // TODO: перевести на SplQueue
-    private static array $queue = [];
-
     public static function add(Suite $suite): void
     {
-        self::$queue[] = $suite;
+        self::$currentSuiteGroup->addSuite($suite);
     }
 
-    private static ?Suite $currentSuite = null;
+    public static function addHook(SuiteHook $hook, Closure $hookFunction): void
+    {
+        self::$currentSuiteGroup->addHook($hook, $hookFunction);
+    }
+
+    private static bool $hasOnlyFilteredTests = false;
 
     public static function run(): array
     {
@@ -48,25 +57,24 @@ final class TestManager
 
         $results = [];
 
-        $hasOnlyFilteredTests = false;
+        $list = self::$suiteGroupList;
 
-        foreach (self::$queue as $suite) {
-            if ($suite->isOnly) {
-                $hasOnlyFilteredTests = true;
-                break;
-            }
-        }
-
-        $list = $hasOnlyFilteredTests ? array_filter(self::$queue, fn ($s): bool => $s->isOnly) : self::$queue;
-
-        foreach ($list as $suite) {
-            self::$currentSuite = $suite;
-            $suiteResult = $suite->run(memory_get_usage());
-            $results[] = $suiteResult;
-            self::$currentSuite = null;
+        foreach ($list as $suiteGroup) {
+            $suiteGroup->run(
+                $results,
+                self::$hasOnlyFilteredTests,
+                fn (Suite|null $suite) => TestManager::setCurrentSuite($suite)
+            );
         }
 
         return $results;
+    }
+
+    private static ?Suite $currentSuite = null;
+
+    public static function setCurrentSuite(Suite|null $suite): void
+    {
+        self::$currentSuite = $suite;
     }
 
     public static function getCurrentSuite(): Suite|null
@@ -94,6 +102,10 @@ final class TestManager
 
     private static function loadTestFile(string $file): void
     {
+        self::$currentSuiteGroup = new SuiteGroup($file);
+
         require_once $file;
+
+        self::$suiteGroupList[] = self::$currentSuiteGroup;
     }
 }

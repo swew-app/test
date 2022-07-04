@@ -12,6 +12,3 @@ $res = TestManager::run();
 
 dd($res);
 
-
-// [ ]: Log Printer
-// [ ]: Parallel Runner
