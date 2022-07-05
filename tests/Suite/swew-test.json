@@ -1,3 +1,6 @@
 {
-    "paths": ["**/*.spec.php", "**/*.test.php"]
+    "paths": ["**/*.spec.php", "**/*.test.php"],
+    "log": {
+        "traceReverse": true
+    }
 }
