@@ -11,6 +11,6 @@ TestManager::init();
 
 $res = TestManager::run();
 
-$log = new LogMaster($res);
+$log = new LogMaster($res, [], TestManager::$testingTime);
 
 $log->logList();

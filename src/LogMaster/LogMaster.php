@@ -34,7 +34,8 @@ final class LogMaster
 
     public function __construct(
         private readonly array $results,
-        private array          $config = []
+        private array          $config = [],
+        private float          $testingTime = 0
     ) {
         $this->config = array_merge($config, [
             'traceReverse' => true,
@@ -43,17 +44,65 @@ final class LogMaster
 
     public function logList(): void
     {
+        $allTests = 0;
+        $excepted = 0;
+        $passed = 0;
+        $skipped = 0;
+        $todo = 0;
+
+        // TODO: $hasOnly = false; // окрашивать в красный Passed
+
         foreach ($this->results as $r) {
+            ++$allTests;
             if ($r->isExcepted) {
+                ++$excepted;
                 $this->echoExpectedSuite($r);
             } else {
                 $this->echoSuite($r);
+
+                if ($r->isSkip) {
+                    ++$skipped;
+                } elseif ($r->isTodo) {
+                    ++$todo;
+                } else {
+                    ++$passed;
+                }
             }
         }
 
         $maxMemory = memory_get_peak_usage();
 
-        echo 'Max memory: ' . $this->memorySize($maxMemory) . "\n";
+        $passedColor = $passed > 0 ? 'green' : 'white';
+        $exceptedColor = $excepted > 0 ? 'red' : 'grey';
+        $skippedColor = $skipped > 0 ? 'yellow' : 'grey';
+        $todoColor = $todo > 0 ? 'yellow' : 'grey';
+
+        $allTests = str_pad("$allTests", 3, ' ', STR_PAD_LEFT);
+        $passed = str_pad("$passed", 3, ' ', STR_PAD_LEFT);
+        $excepted = str_pad("$excepted", 3, ' ', STR_PAD_LEFT);
+        $skipped = str_pad("$skipped", 3, ' ', STR_PAD_LEFT);
+        $todo = str_pad("$todo", 3, ' ', STR_PAD_LEFT);
+
+        $passed = $this->cl($passedColor, $passed);
+        $excepted = $this->cl($exceptedColor, $excepted);
+        $skipped = $this->cl($skippedColor, $skipped);
+        $todo = $this->cl($todoColor, $todo);
+
+        $lines = [
+            "",
+            "  Tests:",
+            $this->cl('grey', '   - All:     ') . $allTests,
+            $this->cl('grey', '   - Passed:  ') . $passed,
+            $this->cl('grey', '   - Excepted:') . $excepted,
+            $this->cl('grey', '   - Skipped: ') . $skipped,
+            $this->cl('grey', '   - Todo:    ') . $todo,
+            " Memory: " . $this->memorySize($maxMemory),
+            "   Time: " . $this->getTime($this->testingTime),
+            "",
+            "",
+        ];
+
+        echo implode("\n", $lines);
     }
 
     public function line(string $color = '', bool $nl = false): string
@@ -82,7 +131,7 @@ final class LogMaster
         echo ' ' . $this->getIcon($item) . ' '
             . $this->getMessage($item)
             . $this->memorySize($item->memoryUsage) . '  '
-            . $this->getTime($item)
+            . $this->getTime($item->timeUsage)
             . "\n";
     }
 
@@ -91,10 +140,11 @@ final class LogMaster
         $msg = '';
 
         if (!is_null($item->exception)) {
-            $msg = LogMaster::$colors['RL'] . ' ' . $item->exception->getMessage() . "\n"
-                . LogMaster::$colors['RL'] . '   '
-                . $item->exception->getFile() . LogMaster::$colors['grey'] . ':'
-                . $item->exception->getLine() . LogMaster::$colors['off']
+            $msg = $this->cl('RL', ' ' . $item->exception->getMessage()) . "\n"
+                . $this->cl('RL', '   ' . $item->exception->getFile())
+                . $this->cl('grey', ':' . $item->exception->getLine())
+                . "\n"
+                . $this->cl('RL')
                 . "\n";
 
             $trace = $item->exception->getTrace();
@@ -154,17 +204,20 @@ final class LogMaster
 
     private function memorySize(int $size): string
     {
-        $units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+        $units = array('B ', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
         $power = $size > 0 ? intval(log($size, 1024)) : 0;
 
         $unit = $this->cl('grey', $units[$power]);
-
-        return number_format(
+        $val = number_format(
             $size / pow(1024, $power),
             1,
             '.',
-            ','
-        ) . ' ' . $unit;
+            '\''
+        );
+
+        $val = str_pad($val, 6, ' ', STR_PAD_LEFT);
+
+        return  "$val $unit";
     }
 
     private function getMessage(LogData $item, bool $isError = false): string
@@ -172,7 +225,7 @@ final class LogMaster
         $msg = str_pad($item->message, 40, ' ');
 
         if ($isError) {
-            return LogMaster::$colors['red'] . $msg . LogMaster::$colors['off'];
+            return $this->cl('red', $msg);
         }
 
         return $msg;
@@ -188,8 +241,8 @@ final class LogMaster
         };
     }
 
-    private function getTime(LogData $item): string
+    private function getTime(float|int $time): string
     {
-        return number_format($item->timeUsage, 5) . $this->cl('grey', ' s');
+        return number_format($time, 6) . $this->cl('grey', ' s');
     }
 }

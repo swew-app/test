@@ -16,6 +16,8 @@ final class TestManager
 
     private static SuiteGroup $currentSuiteGroup;
 
+    public static float $testingTime = 0;
+
     public static function init(): void
     {
         $configFile = getcwd() . DIRECTORY_SEPARATOR . 'swew-test.json';
@@ -57,6 +59,8 @@ final class TestManager
 
         $results = [];
 
+        $startTime = microtime(true);
+
         $list = self::$suiteGroupList;
 
         foreach ($list as $suiteGroup) {
@@ -66,6 +70,8 @@ final class TestManager
                 fn (Suite|null $suite) => TestManager::setCurrentSuite($suite)
             );
         }
+
+        self::$testingTime = microtime(true) - $startTime;
 
         return $results;
     }

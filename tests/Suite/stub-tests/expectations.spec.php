@@ -5,13 +5,13 @@ declare(strict_types=1);
 it('toBe', function () {
     expect(10)->toBe(10);
     expect(10)->not->toBe(1);
-})->only();
+});
 
 it('toBeArray', function () {
     expect([1])->toBeArray();
     expect(1)->not()->toBeArray();
 //    expect([1])->not()->toBeArray();
-})->only();
+});
 
 it('toBeTrue', function () {
     expect(true)->toBeTrue();
