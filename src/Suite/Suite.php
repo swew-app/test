@@ -29,6 +29,10 @@ final class Suite
     {
         $this->logData = new LogData($memory, $this->message);
 
+        if ($this->isOnly) {
+            $this->logData->isOnly = true;
+        }
+
         if ($this->isSkip) {
             $this->logData->isSkip = true;
 

@@ -49,8 +49,7 @@ final class LogMaster
         $passed = 0;
         $skipped = 0;
         $todo = 0;
-
-        // TODO: $hasOnly = false; // окрашивать в красный Passed
+        $hasOnly = false;
 
         foreach ($this->results as $r) {
             ++$allTests;
@@ -59,6 +58,10 @@ final class LogMaster
                 $this->echoExpectedSuite($r);
             } else {
                 $this->echoSuite($r);
+
+                if ($r->isOnly) {
+                    $hasOnly = true;
+                }
 
                 if ($r->isSkip) {
                     ++$skipped;
@@ -72,7 +75,12 @@ final class LogMaster
 
         $maxMemory = memory_get_peak_usage();
 
-        $passedColor = $passed > 0 ? 'green' : 'white';
+        if ($hasOnly) {
+            $passedColor = 'yellow';
+        } else {
+            $passedColor = $passed > 0 ? 'green' : 'white';
+        }
+
         $exceptedColor = $excepted > 0 ? 'red' : 'grey';
         $skippedColor = $skipped > 0 ? 'yellow' : 'grey';
         $todoColor = $todo > 0 ? 'yellow' : 'grey';
@@ -87,6 +95,10 @@ final class LogMaster
         $excepted = $this->cl($exceptedColor, $excepted);
         $skipped = $this->cl($skippedColor, $skipped);
         $todo = $this->cl($todoColor, $todo);
+
+        if ($hasOnly) {
+            $passed .= ' | Tests are filtered by ' . $this->cl('cyan', '->only()');
+        }
 
         $lines = [
             "",

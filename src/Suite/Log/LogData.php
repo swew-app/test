@@ -20,6 +20,8 @@ final class LogData
 
     public bool $isTodo = false;
 
+    public bool $isOnly = false;
+
     public bool $isExcepted = false;
 
     public ?Exception $exception = null;

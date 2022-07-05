@@ -11,7 +11,7 @@ it('toBeArray', function () {
     expect([1])->toBeArray();
     expect(1)->not()->toBeArray();
 //    expect([1])->not()->toBeArray();
-});
+})->only();
 
 it('toBeTrue', function () {
     expect(true)->toBeTrue();

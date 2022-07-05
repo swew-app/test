@@ -51,6 +51,7 @@ final class TestManager
         self::$currentSuiteGroup->addHook($hook, $hookFunction);
     }
 
+    // TODO: прогонять фильтр до запуска тестов
     private static bool $hasOnlyFilteredTests = false;
 
     public static function run(): array
