@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace SWEW\Test\LogMaster;
 
-use SWEW\Test\Cli\CliStr;
+use SWEW\Test\Utils\CliStr;
 use SWEW\Test\LogMaster\Log\LogData;
 use SWEW\Test\LogMaster\Log\LogState;
+use SWEW\Test\Utils\DataConverter;
 
 final class LogMaster
 {
@@ -104,8 +105,8 @@ final class LogMaster
             $lines[] = CliStr::cl('grey', '   - Todo:     ') . $todoStr;
         }
 
-        $lines[] = " Memory: " . $this->memorySize($maxMemory);
-        $lines[] = "   Time: " . $this->getTime($this->logState->getTestingTime());
+        $lines[] = " Memory: " . DataConverter::memorySize($maxMemory);
+        $lines[] = "   Time: " . DataConverter::getTime($this->logState->getTestingTime());
         $lines[] = "";
         $lines[] = CliStr::line('grey', true, '-');
 
@@ -118,10 +119,10 @@ final class LogMaster
 
     private function echoSuite(LogData $item): void
     {
-        $line = ' ' . $this->getIcon($item) . ' '
-            . $this->getMessage($item)
-            . $this->memorySize($item->memoryUsage) . '  '
-            . $this->getTime($item->timeUsage)
+        $line = ' ' . DataConverter::getIcon($item) . ' '
+            . DataConverter::getMessage($item)
+            . DataConverter::memorySize($item->memoryUsage) . '  '
+            . DataConverter::getTime($item->timeUsage)
             . "\n";
 
         CliStr::write($line);
@@ -146,94 +147,15 @@ final class LogMaster
             }
 
             foreach ($trace as $t) {
-                $msg .= $this->parseTraceItem($t);
+                $msg .= DataConverter::parseTraceItem($t);
             }
         }
 
-        $line = ' ' . $this->getIcon($item) . ' '
-        . $this->getMessage($item, true) . "\n"
+        $line = ' ' . DataConverter::getIcon($item) . ' '
+        . DataConverter::getMessage($item, true) . "\n"
         . $msg ?? $item->exception
         . "\n";
 
         CliStr::write($line);
-    }
-
-    private function parseTraceItem(array $v): string
-    {
-        $fileLine = CliStr::cl('b', $v['file'], false)
-            . CliStr::cl('w', ':' . $v['line'], false);
-
-        return CliStr::cl('R', "  " . $fileLine . "\t")
-            . "\n"
-            . $this->getContentByLine($v['file'], $v['line'])
-            . "\n"
-            . CliStr::line('grey', true)
-            . CliStr::cl('c', $v['class'] . $v['type'] . $v['function'] . "(...)\n", false)
-            . (count($v['args']) ? print_r($v['args'], true) : '')
-            . "\n";
-    }
-
-    private function getContentByLine(string $filePath, int $line = 0): string
-    {
-        $len = 10;
-        $start = max($line - ($len / 2), 0);
-
-        $content = file_get_contents($filePath);
-        $lines = explode("\n", $content);
-        $lines = array_slice($lines, $start, $len, true);
-
-        foreach ($lines as $i => &$v) {
-            ++$start;
-            $v = CliStr::cl('grey', str_pad("$start:", 3, ' ', STR_PAD_LEFT))
-                . ' '
-                . ($start === $line ? CliStr::cl('r', $v) : $v);
-        }
-
-        return implode("\n", $lines);
-    }
-
-
-    private function memorySize(int $size): string
-    {
-        $units = array('b ', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb');
-        $power = $size > 0 ? intval(log($size, 1024)) : 0;
-
-        $unit = CliStr::cl('grey', $units[$power]);
-        $val = number_format(
-            $size / pow(1024, $power),
-            1,
-            '.',
-            '\''
-        );
-
-        $val = str_pad($val, 7, ' ', STR_PAD_LEFT);
-
-        return "$val $unit";
-    }
-
-    private function getMessage(LogData $item, bool $isError = false): string
-    {
-        $msg = str_pad($item->message, 50, ' ');
-
-        if ($isError) {
-            return CliStr::cl('red', $msg);
-        }
-
-        return $msg;
-    }
-
-    private function getIcon(LogData $item): string
-    {
-        return match (true) {
-            $item->isSkip => CliStr::cl('grey', '-'),
-            $item->isTodo => CliStr::cl('yellow', '!'),
-            $item->isExcepted => CliStr::cl('red', '✘'),
-            default => CliStr::cl('green', '✓'),
-        };
-    }
-
-    private function getTime(float|int $time): string
-    {
-        return number_format($time, 6) . CliStr::cl('grey', ' s');
     }
 }

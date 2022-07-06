@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\Cli;
+namespace SWEW\Test\Utils;
 
 final class CliStr
 {
