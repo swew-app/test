@@ -4,35 +4,12 @@ declare(strict_types=1);
 
 namespace SWEW\Test\Runner\LogMaster;
 
+use SWEW\Test\Cli\CliStr;
 use SWEW\Test\Runner\LogMaster\Log\LogData;
 use SWEW\Test\Runner\LogMaster\Log\LogState;
 
 final class LogMaster
 {
-    private static array $colors = [
-        'off' => "\033[0m",
-        'black' => "\033[30m",
-        'b' => "\033[30m",
-        'grey' => "\033[90m",
-        'red' => "\033[31m",
-        'r' => "\033[31m",
-        'green' => "\033[32m",
-        'g' => "\033[32m",
-        'cyan' => "\033[36m",
-        'c' => "\033[36m",
-        'yellow' => "\033[33m",
-        'y' => "\033[33m",
-        'white' => "\033[37m",
-        'w' => "\033[37m",
-        'R' => "\033[30m\033[41m",
-        'G' => "\033[30m\033[42m",
-        'Y' => "\033[30m\033[43m",
-        'B' => "\033[30m\033[44m",
-        'RL' => "\033[30m\033[41m \033[0m",
-        'GL' => "\033[30m\033[42m \033[0m",
-        'YL' => "\033[30m\033[43m \033[0m",
-    ];
-
     private array $config = [];
 
     public function __construct(
@@ -46,6 +23,8 @@ final class LogMaster
                 ],
                 $this->logState->getConfig()['log'] ?: []
             );
+
+            CliStr::withColor($this->config['color']);
         }
     }
 
@@ -97,77 +76,55 @@ final class LogMaster
         $skippedStr = str_pad("$skipped", 3, ' ', STR_PAD_LEFT);
         $todoStr = str_pad("$todo", 3, ' ', STR_PAD_LEFT);
 
-        $passedStr = $this->cl($passedColor, $passedStr);
-        $exceptedStr = $this->cl($exceptedColor, $exceptedStr);
-        $skippedStr = $this->cl($skippedColor, $skippedStr);
-        $todoStr = $this->cl($todoColor, $todoStr);
+        $passedStr = CliStr::cl($passedColor, $passedStr);
+        $exceptedStr = CliStr::cl($exceptedColor, $exceptedStr);
+        $skippedStr = CliStr::cl($skippedColor, $skippedStr);
+        $todoStr = CliStr::cl($todoColor, $todoStr);
 
         if ($hasOnly) {
-            $passedStr .= ' | Tests are filtered by ' . $this->cl('cyan', '->only()');
+            $passedStr .= ' | Tests are filtered by ' . CliStr::cl('cyan', '->only()');
         }
 
         // Log Text
         $lines = [""];
-        $lines[] = $this->line('grey', true, '-');
+        $lines[] = CliStr::line('grey', true, '-');
         $lines[] = "  Tests:";
-        $lines[] = $this->cl('grey', '   - All suite:') . $allTests;
-        $lines[] = $this->cl('grey', '   - Passed:   ') . $passedStr;
+        $lines[] = CliStr::cl('grey', '   - All suite:') . $allTests;
+        $lines[] = CliStr::cl('grey', '   - Passed:   ') . $passedStr;
 
         if ($excepted) {
-            $lines[] = $this->cl('grey', '   - Excepted: ') . $exceptedStr;
+            $lines[] = CliStr::cl('grey', '   - Excepted: ') . $exceptedStr;
         }
 
         if ($skipped) {
-            $lines[] = $this->cl('grey', '   - Skipped:  ') . $skippedStr;
+            $lines[] = CliStr::cl('grey', '   - Skipped:  ') . $skippedStr;
         }
 
         if ($todo) {
-            $lines[] = $this->cl('grey', '   - Todo:     ') . $todoStr;
+            $lines[] = CliStr::cl('grey', '   - Todo:     ') . $todoStr;
         }
 
         $lines[] = " Memory: " . $this->memorySize($maxMemory);
         $lines[] = "   Time: " . $this->getTime($this->logState->getTestingTime());
         $lines[] = "";
-        $lines[] = $this->line('grey', true, '-');
+        $lines[] = CliStr::line('grey', true, '-');
 
-        echo implode("\n", $lines);
+        CliStr::write($lines);
 
         if ($hasExcepted) {
             exit(1);
         }
     }
 
-    public function line(string $color = '', bool $nl = false, string $line = '-  '): string
-    {
-        $line = str_pad('', 80, $line);
-
-        if ($nl) {
-            $line .= "\n";
-        }
-
-        if ($color === '') {
-            return $line;
-        }
-
-        return $this->cl($color, $line);
-    }
-
-    public function cl(string $color, string $m = '', bool $close = true): string
-    {
-        if ($this->config['color'] === false) {
-            return $m;
-        }
-
-        return LogMaster::$colors[$color] . $m . ($close ? LogMaster::$colors['off'] : '');
-    }
-
     private function echoSuite(LogData $item): void
     {
-        echo ' ' . $this->getIcon($item) . ' '
+        $line = ' ' . $this->getIcon($item) . ' '
             . $this->getMessage($item)
             . $this->memorySize($item->memoryUsage) . '  '
             . $this->getTime($item->timeUsage)
             . "\n";
+
+        CliStr::write($line);
     }
 
     public function echoExpectedSuite(LogData $item): void
@@ -175,11 +132,11 @@ final class LogMaster
         $msg = '';
 
         if (!is_null($item->exception)) {
-            $msg = $this->cl('RL', ' ' . $item->exception->getMessage()) . "\n"
-                . $this->cl('RL', '   ' . $item->exception->getFile())
-                . $this->cl('grey', ':' . $item->exception->getLine())
+            $msg = CliStr::cl('RL', ' ' . $item->exception->getMessage()) . "\n"
+                . CliStr::cl('RL', '   ' . $item->exception->getFile())
+                . CliStr::cl('grey', ':' . $item->exception->getLine())
                 . "\n"
-                . $this->cl('RL')
+                . CliStr::cl('RL')
                 . "\n";
 
             $trace = $item->exception->getTrace();
@@ -193,26 +150,25 @@ final class LogMaster
             }
         }
 
-        echo ' ' . $this->getIcon($item) . ' '
+        $line = ' ' . $this->getIcon($item) . ' '
         . $this->getMessage($item, true) . "\n"
         . $msg ?? $item->exception
         . "\n";
+
+        CliStr::write($line);
     }
 
     private function parseTraceItem(array $v): string
     {
-        $fileLine = $this->cl('b', $v['file'], false)
-            . $this->cl('w', ':' . $v['line'], false);
+        $fileLine = CliStr::cl('b', $v['file'], false)
+            . CliStr::cl('w', ':' . $v['line'], false);
 
-        return $this->cl(
-            'R',
-            "  " . $fileLine . "\t"
-        )
+        return CliStr::cl('R', "  " . $fileLine . "\t")
             . "\n"
             . $this->getContentByLine($v['file'], $v['line'])
             . "\n"
-            . $this->line('grey', true)
-            . $this->cl('c', $v['class'] . $v['type'] . $v['function'] . "(...)\n", false)
+            . CliStr::line('grey', true)
+            . CliStr::cl('c', $v['class'] . $v['type'] . $v['function'] . "(...)\n", false)
             . (count($v['args']) ? print_r($v['args'], true) : '')
             . "\n";
     }
@@ -228,9 +184,9 @@ final class LogMaster
 
         foreach ($lines as $i => &$v) {
             ++$start;
-            $v = $this->cl('grey', str_pad("$start:", 3, ' ', STR_PAD_LEFT))
+            $v = CliStr::cl('grey', str_pad("$start:", 3, ' ', STR_PAD_LEFT))
                 . ' '
-                . ($start === $line ? $this->cl('r', $v) : $v);
+                . ($start === $line ? CliStr::cl('r', $v) : $v);
         }
 
         return implode("\n", $lines);
@@ -242,7 +198,7 @@ final class LogMaster
         $units = array('b ', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb');
         $power = $size > 0 ? intval(log($size, 1024)) : 0;
 
-        $unit = $this->cl('grey', $units[$power]);
+        $unit = CliStr::cl('grey', $units[$power]);
         $val = number_format(
             $size / pow(1024, $power),
             1,
@@ -260,7 +216,7 @@ final class LogMaster
         $msg = str_pad($item->message, 50, ' ');
 
         if ($isError) {
-            return $this->cl('red', $msg);
+            return CliStr::cl('red', $msg);
         }
 
         return $msg;
@@ -269,15 +225,15 @@ final class LogMaster
     private function getIcon(LogData $item): string
     {
         return match (true) {
-            $item->isSkip => $this->cl('grey', '-'),
-            $item->isTodo => $this->cl('yellow', '!'),
-            $item->isExcepted => $this->cl('red', '✘'),
-            default => $this->cl('green', '✓'),
+            $item->isSkip => CliStr::cl('grey', '-'),
+            $item->isTodo => CliStr::cl('yellow', '!'),
+            $item->isExcepted => CliStr::cl('red', '✘'),
+            default => CliStr::cl('green', '✓'),
         };
     }
 
     private function getTime(float|int $time): string
     {
-        return number_format($time, 6) . $this->cl('grey', ' s');
+        return number_format($time, 6) . CliStr::cl('grey', ' s');
     }
 }
