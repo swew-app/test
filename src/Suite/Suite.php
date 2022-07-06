@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SWEW\Test\Suite;
 
 use Closure;
-use SWEW\Test\Runner\LogMaster\Log\LogData;
+use SWEW\Test\LogMaster\Log\LogData;
 
 final class Suite
 {

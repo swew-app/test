@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SWEW\Test\Expectations;
 
 use SWEW\Test\Exceptions\Exception;
-use SWEW\Test\Runner\TestManager;
+use SWEW\Test\TestRunner;
 use Webmozart\Assert\Assert;
 
 /**
@@ -19,7 +19,7 @@ final class Expectation
         private readonly mixed $expectValue,
         private string         $message = ''
     ) {
-        $suite = TestManager::getCurrentSuite();
+        $suite = TestRunner::getCurrentSuite();
 
         if (!is_null($suite)) {
             $suite->stopLogData();

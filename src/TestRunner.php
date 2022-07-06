@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\Runner;
+namespace SWEW\Test;
 
+use Closure;
 use SWEW\Test\Exceptions\Exception;
-use SWEW\Test\Runner\LogMaster\Log\LogState;
+use SWEW\Test\LogMaster\Log\LogState;
 use SWEW\Test\Suite\Suite;
 use SWEW\Test\Suite\SuiteGroup;
 use SWEW\Test\Suite\SuiteHook;
-use Closure;
 
-final class TestManager
+final class TestRunner
 {
     private static array $suiteGroupList = [];
 
@@ -84,7 +84,7 @@ final class TestManager
             $suiteGroup->run(
                 $results,
                 self::$hasOnlyFilteredTests,
-                fn (Suite|null $suite) => TestManager::setCurrentSuite($suite)
+                fn (Suite|null $suite) => TestRunner::setCurrentSuite($suite)
             );
         }
 

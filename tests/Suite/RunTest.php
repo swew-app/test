@@ -2,14 +2,14 @@
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-use SWEW\Test\Runner\LogMaster\LogMaster;
-use SWEW\Test\Runner\TestManager;
+use SWEW\Test\LogMaster\LogMaster;
+use SWEW\Test\TestRunner;
 
 chdir(__DIR__);
 
-TestManager::init();
+TestRunner::init();
 
-$res = TestManager::run();
+$res = TestRunner::run();
 
 $log = new LogMaster($res);
 

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\Runner\LogMaster;
+namespace SWEW\Test\LogMaster;
 
 use SWEW\Test\Cli\CliStr;
-use SWEW\Test\Runner\LogMaster\Log\LogData;
-use SWEW\Test\Runner\LogMaster\Log\LogState;
+use SWEW\Test\LogMaster\Log\LogData;
+use SWEW\Test\LogMaster\Log\LogState;
 
 final class LogMaster
 {
