@@ -84,14 +84,11 @@ if (!function_exists('get_project_root')) {
                 break;
             }
 
-            $composerPath = $path . DIRECTORY_SEPARATOR . 'composer.json';
-
-            if (file_exists($composerPath)) {
-                return $composerPath;
+            if (file_exists($path . DIRECTORY_SEPARATOR . 'composer.json')) {
+                return $path;
             }
         }
 
         return null;
     }
 }
-

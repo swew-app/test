@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\Suite\Log;
+namespace SWEW\Test\Runner\LogMaster\Log;
 
 use Exception;
 

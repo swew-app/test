@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SWEW\Test\Runner;
 
 use SWEW\Test\Exceptions\Exception;
+use SWEW\Test\Runner\LogMaster\Log\LogState;
 use SWEW\Test\Suite\Suite;
 use SWEW\Test\Suite\SuiteGroup;
 use SWEW\Test\Suite\SuiteHook;
@@ -18,6 +19,8 @@ final class TestManager
 
     public static float $testingTime = 0;
 
+    private static array $config = [];
+
     public static function init(): void
     {
         $configFile = getcwd() . DIRECTORY_SEPARATOR . 'swew-test.json';
@@ -28,13 +31,13 @@ final class TestManager
             throw new Exception("Can't load config file: '{$configFile}'");
         }
 
-        $config = json_decode($json, true);
+        self::$config = json_decode($json, true);
 
-        self::checkConfigValidation($config);
+        self::checkConfigValidation(self::$config);
 
         self::$suiteGroupList = [];
 
-        $testFiles = self::loadTestFilePaths($config['paths']);
+        $testFiles = self::loadTestFilePaths(self::$config['paths']);
 
         foreach ($testFiles as $file) {
             self::loadTestFile($file);
@@ -54,17 +57,30 @@ final class TestManager
     // TODO: прогонять фильтр до запуска тестов
     private static bool $hasOnlyFilteredTests = false;
 
-    public static function run(): array
+    public static function run(): LogState
     {
         clear_cli();
 
         $results = [];
+
+        $testsCount = 0;
 
         $startTime = microtime(true);
 
         $list = self::$suiteGroupList;
 
         foreach ($list as $suiteGroup) {
+            self::$hasOnlyFilteredTests = $suiteGroup->hasOnly();
+
+            if (self::$hasOnlyFilteredTests) {
+                break;
+            }
+        }
+
+        // Run tests
+        foreach ($list as $suiteGroup) {
+            $testsCount = $suiteGroup->getTestsCount();
+
             $suiteGroup->run(
                 $results,
                 self::$hasOnlyFilteredTests,
@@ -74,7 +90,16 @@ final class TestManager
 
         self::$testingTime = microtime(true) - $startTime;
 
-        return $results;
+        $log = new LogState();
+
+        $log->setResults($results);
+        $log->setTestingTime(self::$testingTime);
+        $log->setHasOnlyTests(self::$hasOnlyFilteredTests);
+        $log->setTestsCount($testsCount);
+        $log->setRootDir(get_project_root() ?: '');
+        $log->setConfig(self::$config);
+
+        return $log;
     }
 
     private static ?Suite $currentSuite = null;

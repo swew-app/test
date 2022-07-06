@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\LogMaster;
+namespace SWEW\Test\Runner\LogMaster;
 
-use SWEW\Test\Suite\Log\LogData;
+use SWEW\Test\Runner\LogMaster\Log\LogData;
+use SWEW\Test\Runner\LogMaster\Log\LogState;
 
 final class LogMaster
 {
@@ -32,27 +33,34 @@ final class LogMaster
         'YL' => "\033[30m\033[43m \033[0m",
     ];
 
+    private array $config = [];
+
     public function __construct(
-        private readonly array $results,
-        private array          $config = [],
-        private float          $testingTime = 0
+        private readonly LogState $logState
     ) {
-        $this->config = array_merge($config, [
-            'traceReverse' => true,
-        ]);
+        if (!empty($this->logState)) {
+            $this->config = array_merge(
+                [
+                    'traceReverse' => true,
+                    'color' => true,
+                ],
+                $this->logState->getConfig()['log'] ?: []
+            );
+        }
     }
 
     public function logListAndExit(): void
     {
-        $allTests = count($this->results);
+        $results = $this->logState->getResults();
+        $allTests = $this->logState->getTestsCount();
+        $hasOnly = $this->logState->hasOnlyTests();
         $excepted = 0;
         $passed = 0;
         $skipped = 0;
         $todo = 0;
         $hasExcepted = false;
-        $hasOnly = false;
 
-        foreach ($this->results as $r) {
+        foreach ($results as $r) {
             if ($r->isExcepted) {
                 ++$excepted;
                 $hasExcepted = true;
@@ -60,10 +68,6 @@ final class LogMaster
                 $this->echoExpectedSuite($r);
             } else {
                 $this->echoSuite($r);
-
-                if ($r->isOnly) {
-                    $hasOnly = true;
-                }
 
                 if ($r->isSkip) {
                     ++$skipped;
@@ -88,33 +92,43 @@ final class LogMaster
         $todoColor = $todo > 0 ? 'yellow' : 'grey';
 
         $allTests = str_pad("$allTests", 3, ' ', STR_PAD_LEFT);
-        $passed = str_pad("$passed", 3, ' ', STR_PAD_LEFT);
-        $excepted = str_pad("$excepted", 3, ' ', STR_PAD_LEFT);
-        $skipped = str_pad("$skipped", 3, ' ', STR_PAD_LEFT);
-        $todo = str_pad("$todo", 3, ' ', STR_PAD_LEFT);
+        $passedStr = str_pad("$passed", 3, ' ', STR_PAD_LEFT);
+        $exceptedStr = str_pad("$excepted", 3, ' ', STR_PAD_LEFT);
+        $skippedStr = str_pad("$skipped", 3, ' ', STR_PAD_LEFT);
+        $todoStr = str_pad("$todo", 3, ' ', STR_PAD_LEFT);
 
-        $passed = $this->cl($passedColor, $passed);
-        $excepted = $this->cl($exceptedColor, $excepted);
-        $skipped = $this->cl($skippedColor, $skipped);
-        $todo = $this->cl($todoColor, $todo);
+        $passedStr = $this->cl($passedColor, $passedStr);
+        $exceptedStr = $this->cl($exceptedColor, $exceptedStr);
+        $skippedStr = $this->cl($skippedColor, $skippedStr);
+        $todoStr = $this->cl($todoColor, $todoStr);
 
         if ($hasOnly) {
-            $passed .= ' | Tests are filtered by ' . $this->cl('cyan', '->only()');
+            $passedStr .= ' | Tests are filtered by ' . $this->cl('cyan', '->only()');
         }
 
-        $lines = [
-            "",
-            "  Tests:",
-            $this->cl('grey', '   - All:     ') . $allTests,
-            $this->cl('grey', '   - Passed:  ') . $passed,
-            $this->cl('grey', '   - Excepted:') . $excepted,
-            $this->cl('grey', '   - Skipped: ') . $skipped,
-            $this->cl('grey', '   - Todo:    ') . $todo,
-            " Memory: " . $this->memorySize($maxMemory),
-            "   Time: " . $this->getTime($this->testingTime),
-            "",
-            "",
-        ];
+        // Log Text
+        $lines = [""];
+        $lines[] = $this->line('grey', true, '-');
+        $lines[] = "  Tests:";
+        $lines[] = $this->cl('grey', '   - All suite:') . $allTests;
+        $lines[] = $this->cl('grey', '   - Passed:   ') . $passedStr;
+
+        if ($excepted) {
+            $lines[] = $this->cl('grey', '   - Excepted: ') . $exceptedStr;
+        }
+
+        if ($skipped) {
+            $lines[] = $this->cl('grey', '   - Skipped:  ') . $skippedStr;
+        }
+
+        if ($todo) {
+            $lines[] = $this->cl('grey', '   - Todo:     ') . $todoStr;
+        }
+
+        $lines[] = " Memory: " . $this->memorySize($maxMemory);
+        $lines[] = "   Time: " . $this->getTime($this->logState->getTestingTime());
+        $lines[] = "";
+        $lines[] = $this->line('grey', true, '-');
 
         echo implode("\n", $lines);
 
@@ -123,9 +137,9 @@ final class LogMaster
         }
     }
 
-    public function line(string $color = '', bool $nl = false): string
+    public function line(string $color = '', bool $nl = false, string $line = '-  '): string
     {
-        $line = str_pad('', 120, '─  ');
+        $line = str_pad('', 80, $line);
 
         if ($nl) {
             $line .= "\n";
@@ -140,9 +154,12 @@ final class LogMaster
 
     public function cl(string $color, string $m = '', bool $close = true): string
     {
+        if ($this->config['color'] === false) {
+            return $m;
+        }
+
         return LogMaster::$colors[$color] . $m . ($close ? LogMaster::$colors['off'] : '');
     }
-
 
     private function echoSuite(LogData $item): void
     {
@@ -233,9 +250,9 @@ final class LogMaster
             '\''
         );
 
-        $val = str_pad($val, 5, ' ', STR_PAD_LEFT);
+        $val = str_pad($val, 7, ' ', STR_PAD_LEFT);
 
-        return  "$val $unit";
+        return "$val $unit";
     }
 
     private function getMessage(LogData $item, bool $isError = false): string
@@ -252,8 +269,8 @@ final class LogMaster
     private function getIcon(LogData $item): string
     {
         return match (true) {
-            $item->isSkip => $this->cl('grey', '.'),
-            $item->isTodo => $this->cl('grey', '⋅'),
+            $item->isSkip => $this->cl('grey', '-'),
+            $item->isTodo => $this->cl('yellow', '!'),
             $item->isExcepted => $this->cl('red', '✘'),
             default => $this->cl('green', '✓'),
         };

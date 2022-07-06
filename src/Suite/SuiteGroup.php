@@ -23,6 +23,11 @@ final class SuiteGroup
     ) {
     }
 
+    public function getTestsCount(): int
+    {
+        return count($this->suiteList);
+    }
+
     public function addSuite(Suite $suite): void
     {
         $this->suiteList[] = $suite;
@@ -45,18 +50,11 @@ final class SuiteGroup
         }
     }
 
-    public function run(array &$results, bool &$hasOnlyFilteredTests, Closure $setCurrentSuite): void
+    public function run(array &$results, bool $hasOnlyFilteredTests, Closure $setCurrentSuite): void
     {
-        if ($hasOnlyFilteredTests === false) {
-            foreach ($this->suiteList as $suite) {
-                if ($suite->isOnly) {
-                    $hasOnlyFilteredTests = true;
-                    break;
-                }
-            }
-        }
-
-        $list = $hasOnlyFilteredTests ? array_filter($this->suiteList, fn ($s): bool => $s->isOnly) : $this->suiteList;
+        $list = $hasOnlyFilteredTests
+            ? array_filter($this->suiteList, fn ($s): bool => $s->isOnly)
+            : $this->suiteList;
 
         $this->callHook(SuiteHook::BeforeAll);
 
@@ -73,5 +71,15 @@ final class SuiteGroup
         }
 
         $this->callHook(SuiteHook::AfterAll);
+    }
+
+    public function hasOnly(): bool
+    {
+        foreach ($this->suiteList as $suite) {
+            if ($suite->isOnly) {
+                return true;
+            }
+        }
+        return false;
     }
 }
