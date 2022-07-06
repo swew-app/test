@@ -54,9 +54,6 @@ final class TestRunner
         self::$currentSuiteGroup->addHook($hook, $hookFunction);
     }
 
-    // TODO: прогонять фильтр до запуска тестов
-    private static bool $hasOnlyFilteredTests = false;
-
     public static function run(): LogState
     {
         clear_cli();
@@ -69,10 +66,12 @@ final class TestRunner
 
         $list = self::$suiteGroupList;
 
-        foreach ($list as $suiteGroup) {
-            self::$hasOnlyFilteredTests = $suiteGroup->hasOnly();
+        $hasOnlyFilteredTests = false;
 
-            if (self::$hasOnlyFilteredTests) {
+        foreach ($list as $suiteGroup) {
+            $hasOnlyFilteredTests = $suiteGroup->hasOnly();
+
+            if ($hasOnlyFilteredTests) {
                 break;
             }
         }
@@ -83,7 +82,7 @@ final class TestRunner
 
             $suiteGroup->run(
                 $results,
-                self::$hasOnlyFilteredTests,
+                $hasOnlyFilteredTests,
                 fn (Suite|null $suite) => TestRunner::setCurrentSuite($suite)
             );
         }
@@ -94,7 +93,7 @@ final class TestRunner
 
         $log->setResults($results);
         $log->setTestingTime(self::$testingTime);
-        $log->setHasOnlyTests(self::$hasOnlyFilteredTests);
+        $log->setHasOnlyTests($hasOnlyFilteredTests);
         $log->setTestsCount($testsCount);
         $log->setRootDir(get_project_root() ?: '');
         $log->setConfig(self::$config);
