@@ -42,19 +42,21 @@ final class LogMaster
         ]);
     }
 
-    public function logList(): void
+    public function logListAndExit(): void
     {
-        $allTests = 0;
+        $allTests = count($this->results);
         $excepted = 0;
         $passed = 0;
         $skipped = 0;
         $todo = 0;
+        $hasExcepted = false;
         $hasOnly = false;
 
         foreach ($this->results as $r) {
-            ++$allTests;
             if ($r->isExcepted) {
                 ++$excepted;
+                $hasExcepted = true;
+
                 $this->echoExpectedSuite($r);
             } else {
                 $this->echoSuite($r);
@@ -115,6 +117,10 @@ final class LogMaster
         ];
 
         echo implode("\n", $lines);
+
+        if ($hasExcepted) {
+            exit(1);
+        }
     }
 
     public function line(string $color = '', bool $nl = false): string
@@ -132,7 +138,7 @@ final class LogMaster
         return $this->cl($color, $line);
     }
 
-    public function cl(string $color, string $m = '', $close = true): string
+    public function cl(string $color, string $m = '', bool $close = true): string
     {
         return LogMaster::$colors[$color] . $m . ($close ? LogMaster::$colors['off'] : '');
     }
@@ -216,7 +222,7 @@ final class LogMaster
 
     private function memorySize(int $size): string
     {
-        $units = array('B ', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+        $units = array('b ', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb');
         $power = $size > 0 ? intval(log($size, 1024)) : 0;
 
         $unit = $this->cl('grey', $units[$power]);
@@ -227,14 +233,14 @@ final class LogMaster
             '\''
         );
 
-        $val = str_pad($val, 6, ' ', STR_PAD_LEFT);
+        $val = str_pad($val, 5, ' ', STR_PAD_LEFT);
 
         return  "$val $unit";
     }
 
     private function getMessage(LogData $item, bool $isError = false): string
     {
-        $msg = str_pad($item->message, 40, ' ');
+        $msg = str_pad($item->message, 50, ' ');
 
         if ($isError) {
             return $this->cl('red', $msg);

@@ -13,4 +13,4 @@ $res = TestManager::run();
 
 $log = new LogMaster($res, [], TestManager::$testingTime);
 
-$log->logList();
+$log->logListAndExit();
