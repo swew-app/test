@@ -77,6 +77,7 @@ final class TestRunner
         }
 
         // Run tests
+        /** @var SuiteGroup $suiteGroup */
         foreach ($list as $suiteGroup) {
             $testsCount = $suiteGroup->getTestsCount();
 

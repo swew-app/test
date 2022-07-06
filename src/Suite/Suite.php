@@ -6,6 +6,8 @@ namespace SWEW\Test\Suite;
 
 use Closure;
 use SWEW\Test\LogMaster\Log\LogData;
+use SWEW\Test\Utils\CliStr;
+use SWEW\Test\Utils\DataConverter;
 
 final class Suite
 {
@@ -70,7 +72,11 @@ final class Suite
             throw new \Exception('Empty LogData');
         }
 
-        return $this->logData->stop(memory_get_usage());
+        $log = $this->logData->stop(memory_get_usage());
+
+        CliStr::write(DataConverter::getIcon($log));
+
+        return  $log;
     }
 
     private function executeTestCase(array $params = []): void

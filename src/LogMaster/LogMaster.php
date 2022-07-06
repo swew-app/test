@@ -40,6 +40,13 @@ final class LogMaster
         $todo = 0;
         $hasExcepted = false;
 
+        CliStr::write(
+            [
+            '',
+            CliStr::line('grey', true, '-')
+        ]
+        );
+
         foreach ($results as $r) {
             if ($r->isExcepted) {
                 ++$excepted;

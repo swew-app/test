@@ -58,6 +58,7 @@ final class SuiteGroup
 
         $this->callHook(SuiteHook::BeforeAll);
 
+        /** @var Suite $suite */
         foreach ($list as $suite) {
             $setCurrentSuite($suite);
 
