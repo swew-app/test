@@ -65,3 +65,33 @@ if (!function_exists('clear_cli')) {
         exec('clear && printf \'\e[3J\'');
     }
 }
+
+if (!function_exists('get_project_root')) {
+    function get_project_root(): string|null
+    {
+        $dirs = explode(DIRECTORY_SEPARATOR, __DIR__);
+
+        $i = count($dirs) + 1;
+
+        while ($i--) {
+            array_splice($dirs, $i);
+            $path = implode(
+                DIRECTORY_SEPARATOR,
+                $dirs
+            );
+
+            if ($path === '') {
+                break;
+            }
+
+            $composerPath = $path . DIRECTORY_SEPARATOR . 'composer.json';
+
+            if (file_exists($composerPath)) {
+                return $composerPath;
+            }
+        }
+
+        return null;
+    }
+}
+
