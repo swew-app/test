@@ -10,6 +10,7 @@ use SWEW\Test\LogMaster\Log\LogState;
 use SWEW\Test\Suite\Suite;
 use SWEW\Test\Suite\SuiteGroup;
 use SWEW\Test\Suite\SuiteHook;
+use SWEW\Test\Utils\CliStr;
 
 final class TestRunner
 {
@@ -42,6 +43,10 @@ final class TestRunner
         foreach ($testFiles as $file) {
             self::loadTestFile($file);
         }
+
+        self::clearCli();
+
+        self::showLogo();
     }
 
     public static function add(Suite $suite): void
@@ -56,8 +61,6 @@ final class TestRunner
 
     public static function run(): LogState
     {
-        clear_cli();
-
         $results = [];
 
         $testsCount = 0;
@@ -96,7 +99,7 @@ final class TestRunner
         $log->setTestingTime(self::$testingTime);
         $log->setHasOnlyTests($hasOnlyFilteredTests);
         $log->setTestsCount($testsCount);
-        $log->setRootPath(get_project_root() ?: '');
+        $log->setRootPath(self::getRootPath());
         $log->setConfig(self::$config);
 
         return $log;
@@ -139,5 +142,59 @@ final class TestRunner
         require_once $file;
 
         self::$suiteGroupList[] = self::$currentSuiteGroup;
+    }
+
+    public static function clearCli(): void
+    {
+        if (self::$config['log'] && self::$config['log']['clear'] === false) {
+            return;
+        }
+
+        CliStr::clear();
+    }
+
+    private static function showLogo(): void
+    {
+        if (self::$config['log'] && self::$config['log']['logo'] === false) {
+            return;
+        }
+
+        $logo =[
+            '',
+            '       __   _       ____  _',
+            '      ( (` \ \    /| |_  \ \    /',
+            '      _)_)  \_\/\/ |_|__  \_\/\/',
+            '            .-. .-. .-. .-.',
+            '             |  |-  `-.  |',
+            '             \'  `-\' `-\'  \'',
+            '',
+        ];
+
+        CliStr::write($logo);
+    }
+
+    private static function getRootPath(): string
+    {
+        $dirs = explode(DIRECTORY_SEPARATOR, __DIR__);
+
+        $i = count($dirs) + 1;
+
+        while ($i--) {
+            array_splice($dirs, $i);
+            $path = implode(
+                DIRECTORY_SEPARATOR,
+                $dirs
+            );
+
+            if ($path === '') {
+                break;
+            }
+
+            if (file_exists($path . DIRECTORY_SEPARATOR . 'composer.json')) {
+                return $path;
+            }
+        }
+
+        return '';
     }
 }

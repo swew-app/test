@@ -2,6 +2,8 @@
     "paths": ["**/*.spec.php", "**/*.test.php"],
     "log": {
         "traceReverse": true,
-        "color": true
+        "color": true,
+        "logo": true,
+        "clear": true
     }
 }
