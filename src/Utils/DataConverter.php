@@ -15,7 +15,7 @@ final class DataConverter
 
     public static function getMessage(LogData $item, bool $isError = false): string
     {
-        $msg = str_pad($item->message, 50, ' ');
+        $msg = str_pad($item->message, 55, ' ');
 
         if ($isError) {
             return CliStr::cl('red', $msg);
@@ -37,7 +37,19 @@ final class DataConverter
 
     public static function getTime(float|int $time): string
     {
-        return number_format($time, 6) . CliStr::cl('grey', ' s');
+        $len = strlen(strval(intval($time)));
+
+        if ($len > 1) {
+            $decimals = 0;
+        } else {
+            $decimals = 6;
+        }
+
+        $val = number_format($time, $decimals);
+        $val = str_pad($val, 6, ' ', STR_PAD_LEFT);
+        $val .= CliStr::cl('grey', ' s');
+
+        return $val;
     }
 
     public static function memorySize(int $size): string
@@ -60,7 +72,7 @@ final class DataConverter
 
     public static function parseTraceItem(array $v): string
     {
-        $fileLine = CliStr::cl('b', $v['file'], false)
+        $fileLine = CliStr::cl('b', CliStr::trimPath($v['file']), false)
             . CliStr::cl('w', ':' . $v['line'], false);
 
         return CliStr::cl('R', "  " . $fileLine . "\t")

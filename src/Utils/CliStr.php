@@ -74,4 +74,20 @@ final class CliStr
 
         return CliStr::cl($color, $line);
     }
+
+    private static string $rootPath = '';
+
+    public static function setRootPath(string $rootPath): void
+    {
+        self::$rootPath = $rootPath;
+    }
+
+    public static function trimPath(string $str): string
+    {
+        return str_replace(
+            rtrim(self::$rootPath, DIRECTORY_SEPARATOR),
+            '',
+            $str
+        );
+    }
 }

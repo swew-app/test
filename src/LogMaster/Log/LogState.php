@@ -10,7 +10,7 @@ final class LogState
 
     private array $results = [];
 
-    private string $rootDir = '';
+    private string $rootPath = '';
 
     private float $testingTime = 0;
 
@@ -40,14 +40,14 @@ final class LogState
         $this->results = $results;
     }
 
-    public function getRootDir(): string
+    public function getRootPath(): string
     {
-        return $this->rootDir;
+        return $this->rootPath;
     }
 
-    public function setRootDir(string $rootDir): void
+    public function setRootPath(string $rootPath): void
     {
-        $this->rootDir = $rootDir;
+        $this->rootPath = $rootPath;
     }
 
     public function getTestingTime(): float

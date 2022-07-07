@@ -96,7 +96,7 @@ final class TestRunner
         $log->setTestingTime(self::$testingTime);
         $log->setHasOnlyTests($hasOnlyFilteredTests);
         $log->setTestsCount($testsCount);
-        $log->setRootDir(get_project_root() ?: '');
+        $log->setRootPath(get_project_root() ?: '');
         $log->setConfig(self::$config);
 
         return $log;

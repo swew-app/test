@@ -26,6 +26,7 @@ final class LogMaster
             );
 
             CliStr::withColor($this->config['color']);
+            CliStr::setRootPath($this->logState->getRootPath());
         }
     }
 
@@ -128,7 +129,7 @@ final class LogMaster
     {
         $line = ' ' . DataConverter::getIcon($item) . ' '
             . DataConverter::getMessage($item)
-            . DataConverter::memorySize($item->memoryUsage) . '  '
+            . DataConverter::memorySize($item->memoryUsage) . ' '
             . DataConverter::getTime($item->timeUsage)
             . "\n";
 
@@ -141,7 +142,7 @@ final class LogMaster
 
         if (!is_null($item->exception)) {
             $msg = CliStr::cl('RL', ' ' . $item->exception->getMessage()) . "\n"
-                . CliStr::cl('RL', '   ' . $item->exception->getFile())
+                . CliStr::cl('RL', '   ' . CliStr::trimPath($item->exception->getFile()))
                 . CliStr::cl('grey', ':' . $item->exception->getLine())
                 . "\n"
                 . CliStr::cl('RL')
