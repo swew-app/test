@@ -38,7 +38,9 @@ final class TestRunner
 
         self::$suiteGroupList = [];
 
-        $testFiles = self::loadTestFilePaths(self::$config['paths']);
+        $paths = self::makeSubPathPatterns(self::$config['paths']);
+
+        $testFiles = self::loadTestFilePaths($paths);
 
         foreach ($testFiles as $file) {
             self::loadTestFile($file);
@@ -60,6 +62,11 @@ final class TestRunner
     }
 
     public static function run(): LogState
+    {
+        return self::runTests();
+    }
+
+    private static function runTests(): LogState
     {
         $results = [];
 
@@ -87,7 +94,7 @@ final class TestRunner
             $suiteGroup->run(
                 $results,
                 $hasOnlyFilteredTests,
-                fn (Suite|null $suite) => TestRunner::setCurrentSuite($suite)
+                fn(Suite|null $suite) => TestRunner::setCurrentSuite($suite)
             );
         }
 
@@ -124,15 +131,33 @@ final class TestRunner
         }
     }
 
+    private static function makeSubPathPatterns(array $paths): array
+    {
+        $added = [];
+
+        foreach ($paths as $path) {
+            if (str_contains($path, '**')) {
+                $added[] = str_replace('**/', '', $path);
+                $added[] = str_replace('**', '*/*', $path);
+                $added[] = str_replace('**', '*/*/*', $path);
+                $added[] = str_replace('**', '*/*/*/*', $path);
+                $added[] = str_replace('**', '*/*/*/*/*', $path);
+                $added[] = str_replace('**', '*/*/*/*/*/*', $path);
+            }
+        }
+
+        return array_merge($paths, $added);
+    }
+
     private static function loadTestFilePaths(array $paths): array
     {
         $files = [];
 
         foreach ($paths as $path) {
-            $files = array_merge($files, glob($path));
+            $files = array_merge($files, glob($path, GLOB_ERR));
         }
 
-        return $files;
+        return array_unique($files);
     }
 
     private static function loadTestFile(string $file): void
@@ -159,7 +184,7 @@ final class TestRunner
             return;
         }
 
-        $logo =[
+        $logo = [
             '',
             '       __   _       ____  _',
             '      ( (` \ \    /| |_  \ \    /',
