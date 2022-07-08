@@ -11,10 +11,25 @@ $_exit = function (string $name): void {
     fwrite(STDERR, "The global function `{$name}()`s can't be created because of some naming collisions with another library.\n");
 };
 
+
+
+if (!function_exists('__getFilePath')) {
+    function __getFilePath(): string
+    {
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+
+        return $backtrace[1]['file'];
+    }
+} else {
+    $_exit('__getFilePath');
+}
+
 if (!function_exists('it')) {
     function it(string $message, Closure $closure): Suite
     {
         $suite = new Suite($message, $closure);
+
+        $suite->testFilePath = __getFilePath();
 
         TestRunner::add($suite);
 
@@ -22,6 +37,40 @@ if (!function_exists('it')) {
     }
 } else {
     $_exit('it');
+}
+
+if (!function_exists('xit')) {
+    function xit(string $message, Closure $closure): Suite
+    {
+        $suite = new Suite($message, $closure);
+
+        $suite->testFilePath = __getFilePath();
+
+        $suite->skip();
+
+        TestRunner::add($suite);
+
+        return $suite;
+    }
+} else {
+    $_exit('xit');
+}
+
+if (!function_exists('fit')) {
+    function fit(string $message, Closure $closure): Suite
+    {
+        $suite = new Suite($message, $closure);
+
+        $suite->testFilePath = __getFilePath();
+
+        $suite->only();
+
+        TestRunner::add($suite);
+
+        return $suite;
+    }
+} else {
+    $_exit('fit');
 }
 
 if (!function_exists('expect')) {

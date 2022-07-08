@@ -13,6 +13,8 @@ final class LogMaster
 {
     private array $config = [];
 
+    public string $testFilePath = '';
+
     public function __construct(
         private readonly LogState $logState
     ) {
@@ -40,13 +42,15 @@ final class LogMaster
         $skipped = 0;
         $todo = 0;
         $hasExcepted = false;
+        $maxMemory = memory_get_peak_usage();
 
         CliStr::write(
             [
-            '',
-            CliStr::line('grey', true, '-')
-        ]
+                '',
+                CliStr::line('grey', true, '-')
+            ]
         );
+
 
         foreach ($results as $r) {
             if ($r->isExcepted) {
@@ -66,8 +70,6 @@ final class LogMaster
                 }
             }
         }
-
-        $maxMemory = memory_get_peak_usage();
 
         if ($hasOnly) {
             $passedColor = 'yellow';
@@ -127,7 +129,15 @@ final class LogMaster
 
     private function echoSuite(LogData $item): void
     {
-        $line = ' ' . DataConverter::getIcon($item) . ' '
+        $filePath = '';
+
+        if ($item->testFilePath !== $this->testFilePath) {
+            $this->testFilePath = $item->testFilePath;
+            $filePath = CliStr::trimPath($item->testFilePath) . "\n";
+        }
+
+        $line = CliStr::cl('cyan', $filePath)
+            . ' ' . DataConverter::getIcon($item) . ' '
             . DataConverter::getMessage($item)
             . DataConverter::memorySize($item->memoryUsage) . ' '
             . DataConverter::getTime($item->timeUsage)

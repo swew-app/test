@@ -60,7 +60,7 @@ final class CliStr
     }
 
 
-    public static function line(string $color = '', bool $nl = false, string $line = '-  '): string
+    public static function line(string $color = '', bool $nl = false, string $line = '─'): string
     {
         $line = str_pad('', 80, $line);
 

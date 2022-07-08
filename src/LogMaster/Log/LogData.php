@@ -26,6 +26,8 @@ final class LogData
 
     public ?Exception $exception = null;
 
+    public string $testFilePath = '';
+
     public function __construct(
         int $memoryBefore,
         public string $message = ''

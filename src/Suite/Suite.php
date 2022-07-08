@@ -17,9 +17,11 @@ final class Suite
 
     private bool $isTodo = false;
 
-    private ?LogData $logData = null;
-
     public bool $isOnly = false;
+
+    public string $testFilePath = '';
+
+    private ?LogData $logData = null;
 
     public function __construct(
         private readonly string  $message,
@@ -30,6 +32,8 @@ final class Suite
     public function run(int $memory): LogData
     {
         $this->logData = new LogData($memory, $this->message);
+
+        $this->logData->testFilePath = $this->testFilePath;
 
         if ($this->isOnly) {
             $this->logData->isOnly = true;

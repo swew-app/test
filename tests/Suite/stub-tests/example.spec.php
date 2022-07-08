@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
  it('Test 1', function () {
-     $a = str_repeat("Hello", 100000);
+//     $a = str_repeat("Hello", 1024 * 1024 * 4);
      // d($R, memory_get_usage());
      expect(10)->not()->toBe(1);
  });
