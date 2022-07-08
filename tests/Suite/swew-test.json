@@ -4,6 +4,7 @@
         "traceReverse": true,
         "color": true,
         "logo": true,
-        "clear": true
+        "clear": true,
+        "short": false
     }
 }

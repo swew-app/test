@@ -23,6 +23,7 @@ final class LogMaster
                 [
                     'traceReverse' => true,
                     'color' => true,
+                    'short' > false,
                 ],
                 $this->logState->getConfig()['log'] ?: []
             );
@@ -44,13 +45,14 @@ final class LogMaster
         $hasExcepted = false;
         $maxMemory = memory_get_peak_usage();
 
-        CliStr::write(
-            [
-                '',
-                CliStr::line('grey', true, '-')
-            ]
-        );
-
+        if ($this->config['short'] === false) {
+            CliStr::write(
+                [
+                    '',
+                    CliStr::line('grey', true, '-')
+                ]
+            );
+        }
 
         foreach ($results as $r) {
             if ($r->isExcepted) {
@@ -134,6 +136,10 @@ final class LogMaster
         if ($item->testFilePath !== $this->testFilePath) {
             $this->testFilePath = $item->testFilePath;
             $filePath = CliStr::trimPath($item->testFilePath) . "\n";
+        }
+
+        if ($this->config['short']) {
+            return;
         }
 
         $line = CliStr::cl('cyan', $filePath)
