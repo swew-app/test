@@ -173,6 +173,8 @@ final class LogMaster
             foreach ($trace as $t) {
                 $msg .= DataConverter::parseTraceItem($t);
             }
+
+            $msg .= CliStr::cl('RL', ' ' . $item->exception->getMessage());
         }
 
         $line = ' ' . DataConverter::getIcon($item) . ' '

@@ -28,6 +28,8 @@ final class CliStr
         'RL' => "\033[30m\033[41m \033[0m",
         'GL' => "\033[30m\033[42m \033[0m",
         'YL' => "\033[30m\033[43m \033[0m",
+        'Ur' => "\e[4m\033[31m",
+        'Ug' => "\e[4m\033[32m",
     ];
 
     private static bool $hasColor = true;
@@ -60,7 +62,7 @@ final class CliStr
     }
 
 
-    public static function line(string $color = '', bool $nl = false, string $line = '─'): string
+    public static function line(string $color = '', bool $nl = false, string $line = '─  '): string
     {
         $line = str_pad('', 80, $line);
 
@@ -94,9 +96,9 @@ final class CliStr
     public static function clear(): void
     {
         if (PHP_OS_FAMILY === 'Windows') {
-            exec("echo \x1B[2J\x1B[0f");
+            self::write("\x1B[2J\x1B[0f");
         } else {
-            exec("echo \x1B[2J\x1B[3J\x1B[H");
+            self:self::write("\x1B[2J\x1B[3J\x1B[H");
         }
     }
 }
