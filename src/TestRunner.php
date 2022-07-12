@@ -10,6 +10,7 @@ use SWEW\Test\LogMaster\Log\LogState;
 use SWEW\Test\Suite\Suite;
 use SWEW\Test\Suite\SuiteGroup;
 use SWEW\Test\Suite\SuiteHook;
+use SWEW\Test\Utils\CliArgs;
 use SWEW\Test\Utils\CliStr;
 
 final class TestRunner
@@ -36,11 +37,13 @@ final class TestRunner
 
         self::checkConfigValidation(self::$config);
 
-        self::$suiteGroupList = [];
+        $msg = self::initCliAndUpdateConfig();
 
         $paths = self::makeSubPathPatterns(self::$config['paths']);
 
         $testFiles = self::loadTestFilePaths($paths);
+
+        self::$suiteGroupList = [];
 
         foreach ($testFiles as $file) {
             self::loadTestFile($file);
@@ -49,6 +52,50 @@ final class TestRunner
         self::clearCli();
 
         self::showLogo();
+
+        if ($msg) {
+            CliStr::write([
+                '',
+                $msg,
+                '',
+                '',
+            ]);
+        }
+    }
+
+    private static function initCliAndUpdateConfig(): string
+    {
+        $message = '';
+
+        CliArgs::init([], [
+            'file,f' => [
+                'desc' => 'Filter files',
+            ],
+// TODO
+//            'suite,sf' => [
+//                'desc' => 'Filter by suite message',
+//            ],
+            'no-color' => [
+                'desc' => 'Turn off colors',
+            ],
+        ]);
+
+        if (CliArgs::hasArg('help')) {
+            CliStr::write(CliArgs::getHelp());
+
+            exit(0);
+        }
+
+        $filePattern = CliArgs::getFilePattern('file');
+
+        if (!is_null($filePattern)) {
+            $message .= CliStr::cl('c', 'Filtered by pattern: ');
+            $message .= CliStr::cl('y', ' ' . $filePattern);
+
+            self::$config['paths'] = [$filePattern];
+        }
+
+        return $message;
     }
 
     public static function add(Suite $suite): void

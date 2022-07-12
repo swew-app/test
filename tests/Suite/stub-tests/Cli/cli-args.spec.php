@@ -32,7 +32,7 @@ it('CLI: exception not found options', function () {
 
     CliArgs::init($args, $options);
 
-    expect(fn() => CliArgs::val('lorem'))->toThrow(Exception::class);
+    expect(fn () => CliArgs::val('lorem'))->toThrow(Exception::class);
 });
 
 
@@ -85,12 +85,12 @@ it('CLI: hasArgs', function (bool $expected, array $props) {
     ->with([
         [false, []],
         [false, ['test-file-name.spec.php']],
-        [true, ['-f', 'test-file-name.spec.php']],
+        [true, ['-f', 'file.spec.php']],
     ]);
 
 
 it('CLI: hasArgs,hasCommand,getCommands', function () {
-    $args = ['path/to/file.php', 'test-file-name.spec.php'];
+    $args = ['path/to/file.php', 'file.spec.php'];
 
     $options = [
         'file,f' => [
@@ -107,5 +107,48 @@ it('CLI: hasArgs,hasCommand,getCommands', function () {
 
     expect(CliArgs::hasCommand())->toBe(true);
 
-    expect(CliArgs::getCommands())->toBe(['test-file-name.spec.php']);
+    expect(CliArgs::getCommands())->toBe(['file.spec.php']);
+});
+
+
+it('CLI: getFilePattern 1', function () {
+    $args = ['path/to/file.php', 'file.spec.php'];
+
+    $options = [
+        'file,f' => [
+            'desc' => 'Filter files',
+        ],
+    ];
+
+    CliArgs::init($args, $options);
+
+    expect(CliArgs::getFilePattern())->toBe('**/*file.spec.php*');
+});
+
+it('CLI: getFilePattern 2', function () {
+    $args = ['path/to/file.php', '-f', 'file-1.spec.php'];
+
+    $options = [
+        'file,f' => [
+            'desc' => 'Filter files',
+        ],
+    ];
+
+    CliArgs::init($args, $options);
+
+    expect(CliArgs::getFilePattern('file'))->toBe('**/*file-1.spec.php*');
+});
+
+it('CLI: getFilePattern 3', function () {
+    $args = ['path/to/file.php'];
+
+    $options = [
+        'file,f' => [
+            'desc' => 'Filter files',
+        ],
+    ];
+
+    CliArgs::init($args, $options);
+
+    expect(CliArgs::getFilePattern('file'))->toBe(null);
 });

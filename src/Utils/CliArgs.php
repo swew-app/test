@@ -46,6 +46,11 @@ final class CliArgs
         return $res ?: false;
     }
 
+    public static function hasArg(string $key): bool
+    {
+        return !empty(self::findArg($key));
+    }
+
     private static function parseOptions(array $options): void
     {
         $keysRaw = array_keys($options);
@@ -125,5 +130,20 @@ final class CliArgs
     public static function getCommands(): array
     {
         return self::$argv;
+    }
+
+    public static function getFilePattern(string $key = ''): ?string
+    {
+        if (self::hasArgs() === false && self::hasCommand() === true) {
+            return '**/*' . self::getCommands()[0] . '*';
+        }
+
+        if (!empty($key)) {
+            if (!is_null(self::findArg($key))) {
+                return '**/*' . self::val($key) . '*';
+            }
+        }
+
+        return null;
     }
 }
