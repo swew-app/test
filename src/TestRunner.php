@@ -71,10 +71,9 @@ final class TestRunner
             'file,f' => [
                 'desc' => 'Filter files',
             ],
-// TODO
-//            'suite,sf' => [
-//                'desc' => 'Filter by suite message',
-//            ],
+            'suite,sf' => [
+                'desc' => 'Filter by suite message',
+            ],
             'no-color' => [
                 'desc' => 'Turn off colors',
             ],
@@ -133,6 +132,12 @@ final class TestRunner
             }
         }
 
+        $filterSuiteByMsg = null;
+
+        if (CliArgs::hasArg('suite')) {
+            $filterSuiteByMsg = (string)CliArgs::val('suite');
+        }
+
         // Run tests
         /** @var SuiteGroup $suiteGroup */
         foreach ($list as $suiteGroup) {
@@ -141,7 +146,8 @@ final class TestRunner
             $suiteGroup->run(
                 $results,
                 $hasOnlyFilteredTests,
-                fn (Suite|null $suite) => TestRunner::setCurrentSuite($suite)
+                fn (Suite|null $suite) => TestRunner::setCurrentSuite($suite),
+                $filterSuiteByMsg
             );
         }
 

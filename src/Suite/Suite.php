@@ -24,7 +24,7 @@ final class Suite
     private ?LogData $logData = null;
 
     public function __construct(
-        private readonly string  $message,
+        public readonly string  $message,
         private readonly Closure $testCase
     ) {
     }

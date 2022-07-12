@@ -1,7 +1,9 @@
 {
     "ignore": ["vendor"],
     "watch": ["src", "tests"],
-    "exec": "php ./tests/Suite/RunTest.php -C -f spec.php",
+    "exec": "php ./tests/Suite/RunTest.php",
+    "_exec": "php ./tests/Suite/RunTest.php -sf CLI:",
+    "_exec": "php ./tests/Suite/RunTest.php -C -f spec.php",
     "ext": "php,json",
     "delay": 1000
 }

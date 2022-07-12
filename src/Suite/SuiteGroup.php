@@ -50,8 +50,12 @@ final class SuiteGroup
         }
     }
 
-    public function run(array &$results, bool $hasOnlyFilteredTests, Closure $setCurrentSuite): void
-    {
+    public function run(
+        array   &$results,
+        bool    $hasOnlyFilteredTests,
+        Closure $setCurrentSuite,
+        ?string $filterSuiteByMsg = null
+    ): void {
         $list = $hasOnlyFilteredTests
             ? array_filter($this->suiteList, fn ($s): bool => $s->isOnly)
             : $this->suiteList;
@@ -60,6 +64,12 @@ final class SuiteGroup
 
         /** @var Suite $suite */
         foreach ($list as $suite) {
+            if (!is_null($filterSuiteByMsg)) {
+                if (!str_contains($suite->message, $filterSuiteByMsg)) {
+                    continue;
+                }
+            }
+
             $setCurrentSuite($suite);
 
             $this->callHook(SuiteHook::BeforeEach);
