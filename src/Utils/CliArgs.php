@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SWEW\Test\Utils;
 
-
 use SWEW\Test\Exceptions\Exception;
 
 final class CliArgs

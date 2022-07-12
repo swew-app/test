@@ -32,7 +32,7 @@ it('CLI: exception not found options', function () {
 
     CliArgs::init($args, $options);
 
-    expect(fn() => CliArgs::val('lorem'))->toThrow(Exception::class);
+    expect(fn () => CliArgs::val('lorem'))->toThrow(Exception::class);
 });
 
 it('CLI: getHelp', function () {
@@ -67,10 +67,9 @@ PHP_DATA;
     $a2 = explode("\n", $expected);
 
     dd(
-         array_diff($a1, $a2),
-         array_diff($a2, $a1)
+        array_diff($a1, $a2),
+        array_diff($a2, $a1)
     );
 
     expect(CliArgs::getHelp())->toBe($expected);
 })->todo();
-

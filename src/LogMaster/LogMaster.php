@@ -55,11 +55,18 @@ final class LogMaster
         }
 
         foreach ($results as $r) {
+            if ($r->testFilePath !== $this->testFilePath) {
+                $this->testFilePath = $r->testFilePath;
+                $filePath = CliStr::trimPath($r->testFilePath) . "\n";
+
+                CliStr::write(CliStr::cl('cyan', $filePath));
+            }
+
             if ($r->isExcepted) {
                 ++$excepted;
                 $hasExcepted = true;
 
-                $this->echoExpectedSuite($r);
+                $this->echoExceptedSuite($r);
             } else {
                 $this->echoSuite($r);
 
@@ -131,19 +138,12 @@ final class LogMaster
 
     private function echoSuite(LogData $item): void
     {
-        $filePath = '';
-
-        if ($item->testFilePath !== $this->testFilePath) {
-            $this->testFilePath = $item->testFilePath;
-            $filePath = CliStr::trimPath($item->testFilePath) . "\n";
-        }
-
         if ($this->config['short']) {
             return;
         }
 
-        $line = CliStr::cl('cyan', $filePath)
-            . ' ' . DataConverter::getIcon($item) . ' '
+        $line = ' '
+            . DataConverter::getIcon($item) . ' '
             . DataConverter::getMessage($item)
             . DataConverter::memorySize($item->memoryUsage) . ' '
             . DataConverter::getTime($item->timeUsage)
@@ -152,7 +152,7 @@ final class LogMaster
         CliStr::write($line);
     }
 
-    public function echoExpectedSuite(LogData $item): void
+    private function echoExceptedSuite(LogData $item): void
     {
         $msg = '';
 
@@ -177,11 +177,13 @@ final class LogMaster
             $msg .= CliStr::cl('RL', ' ' . $item->exception->getMessage());
         }
 
-        $line = ' ' . DataConverter::getIcon($item) . ' '
-        . DataConverter::getMessage($item, true) . "\n"
-        . $msg ?? $item->exception
-        . "\n";
+        $title = ' ' . DataConverter::getIcon($item) . ' ' . DataConverter::getMessage($item, true);
 
-        CliStr::write($line);
+        $lines = [
+            ($msg ?: $item->exception),
+            $title,
+        ];
+
+        CliStr::write($lines);
     }
 }

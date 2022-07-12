@@ -9,8 +9,7 @@ use DateTimeImmutable;
 
 final class Diff
 {
-
-    public static function diff(mixed $v1, mixed $v2): string
+    public static function diff(mixed $v1, mixed $v2, bool $isShowTitle = true): string
     {
         $s1 = self::valueToString($v1);
         $s2 = self::valueToString($v2);
@@ -24,16 +23,30 @@ final class Diff
 
         $res = [];
 
-        $indexes = array_keys(array_diff($letters1, $letters2));
-        $res[] = self::highlighter($letters1, $indexes, false);
+        if ($isShowTitle) {
+            $res[] = CliStr::cl('y', 'actual:');
+        }
 
-        $indexes = array_keys(array_diff($letters2, $letters1));
-        $res[] = self::highlighter($letters2, $indexes, true);
+        $indexes = array_keys(array_diff_assoc($letters1, $letters2));
+        $res[] = self::prefixColor(
+            'RL',
+            self::highlighter($letters1, $indexes, false)
+        );
+
+        if ($isShowTitle) {
+            $res[] = CliStr::cl('y', 'expected:');
+        }
+
+        $indexes = array_keys(array_diff_assoc($letters2, $letters1));
+        $res[] = self::prefixColor(
+            'GL',
+            self::highlighter($letters2, $indexes, true)
+        );
 
         return implode("\n", $res);
     }
 
-    public static function highlighter(array &$letters, array &$indexes, bool $isGood): string
+    private static function highlighter(array &$letters, array &$indexes, bool $isGood): string
     {
         $res = [];
 
@@ -52,7 +65,18 @@ final class Diff
         return implode('', $res);
     }
 
-    protected static function valueToString($value): string
+    private static function prefixColor(string $color, string $text): string
+    {
+        $lines = explode("\n", $text);
+
+        foreach ($lines as &$line) {
+            $line = CliStr::cl($color, ' ' . $line);
+        }
+
+        return implode("\n", $lines);
+    }
+
+    private static function valueToString(mixed $value): string
     {
         if (is_string($value)) {
             return $value;

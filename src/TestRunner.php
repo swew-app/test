@@ -94,7 +94,7 @@ final class TestRunner
             $suiteGroup->run(
                 $results,
                 $hasOnlyFilteredTests,
-                fn(Suite|null $suite) => TestRunner::setCurrentSuite($suite)
+                fn (Suite|null $suite) => TestRunner::setCurrentSuite($suite)
             );
         }
 
