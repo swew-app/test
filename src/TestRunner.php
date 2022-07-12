@@ -94,6 +94,11 @@ final class TestRunner
             self::$config['paths'] = [$filePattern];
         }
 
+        if (CliArgs::hasArgs('no-color')) {
+            self::$config['log']['color'] = false;
+            CliStr::withColor(false);
+        }
+
         return $message;
     }
 
