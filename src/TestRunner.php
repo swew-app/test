@@ -77,6 +77,9 @@ final class TestRunner
             'no-color' => [
                 'desc' => 'Turn off colors',
             ],
+            'short,s' => [
+                'desc' => 'Do not show test names and statistics',
+            ],
         ]);
 
         if (CliArgs::hasArg('help')) {
@@ -94,9 +97,13 @@ final class TestRunner
             self::$config['paths'] = [$filePattern];
         }
 
-        if (CliArgs::hasArgs('no-color')) {
+        if (CliArgs::hasArg('no-color')) {
             self::$config['log']['color'] = false;
             CliStr::withColor(false);
+        }
+
+        if (CliArgs::hasArg('short')) {
+            self::$config['log']['short'] = true;
         }
 
         return $message;
