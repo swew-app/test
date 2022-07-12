@@ -98,7 +98,14 @@ final class CliStr
         if (PHP_OS_FAMILY === 'Windows') {
             self::write("\x1B[2J\x1B[0f");
         } else {
-            self:self::write("\x1B[2J\x1B[3J\x1B[H");
+            self::write("\x1B[2J\x1B[3J\x1B[H");
         }
+    }
+
+    public static function clearColor(string $str): string
+    {
+        $patterns = '/\033\[\d+m/';
+
+        return (string)preg_replace($patterns, '', $str);
     }
 }

@@ -48,28 +48,18 @@ it('CLI: getHelp', function () {
     ];
 
     CliArgs::init($args, $options);
-    CliStr::withColor(false);
+//    CliStr::withColor(false);
 
     expect(CliArgs::val('help'))->toBe(true);
 
     $expected = <<<PHP_DATA
-
 Help information.
 
  -help, -h:     Show help
  -file, -f:     Filter files
  -no-color:     Use color
-
 PHP_DATA;
 
-
-    $a1 = explode("\n", CliArgs::getHelp());
-    $a2 = explode("\n", $expected);
-
-    dd(
-        array_diff($a1, $a2),
-        array_diff($a2, $a1)
-    );
-
-    expect(CliArgs::getHelp())->toBe($expected);
-})->todo();
+    expect(trim(CliArgs::getHelp()))->toBe(trim($expected));
+});
+//})->only();

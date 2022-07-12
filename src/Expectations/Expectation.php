@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SWEW\Test\Expectations;
 
 use SWEW\Test\Exceptions\Exception;
+use SWEW\Test\Exceptions\ExpectException;
 use SWEW\Test\TestRunner;
 use Webmozart\Assert\Assert;
 
@@ -54,9 +55,25 @@ final class Expectation
     public function toBe(mixed $value): self
     {
         if ($this->isNot) {
-            Assert::notSame($this->expectValue, $value, $this->message);
+            $msg = $this->message ?: 'Expected a value identical:';
+
+            if ($this->expectValue === $value) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $msg
+                );
+            }
         } else {
-            Assert::same($this->expectValue, $value, $this->message);
+            $msg = $this->message ?: 'Expected a value not identical:';
+
+            if ($this->expectValue !== $value) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $msg
+                );
+            }
         }
 
         return $this;

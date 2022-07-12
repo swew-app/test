@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 use SWEW\Test\Utils\CliStr;
 use SWEW\Test\Utils\Diff;
 
@@ -21,7 +20,7 @@ it('CLI: Diff::diff Str==', function () {
 PHP_DATA;
 
     expect(trim($res))->toBe(trim($exp));
-})->only();
+});
 
 it('CLI: Diff::diff Arr==', function () {
     $str1 = ["h1"];
@@ -31,7 +30,7 @@ it('CLI: Diff::diff Arr==', function () {
     $exp = '';
 
     expect($res)->toBe($exp);
-})->only();
+});
 
 it('CLI: Diff::diff Arr!=', function () {
     $str1 = ["h1", "h2", "h3", "h4", "h5"];
@@ -57,4 +56,4 @@ it('CLI: Diff::diff Arr!=', function () {
 PHP_DATA;
 
     expect(trim($res))->toBe(trim($exp));
-})->only();
+});

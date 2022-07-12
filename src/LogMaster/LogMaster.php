@@ -174,7 +174,7 @@ final class LogMaster
                 $msg .= DataConverter::parseTraceItem($t);
             }
 
-            $msg .= CliStr::cl('RL', ' ' . $item->exception->getMessage());
+            $msg .= ' ' . $item->exception->getMessage();
         }
 
         $title = ' ' . DataConverter::getIcon($item) . ' ' . DataConverter::getMessage($item, true);

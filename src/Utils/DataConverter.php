@@ -82,6 +82,7 @@ final class DataConverter
             . CliStr::line('grey', true)
             . CliStr::cl('c', $v['class'] . $v['type'] . $v['function'] . "(...)\n", false)
             . (count($v['args']) ? print_r($v['args'], true) : '')
+            . CliStr::cl('off', '', false)
             . "\n";
     }
 
