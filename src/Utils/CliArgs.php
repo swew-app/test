@@ -24,7 +24,7 @@ final class CliArgs
             $argv = $_SERVER["argv"];
         }
 
-        self::$argv = $argv;
+        self::$argv = array_slice($argv, 1);
 
         self::$options = [
                 'help,h' => [
@@ -105,5 +105,25 @@ final class CliArgs
         $help[] = '';
 
         return implode("\n", $help);
+    }
+
+    public static function hasArgs(): bool
+    {
+        foreach (self::$argv as $arg) {
+            if ($arg[0] === '-') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static function hasCommand(): bool
+    {
+        return count(self::$argv) > 0 && self::$argv[0][0] !== '-';
+    }
+
+    public static function getCommands(): array
+    {
+        return self::$argv;
     }
 }

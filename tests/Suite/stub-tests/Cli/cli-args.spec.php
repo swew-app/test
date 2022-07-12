@@ -32,8 +32,9 @@ it('CLI: exception not found options', function () {
 
     CliArgs::init($args, $options);
 
-    expect(fn () => CliArgs::val('lorem'))->toThrow(Exception::class);
+    expect(fn() => CliArgs::val('lorem'))->toThrow(Exception::class);
 });
+
 
 it('CLI: getHelp', function () {
     $args = ['path/to/file.php', '-h'];
@@ -48,18 +49,63 @@ it('CLI: getHelp', function () {
     ];
 
     CliArgs::init($args, $options);
-//    CliStr::withColor(false);
 
     expect(CliArgs::val('help'))->toBe(true);
 
-    $expected = <<<PHP_DATA
-Help information.
+    $exp = "Help information.\n\n" .
+        " -help, -h:\tShow help\n" .
+        " -file, -f:\tFilter files\n" .
+        " -no-color:\tUse color\n";
 
- -help, -h:     Show help
- -file, -f:     Filter files
- -no-color:     Use color
-PHP_DATA;
+    $res = CliStr::clearColor(CliArgs::getHelp());
+    $exp = CliStr::clearColor($exp);
 
-    expect(trim(CliArgs::getHelp()))->toBe(trim($expected));
+    expect(trim($res))->toBe(trim($exp));
 });
-//})->only();
+
+
+it('CLI: hasArgs', function (bool $expected, array $props) {
+    $args = array_merge(['path/to/file.php'], $props);
+
+    $options = [
+        'file,f' => [
+            'desc' => 'Filter files',
+        ],
+        'no-color' => [
+            'desc' => 'Use color',
+        ],
+    ];
+
+    CliArgs::init($args, $options);
+
+    $res = CliArgs::hasArgs();
+
+    expect($res)->toBe($expected);
+})
+    ->with([
+        [false, []],
+        [false, ['test-file-name.spec.php']],
+        [true, ['-f', 'test-file-name.spec.php']],
+    ]);
+
+
+it('CLI: hasArgs,hasCommand,getCommands', function () {
+    $args = ['path/to/file.php', 'test-file-name.spec.php'];
+
+    $options = [
+        'file,f' => [
+            'desc' => 'Filter files',
+        ],
+        'no-color' => [
+            'desc' => 'Use color',
+        ],
+    ];
+
+    CliArgs::init($args, $options);
+
+    expect(CliArgs::hasArgs())->toBe(false);
+
+    expect(CliArgs::hasCommand())->toBe(true);
+
+    expect(CliArgs::getCommands())->toBe(['test-file-name.spec.php']);
+});

@@ -19,4 +19,4 @@ it('CliStr: clearColor', function () {
     $str = CliStr::clearColor($exp);
 
     expect($str)->toBe($exp);
-})->only();
+});
