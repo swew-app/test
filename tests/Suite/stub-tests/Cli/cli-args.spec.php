@@ -44,7 +44,7 @@ it('CLI: getHelp', function () {
             'desc' => 'Filter files',
         ],
         'no-color' => [
-            'desc' => 'Use color',
+            'desc' => 'Turn off colors',
         ],
     ];
 
@@ -52,10 +52,16 @@ it('CLI: getHelp', function () {
 
     expect(CliArgs::val('help'))->toBe(true);
 
-    $exp = "Help information.\n\n" .
-        " -help, -h:\tShow help\n" .
-        " -file, -f:\tFilter files\n" .
-        " -no-color:\tUse color\n";
+    $exp = <<<PHP_DATA
+   SWEW-test
+Help information.
+
+Options:
+
+ -help, -h    : Show help
+ -file, -f    : Filter files
+ -no-color    : Turn off colors
+PHP_DATA;
 
     $res = CliStr::clearColor(CliArgs::getHelp());
     $exp = CliStr::clearColor($exp);

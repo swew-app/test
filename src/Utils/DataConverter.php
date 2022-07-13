@@ -75,12 +75,26 @@ final class DataConverter
         $fileLine = CliStr::cl('b', CliStr::trimPath($v['file']), false)
             . CliStr::cl('w', ':' . $v['line'], false);
 
+        $methodLine = '';
+
+        if (in_array('class', $v)) {
+            $methodLine .= $v['class'];
+        }
+        if (in_array('type', $v)) {
+            $methodLine .= $v['type'];
+        }
+        if (in_array('function', $v)) {
+            $methodLine .= $v['function'] . "(...)";
+        }
+
+        $methodLine .= "\n";
+
         return CliStr::cl('R', "  " . $fileLine . "\t")
             . "\n"
             . self::getContentByLine($v['file'], $v['line'])
             . "\n"
-            . CliStr::line('grey', true)
-            . CliStr::cl('c', $v['class'] . $v['type'] . $v['function'] . "(...)\n", false)
+            . CliStr::line('grey')
+            . CliStr::cl('c', $methodLine, false)
             . (count($v['args']) ? print_r($v['args'], true) : '')
             . CliStr::cl('off', '', false)
             . "\n";

@@ -93,7 +93,10 @@ final class CliArgs
     public static function getHelp(): string
     {
         $help = [''];
+        $help[] = '   SWEW-test';
         $help[] = 'Help information.';
+        $help[] = '';
+        $help[] = 'Options:';
         $help[] = '';
 
         foreach (self::$options as $k => $v) {
@@ -101,12 +104,14 @@ final class CliArgs
             $str = [];
 
             foreach ($keys as $key) {
-                $str[] = CliStr::cl('c', '-' . $key);
+                $str[] = '-' . $key;
             }
 
-            $help[] = ' ' . implode(', ', $str) . ":\t" . $v['desc'];
+            $help[] = str_pad(' ' . implode(', ', $str), 14, ' ')
+                . ": " . $v['desc'];
         }
 
+        $help[] = '';
         $help[] = '';
 
         return implode("\n", $help);
