@@ -1,5 +1,6 @@
 {
-    "paths": ["stub-tests/**.spec.php"],
+    "paths": ["**.spec.php"],
+    "bail": true,
     "log": {
         "traceReverse": true,
         "color": true,

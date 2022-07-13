@@ -4,29 +4,24 @@ declare(strict_types=1);
 
 namespace SWEW\Test\LogMaster;
 
+use SWEW\Test\Utils\CliArgs;
 use SWEW\Test\Utils\CliStr;
 use SWEW\Test\LogMaster\Log\LogData;
 use SWEW\Test\LogMaster\Log\LogState;
+use SWEW\Test\Utils\ConfigMaster;
 use SWEW\Test\Utils\DataConverter;
 
 final class LogMaster
 {
-    private array $config = [];
-
     public string $testFilePath = '';
+
+    private readonly array $config;
 
     public function __construct(
         private readonly LogState $logState
     ) {
         if (!empty($this->logState)) {
-            $this->config = array_merge(
-                [
-                    'traceReverse' => true,
-                    'color' => true,
-                    'short' > false,
-                ],
-                $this->logState->getConfig()['log'] ?: []
-            );
+            $this->config = (array)ConfigMaster::getConfig('log');
 
             CliStr::withColor($this->config['color']);
             CliStr::setRootPath($this->logState->getRootPath());
@@ -45,10 +40,11 @@ final class LogMaster
         $hasExcepted = false;
         $maxMemory = memory_get_peak_usage();
 
+        CliStr::write("\n");
+
         if ($this->config['short'] === false) {
             CliStr::write(
                 [
-                    '',
                     CliStr::line('grey', true, '-')
                 ]
             );
@@ -108,6 +104,24 @@ final class LogMaster
         // Log Text
         $lines = [""];
         $lines[] = CliStr::line('grey', true, '-');
+
+        // Filtering by file pattern
+        $filePattern = CliArgs::getGlobMaskPattern('file');
+
+        if (!is_null($filePattern)) {
+            $lines[] = CliStr::cl('cyan', 'Filtered by file pattern (--file):');
+            $lines[] = ' "' . CliStr::cl('yellow', $filePattern) . '"';
+            $lines[] = '';
+        }
+
+
+        // $filterSuiteByMsg
+        if (!is_null($this->logState->getFilterSuiteByMsg())) {
+            $lines[] = CliStr::cl('cyan', 'Filtered by suite pattern (--suite):');
+            $lines[] = ' "' . CliStr::cl('yellow', $this->logState->getFilterSuiteByMsg()) . '"';
+            $lines[] = '';
+        }
+
         $lines[] = "  Tests:";
         $lines[] = CliStr::cl('grey', '   - All suite:') . $allTests;
         $lines[] = CliStr::cl('grey', '   - Passed:   ') . $passedStr;

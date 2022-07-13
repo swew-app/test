@@ -122,7 +122,7 @@ it('CLI: getFilePattern 1', function () {
 
     CliArgs::init($args, $options);
 
-    expect(CliArgs::getFilePattern())->toBe('**/*file.spec.php*');
+    expect(CliArgs::getGlobMaskPattern())->toBe('**file.spec.php*');
 });
 
 it('CLI: getFilePattern 2', function () {
@@ -136,7 +136,7 @@ it('CLI: getFilePattern 2', function () {
 
     CliArgs::init($args, $options);
 
-    expect(CliArgs::getFilePattern('file'))->toBe('**/*file-1.spec.php*');
+    expect(CliArgs::getGlobMaskPattern('file'))->toBe('**file-1.spec.php*');
 });
 
 it('CLI: getFilePattern 3', function () {
@@ -150,5 +150,20 @@ it('CLI: getFilePattern 3', function () {
 
     CliArgs::init($args, $options);
 
-    expect(CliArgs::getFilePattern('file'))->toBe(null);
+    expect(CliArgs::getGlobMaskPattern('file'))->toBe(null);
+});
+
+
+it('CLI: Suite Pattern', function () {
+    $args = ['path/to/file.php', '-sf', 'suite.spec.php'];
+
+    $options = [
+        'suite,sf' => [
+            'desc' => 'Filter by suite message',
+        ],
+    ];
+
+    CliArgs::init($args, $options);
+
+    expect(CliArgs::getGlobMaskPattern('suite'))->toBe('**suite.spec.php*');
 });

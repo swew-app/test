@@ -132,16 +132,16 @@ final class CliArgs
         return self::$argv;
     }
 
-    public static function getFilePattern(string $key = ''): ?string
+    public static function getGlobMaskPattern(string $key = ''): ?string
     {
-        if (self::hasArgs() === false && self::hasCommand() === true) {
-            return '**/*' . self::getCommands()[0] . '*';
-        }
-
         if (!empty($key)) {
             if (!is_null(self::findArg($key))) {
-                return '**/*' . self::val($key) . '*';
+                return '**' . self::val($key) . '*';
             }
+        }
+
+        if (self::hasArgs() === false && self::hasCommand() === true) {
+            return '**' . self::getCommands()[0] . '*';
         }
 
         return null;

@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace SWEW\Test;
 
 use Closure;
-use SWEW\Test\Exceptions\Exception;
 use SWEW\Test\LogMaster\Log\LogState;
 use SWEW\Test\Suite\Suite;
 use SWEW\Test\Suite\SuiteGroup;
 use SWEW\Test\Suite\SuiteHook;
 use SWEW\Test\Utils\CliArgs;
 use SWEW\Test\Utils\CliStr;
+use SWEW\Test\Utils\ConfigMaster;
 
 final class TestRunner
 {
@@ -21,25 +21,15 @@ final class TestRunner
 
     public static float $testingTime = 0;
 
-    private static array $config = [];
-
     public static function init(): void
     {
-        $configFile = getcwd() . DIRECTORY_SEPARATOR . 'swew-test.json';
+        self::cliInit();
 
-        $json = file_get_contents($configFile);
+        ConfigMaster::loadConfig();
 
-        if (!$json) {
-            throw new Exception("Can't load config file: '{$configFile}'");
-        }
+        self::cliUpdateConfig();
 
-        self::$config = json_decode($json, true);
-
-        self::checkConfigValidation(self::$config);
-
-        $msg = self::initCliAndUpdateConfig();
-
-        $paths = self::makeSubPathPatterns(self::$config['paths']);
+        $paths = self::makeSubPathPatterns((array) ConfigMaster::getConfig('paths'));
 
         $testFiles = self::loadTestFilePaths($paths);
 
@@ -52,24 +42,16 @@ final class TestRunner
         self::clearCli();
 
         self::showLogo();
-
-        if ($msg) {
-            CliStr::write([
-                '',
-                $msg,
-                '',
-                '',
-            ]);
-        }
     }
 
-    private static function initCliAndUpdateConfig(): string
+    public static function cliInit(): void
     {
-        $message = '';
-
         CliArgs::init([], [
             'file,f' => [
                 'desc' => 'Filter files',
+            ],
+            'config,c' => [
+                'desc' => 'Path to config file',
             ],
             'suite,sf' => [
                 'desc' => 'Filter by suite message',
@@ -81,32 +63,30 @@ final class TestRunner
                 'desc' => 'Do not show test names and statistics',
             ],
         ]);
+    }
 
+    private static function cliUpdateConfig(): void
+    {
         if (CliArgs::hasArg('help')) {
             CliStr::write(CliArgs::getHelp());
 
             exit(0);
         }
 
-        $filePattern = CliArgs::getFilePattern('file');
-
-        if (!is_null($filePattern)) {
-            $message .= CliStr::cl('c', 'Filtered by pattern: ');
-            $message .= CliStr::cl('y', ' ' . $filePattern);
-
-            self::$config['paths'] = [$filePattern];
-        }
-
         if (CliArgs::hasArg('no-color')) {
-            self::$config['log']['color'] = false;
+            ConfigMaster::setConfig('log.color', false);
             CliStr::withColor(false);
         }
 
         if (CliArgs::hasArg('short')) {
-            self::$config['log']['short'] = true;
+            ConfigMaster::setConfig('log.short', true);
         }
 
-        return $message;
+        $filePattern = CliArgs::getGlobMaskPattern('file');
+
+        if (!is_null($filePattern)) {
+            ConfigMaster::setConfig('paths', [$filePattern]);
+        }
     }
 
     public static function add(Suite $suite): void
@@ -171,8 +151,8 @@ final class TestRunner
         $log->setTestingTime(self::$testingTime);
         $log->setHasOnlyTests($hasOnlyFilteredTests);
         $log->setTestsCount($testsCount);
-        $log->setRootPath(self::getRootPath());
-        $log->setConfig(self::$config);
+        $log->setRootPath(ConfigMaster::getRootPath());
+        $log->setFilterSuiteByMsg($filterSuiteByMsg);
 
         return $log;
     }
@@ -189,20 +169,14 @@ final class TestRunner
         return self::$currentSuite;
     }
 
-    private static function checkConfigValidation(array $config): void
-    {
-        if (empty($config['paths'])) {
-            throw new Exception("'paths' - is required parameter in config file.");
-        }
-    }
-
     private static function makeSubPathPatterns(array $paths): array
     {
         $added = [];
 
         foreach ($paths as $path) {
             if (str_contains($path, '**')) {
-                $added[] = str_replace('**/', '', $path);
+                $added[] = str_replace('**', '', $path);
+                $added[] = str_replace('**', '*', $path);
                 $added[] = str_replace('**', '*/*', $path);
                 $added[] = str_replace('**', '*/*/*', $path);
                 $added[] = str_replace('**', '*/*/*/*', $path);
@@ -236,7 +210,7 @@ final class TestRunner
 
     public static function clearCli(): void
     {
-        if (self::$config['log'] && self::$config['log']['clear'] === false) {
+        if (ConfigMaster::getConfig('log.clear') === false) {
             return;
         }
 
@@ -245,7 +219,7 @@ final class TestRunner
 
     private static function showLogo(): void
     {
-        if (self::$config['log'] && self::$config['log']['logo'] === false) {
+        if (ConfigMaster::getConfig('log.logo') === false) {
             return;
         }
 
@@ -261,30 +235,5 @@ final class TestRunner
         ];
 
         CliStr::write($logo);
-    }
-
-    private static function getRootPath(): string
-    {
-        $dirs = explode(DIRECTORY_SEPARATOR, __DIR__);
-
-        $i = count($dirs) + 1;
-
-        while ($i--) {
-            array_splice($dirs, $i);
-            $path = implode(
-                DIRECTORY_SEPARATOR,
-                $dirs
-            );
-
-            if ($path === '') {
-                break;
-            }
-
-            if (file_exists($path . DIRECTORY_SEPARATOR . 'composer.json')) {
-                return $path;
-            }
-        }
-
-        return '';
     }
 }

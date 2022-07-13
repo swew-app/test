@@ -6,8 +6,6 @@ namespace SWEW\Test\LogMaster\Log;
 
 final class LogState
 {
-    private array $config = [];
-
     private array $results = [];
 
     private string $rootPath = '';
@@ -18,17 +16,9 @@ final class LogState
 
     private bool $hasOnlyTests = false;
 
+    private ?string $filterSuiteByMsg = null;
+
     //
-
-    public function getConfig(): array
-    {
-        return $this->config;
-    }
-
-    public function setConfig(array $config): void
-    {
-        $this->config = $config;
-    }
 
     public function getResults(): array
     {
@@ -78,5 +68,15 @@ final class LogState
     public function setHasOnlyTests(bool $hasOnlyTests): void
     {
         $this->hasOnlyTests = $hasOnlyTests;
+    }
+
+    public function getFilterSuiteByMsg(): ?string
+    {
+        return $this->filterSuiteByMsg;
+    }
+
+    public function setFilterSuiteByMsg(?string $filterSuiteByMsg): void
+    {
+        $this->filterSuiteByMsg = $filterSuiteByMsg;
     }
 }
