@@ -1,0 +1,34 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+
+use SWEW\Test\LogMaster\LogMaster;
+use SWEW\Test\TestRunner;
+use SWEW\Test\Utils\ConfigMaster;
+
+(static function () {
+    // Used when SWEW-test is required using composer.
+    $vendorPath = dirname(__DIR__, 4) . '/vendor/autoload.php';
+
+    // Used when SWEW-test maintainers are running SWEW-test tests.
+    $localPath = dirname(__DIR__) . '/vendor/autoload.php';
+
+    if (file_exists($vendorPath)) {
+        include_once $vendorPath;
+        $autoloadPath = $vendorPath;
+    } else {
+        include_once $localPath;
+        $autoloadPath = $localPath;
+    }
+
+    // Get $rootPath based on $autoloadPath
+//    $rootPath = ConfigMaster::getRootPath();
+
+    TestRunner::init();
+
+    $res = TestRunner::run();
+
+    $log = new LogMaster($res);
+
+    $log->logListAndExit();
+})();

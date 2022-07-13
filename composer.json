@@ -15,6 +15,9 @@
         "sort-packages": true,
         "optimize-autoloader": true
     },
+    "bin": [
+        "bin/test"
+    ],
     "autoload": {
         "psr-4": {
             "SWEW\\Test\\": "src/"

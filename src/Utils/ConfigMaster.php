@@ -113,6 +113,22 @@ final class ConfigMaster
             }
         } else {
             $configFile = getcwd() . DIRECTORY_SEPARATOR . 'swew-test.json';
+
+            if (!file_exists($configFile)) {
+                $configFile = self::getRootPath() . DIRECTORY_SEPARATOR . 'swew-test.json';
+            }
+
+            if (!file_exists($configFile)) {
+                CliStr::write(
+                    "\n"
+                    . CliStr::cl('B', '  Try creating a new config by adding the ', false)
+                    . CliStr::cl('yellow', '--init', false)
+                    . CliStr::cl('B', ' argument  ')
+                    . "\n\n"
+                );
+
+                throw new Exception("Can't find config file: '$configFile'");
+            }
         }
 
         $json = file_get_contents($configFile);
