@@ -9,18 +9,37 @@ use SWEW\Test\Exceptions\Exception;
 final class ConfigMaster
 {
     private static array $config = [
-        'paths' => ['**/*.spec.php'],
+        'paths' => ['**/*.spec.php', '**/*.test.php'],
         'bail' => false,
         'log' => [
             'traceReverse' => true,
-            'color' => true,
-            'short' => false,
             'logo' => true,
+            'color' => true,
+            'clear' => true,
+            'short' => false,
         ],
     ];
 
     private function __construct()
     {
+    }
+
+    public static function createConfigFile(): string
+    {
+        $root = self::getRootPath();
+
+        if (empty($root)) {
+            throw new Exception("Can't find root dir with composer.json");
+        }
+
+        $configFile = $root . DIRECTORY_SEPARATOR . 'swew-test.json';
+        $json = json_encode(self::$config, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES);
+
+        $file = fopen($configFile, 'w') or die("Unable to open file!");
+        fwrite($file, $json);
+        fclose($file);
+
+        return $configFile;
     }
 
     public static function getRootPath(): string

@@ -25,6 +25,8 @@ final class TestRunner
     {
         self::cliInit();
 
+        self::cliPreload();
+
         ConfigMaster::loadConfig();
 
         self::cliUpdateConfig();
@@ -47,6 +49,9 @@ final class TestRunner
     public static function cliInit(): void
     {
         CliArgs::init([], [
+            'init' => [
+                'desc' => 'Create a new config file',
+            ],
             'file,f' => [
                 'desc' => 'Filter files',
             ],
@@ -65,7 +70,7 @@ final class TestRunner
         ]);
     }
 
-    private static function cliUpdateConfig(): void
+    public static function cliPreload(): void
     {
         if (CliArgs::hasArg('help')) {
             CliStr::write(CliArgs::getHelp());
@@ -73,6 +78,20 @@ final class TestRunner
             exit(0);
         }
 
+        if (CliArgs::hasArg('init')) {
+            $configFile = ConfigMaster::createConfigFile();
+            CliStr::write([
+                CliStr::cl('cyan', 'Created new config file:'),
+                ' ' . $configFile,
+                ''
+            ]);
+
+            exit(0);
+        }
+    }
+
+    private static function cliUpdateConfig(): void
+    {
         if (CliArgs::hasArg('no-color')) {
             ConfigMaster::setConfig('log.color', false);
             CliStr::withColor(false);
