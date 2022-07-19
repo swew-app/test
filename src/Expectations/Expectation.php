@@ -35,7 +35,7 @@ final class Expectation
 
         $this->isNot = true;
 
-        return  $this;
+        return $this;
     }
 
     public function not(): self
@@ -55,23 +55,19 @@ final class Expectation
     public function toBe(mixed $value): self
     {
         if ($this->isNot) {
-            $msg = $this->message ?: 'Expected a value identical:';
-
             if ($this->expectValue === $value) {
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $msg
+                    $this->message ?: 'Expected a value identical:'
                 );
             }
         } else {
-            $msg = $this->message ?: 'Expected a value not identical:';
-
             if ($this->expectValue !== $value) {
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $msg
+                    $this->message ?: 'Expected a value not identical:'
                 );
             }
         }
@@ -82,9 +78,21 @@ final class Expectation
     public function toBeArray(): self
     {
         if ($this->isNot) {
-            Assert::notEq(gettype($this->expectValue), 'array', $this->message);
+            if (is_array($this->expectValue)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    'Not Array',
+                    $this->message ?: 'Expected not an array.'
+                );
+            }
         } else {
-            Assert::isArray($this->expectValue, $this->message);
+            if (!is_array($this->expectValue)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    'Array',
+                    $this->message ?: 'Expected an array.'
+                );
+            }
         }
 
         return $this;
@@ -104,9 +112,21 @@ final class Expectation
     public function toBeTrue(): self
     {
         if ($this->isNot) {
-            Assert::false($this->expectValue, $this->message);
+            if ($this->expectValue === true) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    false,
+                    $this->message ?: 'Expected a value to be false.'
+                );
+            }
         } else {
-            Assert::true($this->expectValue, $this->message);
+            if ($this->expectValue !== true) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    true,
+                    $this->message ?: 'Expected a value to be true.'
+                );
+            }
         }
 
         return $this;

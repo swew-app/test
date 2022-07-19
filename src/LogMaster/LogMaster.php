@@ -30,7 +30,11 @@ final class LogMaster
 
     public function logListAndExit(): void
     {
-        $results = $this->logState->getResults();
+        $list = $this->logState->getResults();
+
+        $results = array_filter($list, fn ($r) => $r->isExcepted === false);
+        $results += array_filter($list, fn ($r) => $r->isExcepted === true);
+
         $allTests = $this->logState->getTestsCount();
         $hasOnly = $this->logState->hasOnlyTests();
         $excepted = 0;

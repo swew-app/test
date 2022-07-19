@@ -10,7 +10,6 @@ it('toBe', function () {
 it('toBeArray', function () {
     expect([1])->toBeArray();
     expect(1)->not()->toBeArray();
-//    expect([1])->not()->toBeArray(); // Error
 });
 
 it('toBeTrue', function () {
