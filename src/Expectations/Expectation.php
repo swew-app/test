@@ -890,15 +890,32 @@ final class Expectation
                 $expression();
             } catch (Exception|\Throwable $e) {
                 /** @var class-string<Exception> $class */
-                Assert::notInstanceOf($e, $class, $this->message);
+                if ($e instanceof $class) {
+                    throw new ExpectException(
+                        get_class($e),
+                        '',
+                        $this->message ?: "Expected an instance other than $class"
+                    );
+                }
             }
 
             return $this;
         } // END NOT
 
         if (class_exists($class, false)) {
-            /** @var class-string<Exception> $class */
-            Assert::throws($this->expectValue, $class, $this->message);
+            try {
+                $expression = $this->expectValue;
+                $expression();
+            } catch (Exception|\Throwable $e) {
+                /** @var class-string<Exception> $class */
+                if (!($e instanceof $class)) {
+                    throw new ExpectException(
+                        get_class($e),
+                        $class,
+                        $this->message ?: "Expected to throw $class"
+                    );
+                }
+            }
         } elseif ($message === '') {
             $message = $class;
         }
@@ -913,7 +930,13 @@ final class Expectation
                 $errorMessage = $e->getMessage();
             }
 
-            Assert::same($message, $errorMessage, $this->message);
+            if ($errorMessage !== $message) {
+                throw new ExpectException(
+                    $errorMessage,
+                    $message,
+                    $this->message ?: "Expect the messages to be identical"
+                );
+            }
         }
 
         return $this;
