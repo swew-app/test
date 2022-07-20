@@ -8,7 +8,6 @@ use SWEW\Test\Exceptions\Exception;
 use SWEW\Test\Exceptions\ExpectException;
 use SWEW\Test\TestRunner;
 use Traversable;
-use Webmozart\Assert\Assert;
 
 /**
  * @property Expectation $not
@@ -859,22 +858,22 @@ final class Expectation
         return $this;
     }
 
-    public function toStartWith(string $str): self
+    public function toStartWith(string $prefix): self
     {
         if ($this->isNot) {
-            if (str_starts_with($this->expectValue, $str)) {
+            if (str_starts_with($this->expectValue, $prefix)) {
                 throw new ExpectException(
                     $this->expectValue,
                     '',
-                    $this->message ?: "Expected a value not to start with '$str'"
+                    $this->message ?: "Expected a value not to start with '$prefix'"
                 );
             }
         } else {
-            if (!str_starts_with($this->expectValue, $str)) {
+            if (!str_starts_with($this->expectValue, $prefix)) {
                 throw new ExpectException(
                     $this->expectValue,
                     '',
-                    $this->message ?: "Expected a value to start with '$str'"
+                    $this->message ?: "Expected a value to start with '$prefix'"
                 );
             }
         }
@@ -942,12 +941,24 @@ final class Expectation
         return $this;
     }
 
-    public function toEndWith(string $str): self
+    public function toEndWith(string $suffix): self
     {
         if ($this->isNot) {
-            Assert::notEndsWith($this->expectValue, $str, $this->message);
+            if (str_ends_with($this->expectValue, $suffix)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $suffix,
+                    $this->message ?: "Expected a value not to end with '$suffix'"
+                );
+            }
         } else {
-            Assert::endsWith($this->expectValue, $str, $this->message);
+            if (!str_ends_with($this->expectValue, $suffix)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $suffix,
+                    $this->message ?: "Expected a value to end with"
+                );
+            }
         }
 
         return $this;
@@ -956,9 +967,21 @@ final class Expectation
     public function toMatch(string $pattern): self
     {
         if ($this->isNot) {
-            Assert::notRegex($this->expectValue, $pattern, $this->message);
+            if (\preg_match($pattern, $this->expectValue, $matches, PREG_OFFSET_CAPTURE)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    '',
+                    $this->message ?: "The value matches the pattern $pattern."
+                );
+            }
         } else {
-            Assert::regex($this->expectValue, $pattern, $this->message);
+            if (!\preg_match($pattern, $this->expectValue)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    '',
+                    $this->message ?: "The value does not match the expected pattern: $pattern"
+                );
+            }
         }
 
         return $this;
@@ -989,21 +1012,21 @@ final class Expectation
         return $this;
     }
 
-    public function sequence(): self
-    {
-        throw new Exception('// TODO');
-        return $this;
-    }
-
-    public function unless(): self
-    {
-        throw new Exception('// TODO');
-        return $this;
-    }
-
-    public function when(): self
-    {
-        throw new Exception('// TODO');
-        return $this;
-    }
+//    public function sequence(): self
+//    {
+//        throw new Exception('// TODO');
+//        return $this;
+//    }
+//
+//    public function unless(): self
+//    {
+//        throw new Exception('// TODO');
+//        return $this;
+//    }
+//
+//    public function when(): self
+//    {
+//        throw new Exception('// TODO');
+//        return $this;
+//    }
 }

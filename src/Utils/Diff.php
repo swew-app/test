@@ -13,15 +13,24 @@ final class Diff
     {
         $s1 = self::valueToString($v1);
         $s2 = self::valueToString($v2);
+        $res = [];
 
         if ($s1 === $s2) {
             return '';
         }
 
+        if ($s2 === '') {
+            $res[] = CliStr::cl('y', 'value:');
+            $res[] = self::prefixColor(
+                'RL',
+                $s1
+            );
+
+            return implode("\n", $res);
+        } // END
+
         $letters1 = str_split($s1);
         $letters2 = str_split($s2);
-
-        $res = [];
 
         if ($isShowTitle) {
             $res[] = CliStr::cl('y', 'actual:');
