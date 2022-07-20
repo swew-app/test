@@ -7,6 +7,7 @@ namespace SWEW\Test\Expectations;
 use SWEW\Test\Exceptions\Exception;
 use SWEW\Test\Exceptions\ExpectException;
 use SWEW\Test\TestRunner;
+use Traversable;
 use Webmozart\Assert\Assert;
 
 /**
@@ -101,9 +102,21 @@ final class Expectation
     public function toBeEmpty(): self
     {
         if ($this->isNot) {
-            Assert::notEmpty($this->expectValue, $this->message);
+            if (empty($this->expectValue)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    'Non-empty empty value',
+                    $this->message ?: 'Expected a non-empty value.'
+                );
+            }
         } else {
-            Assert::isEmpty($this->expectValue, $this->message);
+            if (!empty($this->expectValue)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    'Empty value',
+                    $this->message ?: 'Expected an empty value.'
+                );
+            }
         }
 
         return $this;
@@ -135,9 +148,21 @@ final class Expectation
     public function toBeTruthy(): self
     {
         if ($this->isNot) {
-            Assert::false(!!$this->expectValue, $this->message);
+            if (!empty($this->expectValue)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    'Falsy value',
+                    $this->message ?: 'Expected an falsy value.'
+                );
+            }
         } else {
-            Assert::true(!!$this->expectValue, $this->message);
+            if (empty($this->expectValue)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    'Truthy value',
+                    $this->message ?: 'Expected a truthy value.'
+                );
+            }
         }
 
         return $this;
@@ -146,9 +171,21 @@ final class Expectation
     public function toBeFalse(): self
     {
         if ($this->isNot) {
-            Assert::true($this->expectValue, $this->message);
+            if ($this->expectValue === false) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    true,
+                    $this->message ?: 'Expected a value to be true.'
+                );
+            }
         } else {
-            Assert::false($this->expectValue, $this->message);
+            if ($this->expectValue !== false) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    false,
+                    $this->message ?: 'Expected a value to be false.'
+                );
+            }
         }
 
         return $this;
@@ -157,9 +194,21 @@ final class Expectation
     public function toBeFalsy(): self
     {
         if ($this->isNot) {
-            Assert::false(!$this->expectValue, $this->message);
+            if (empty($this->expectValue)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    'Non-Falsy value',
+                    $this->message ?: 'Expected a non-empty value.'
+                );
+            }
         } else {
-            Assert::true(!$this->expectValue, $this->message);
+            if (!empty($this->expectValue)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    'Falsy value',
+                    $this->message ?: 'Expected an empty value.'
+                );
+            }
         }
 
         return $this;
@@ -168,9 +217,21 @@ final class Expectation
     public function toBeGreaterThan(mixed $value): self
     {
         if ($this->isNot) {
-            Assert::lessThan($this->expectValue, $value, $this->message);
+            if ($this->expectValue >= $value) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $this->message ?: "Expected a value less than: $value"
+                );
+            }
         } else {
-            Assert::greaterThan($this->expectValue, $value, $this->message);
+            if ($this->expectValue <= $value) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $this->message ?: "Expected a value greater than: $value"
+                );
+            }
         }
 
         return $this;
@@ -179,9 +240,21 @@ final class Expectation
     public function toBeGreaterThanOrEqual(mixed $value): self
     {
         if ($this->isNot) {
-            Assert::lessThanEq($this->expectValue, $value, $this->message);
+            if ($this->expectValue > $value) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $this->message ?: "Expected a value less than or equal to: $value"
+                );
+            }
         } else {
-            Assert::greaterThanEq($this->expectValue, $value, $this->message);
+            if ($this->expectValue < $value) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $this->message ?: "Expected a value greater than or equal to: $value"
+                );
+            }
         }
 
         return $this;
@@ -190,9 +263,21 @@ final class Expectation
     public function toBeLessThan(mixed $value): self
     {
         if ($this->isNot) {
-            Assert::greaterThan($this->expectValue, $value, $this->message);
+            if ($this->expectValue <= $value) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $this->message ?: "Expected a value greater than: $value"
+                );
+            }
         } else {
-            Assert::lessThan($this->expectValue, $value, $this->message);
+            if ($this->expectValue >= $value) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $this->message ?: "Expected a value less than: $value"
+                );
+            }
         }
 
         return $this;
@@ -201,9 +286,21 @@ final class Expectation
     public function toBeLessThanOrEqual(mixed $value): self
     {
         if ($this->isNot) {
-            Assert::greaterThanEq($this->expectValue, $value, $this->message);
+            if ($this->expectValue < $value) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $this->message ?: "Expected a value greater than or equal to: $value"
+                );
+            }
         } else {
-            Assert::lessThanEq($this->expectValue, $value, $this->message);
+            if ($this->expectValue > $value) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $this->message ?: "Expected a value less than or equal to: $value"
+                );
+            }
         }
 
         return $this;
@@ -212,9 +309,21 @@ final class Expectation
     public function toContain(mixed $value): self
     {
         if ($this->isNot) {
-            Assert::notContains($this->expectValue, $value, $this->message);
+            if (str_contains(strval($this->expectValue), strval($value))) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $this->message ?: "Was not expected to be contained in a value: '$value'"
+                );
+            }
         } else {
-            Assert::contains($this->expectValue, $value, $this->message);
+            if (!str_contains(strval($this->expectValue), strval($value))) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $this->message ?: "Expected a value to contain: '$value'"
+                );
+            }
         }
 
         return $this;
@@ -223,17 +332,21 @@ final class Expectation
     public function toHaveCount(int $number): self
     {
         if ($this->isNot) {
-            Assert::notEq(
-                \count($this->expectValue),
-                $number,
-                \sprintf(
-                    $this->message ?: 'Expected an array to contain %d elements. Got: %d.',
+            if (count($this->expectValue) === $number) {
+                throw new ExpectException(
+                    $this->expectValue,
                     $number,
-                    \count($this->expectValue)
-                )
-            );
+                    $this->message ?: "Expected an array to contain not $number elements"
+                );
+            }
         } else {
-            Assert::count($this->expectValue, $number, $this->message);
+            if (count($this->expectValue) !== $number) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $number,
+                    $this->message ?: "Expected an array to contain $number elements"
+                );
+            }
         }
 
         return $this;
@@ -242,9 +355,21 @@ final class Expectation
     public function toHaveProperty(string $property): self
     {
         if ($this->isNot) {
-            Assert::propertyNotExists($this->expectValue, $property, $this->message);
+            if (\property_exists($this->expectValue, $property)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $property,
+                    $this->message ?: "Expected the property '$property' to not exist."
+                );
+            }
         } else {
-            Assert::propertyExists($this->expectValue, $property, $this->message);
+            if (!\property_exists($this->expectValue, $property)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $property,
+                    $this->message ?: "Expected the property '$property' to exist."
+                );
+            }
         }
 
         return $this;
@@ -263,17 +388,21 @@ final class Expectation
         }
 
         foreach ($array as $key => $value) {
-            Assert::keyExists($valueAsArray, $key);
-
-            Assert::eq(
-                $value,
-                $valueAsArray[$key],
-                sprintf(
-                    'Failed asserting that an array has a key %s with the value %s.',
+            if (!(isset($value) || \array_key_exists($key, $array))) {
+                throw new ExpectException(
+                    $this->expectValue,
                     $key,
+                    $this->message ?: "Expected the key '$key' to exist."
+                );
+            }
+
+            if ($value != $valueAsArray[$key]) {
+                throw new ExpectException(
+                    $value,
                     $valueAsArray[$key],
-                ),
-            );
+                    $this->message ?: "Failed asserting that an array has a key $key with the value $value."
+                );
+            }
         }
 
         return $this;
@@ -282,9 +411,21 @@ final class Expectation
     public function toMatchObject(mixed $object): self
     {
         if ($this->isNot) {
-            Assert::notEq($this->expectValue, $object, $this->message);
+            if ($this->expectValue == $object) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $object,
+                    $this->message ?: "Expected a different value than"
+                );
+            }
         } else {
-            Assert::eq($this->expectValue, $object, $this->message);
+            if ($this->expectValue != $object) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $object,
+                    $this->message ?: "Expected a value equal"
+                );
+            }
         }
 
         return $this;
@@ -293,9 +434,21 @@ final class Expectation
     public function toEqual(mixed $value): self
     {
         if ($this->isNot) {
-            Assert::notEq($this->expectValue, $value, $this->message);
+            if ($this->expectValue == $value) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $this->message ?: "Expected a different value than"
+                );
+            }
         } else {
-            Assert::eq($this->expectValue, $value, $this->message);
+            if ($this->expectValue != $value) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $value,
+                    $this->message ?: "Expected a value equal"
+                );
+            }
         }
 
         return $this;
@@ -307,7 +460,22 @@ final class Expectation
             throw new Exception('The method "toEqualWithDelta" cannot be used with "not()"');
         }
 
-        Assert::range($this->expectValue, $min, $min + $max, $this->message);
+        $maxVal = $min + $max;
+
+        if ($this->expectValue < $min) {
+            throw new ExpectException(
+                $this->expectValue,
+                $min,
+                $this->message ?: "Expected a value between $min and $maxVal."
+            );
+        }
+        if ($this->expectValue > $maxVal) {
+            throw new ExpectException(
+                $this->expectValue,
+                $maxVal,
+                $this->message ?: "Expected a value between $min and $maxVal."
+            );
+        }
 
         return $this;
     }
@@ -316,10 +484,20 @@ final class Expectation
     {
         if ($this->isNot) {
             if (\in_array($this->expectValue, $array, true)) {
-                throw new Exception($this->message);
+                throw new ExpectException(
+                    $array,
+                    '',
+                    $this->message ?: "Expected not to be in the array: " . $this->expectValue
+                );
             }
         } else {
-            Assert::inArray($this->expectValue, $array, $this->message);
+            if (!\in_array($this->expectValue, $array, true)) {
+                throw new ExpectException(
+                    $array,
+                    '',
+                    $this->message ?: "Expected availability: " . $this->expectValue
+                );
+            }
         }
 
         return $this;
@@ -328,9 +506,21 @@ final class Expectation
     public function toBeInstanceOf(mixed $class): self
     {
         if ($this->isNot) {
-            Assert::notInstanceOf($this->expectValue, $class, $this->message);
+            if ($this->expectValue instanceof $class) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $class,
+                    $this->message ?: 'Expected an instance other'
+                );
+            }
         } else {
-            Assert::isInstanceOf($this->expectValue, $class, $this->message);
+            if (!($this->expectValue instanceof $class)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    $class,
+                    $this->message ?: 'Expected an instance of'
+                );
+            }
         }
 
         return $this;
@@ -342,7 +532,13 @@ final class Expectation
             throw new Exception('The method "toBeBool" cannot be used with "not()"');
         }
 
-        Assert::boolean($this->expectValue, $this->message);
+        if (!\is_bool($this->expectValue)) {
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message ?: 'Expected a boolean.'
+            );
+        }
 
         return $this;
     }
@@ -353,7 +549,13 @@ final class Expectation
             throw new Exception('The method "toBeCallable" cannot be used with "not()"');
         }
 
-        Assert::isCallable($this->expectValue, $this->message);
+        if (!\is_callable($this->expectValue)) {
+            throw new ExpectException(
+                $this->expectValue,
+                'Callable',
+                $this->message ?: 'Expected a callable.'
+            );
+        }
 
         return $this;
     }
@@ -364,7 +566,13 @@ final class Expectation
             throw new Exception('The method "toBeFloat" cannot be used with "not()"');
         }
 
-        Assert::float($this->expectValue, $this->message);
+        if (!\is_float($this->expectValue)) {
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message ?: 'Expected a float.'
+            );
+        }
 
         return $this;
     }
@@ -375,7 +583,13 @@ final class Expectation
             throw new Exception('The method "toBeInt" cannot be used with "not()"');
         }
 
-        Assert::integer($this->expectValue, $this->message);
+        if (!\is_int($this->expectValue)) {
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message ?: 'Expected an integer.'
+            );
+        }
 
         return $this;
     }
@@ -386,7 +600,13 @@ final class Expectation
             throw new Exception('The method "toBeIterable" cannot be used with "not()"');
         }
 
-        Assert::isIterable($this->expectValue, $this->message);
+        if (!\is_array($this->expectValue) && !($this->expectValue instanceof Traversable)) {
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message ?: 'Expected an iterable.'
+            );
+        }
 
         return $this;
     }
@@ -397,7 +617,13 @@ final class Expectation
             throw new Exception('The method "toBeNumeric" cannot be used with "not()"');
         }
 
-        Assert::numeric($this->expectValue, $this->message);
+        if (!\is_numeric($this->expectValue)) {
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message ?: 'Expected a numeric.'
+            );
+        }
 
         return $this;
     }
@@ -408,18 +634,38 @@ final class Expectation
             throw new Exception('The method "toBeObject" cannot be used with "not()"');
         }
 
-        Assert::object($this->expectValue, $this->message);
+        if (!\is_object($this->expectValue)) {
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message ?: 'Expected an object.'
+            );
+        }
 
         return $this;
     }
 
-    public function toBeResource(): self
+    public function toBeResource(mixed $type = null): self
     {
         if ($this->isNot) {
             throw new Exception('The method "toBeResource" cannot be used with "not()"');
         }
 
-        Assert::resource($this->expectValue, $this->message);
+        if (!\is_resource($this->expectValue)) {
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message ?: 'Expected a resource.'
+            );
+        }
+
+        if ($type && $type !== \get_resource_type($this->expectValue)) {
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message ?: "Expected a resource of type $type"
+            );
+        }
 
         return $this;
     }
@@ -428,10 +674,20 @@ final class Expectation
     {
         if ($this->isNot) {
             if (\is_scalar($this->expectValue)) {
-                throw new Exception($this->message);
+                throw new ExpectException(
+                    $this->expectValue,
+                    '',
+                    $this->message ?: 'Expected a non-scalar.'
+                );
             }
         } else {
-            Assert::scalar($this->expectValue, $this->message);
+            if (!\is_scalar($this->expectValue)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    '',
+                    $this->message ?: 'Expected a scalar.'
+                );
+            }
         }
 
         return $this;
@@ -441,10 +697,20 @@ final class Expectation
     {
         if ($this->isNot) {
             if (\is_string($this->expectValue)) {
-                throw new Exception($this->message);
+                throw new ExpectException(
+                    $this->expectValue,
+                    '',
+                    $this->message ?: 'Expected a non-string.'
+                );
             }
         } else {
-            Assert::string($this->expectValue, $this->message);
+            if (!\is_string($this->expectValue)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    '',
+                    $this->message ?: 'Expected a string.'
+                );
+            }
         }
 
         return $this;
@@ -456,16 +722,21 @@ final class Expectation
             throw new Exception('The method "toBeJson" cannot be used with "not()"');
         }
 
-        Assert::string($this->expectValue, $this->message);
+        if (!\is_string($this->expectValue)) {
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message ?: 'Expected a JSON string.'
+            );
+        }
 
         $json = json_decode($this->expectValue, true);
 
         if (is_null($json)) {
-            throw new Exception(
-                \sprintf(
-                    $this->message ?: 'Expected JSON. Got: %s',
-                    $this->expectValue
-                )
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message ?: 'Expected JSON'
             );
         }
 
@@ -475,9 +746,21 @@ final class Expectation
     public function toBeNull(): self
     {
         if ($this->isNot) {
-            Assert::notNull($this->expectValue, $this->message);
+            if (null === $this->expectValue) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    null,
+                    $this->message ?: 'Expected a value other than null.'
+                );
+            }
         } else {
-            Assert::null($this->expectValue, $this->message);
+            if (null !== $this->expectValue) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    null,
+                    $this->message ?: 'Expected null.'
+                );
+            }
         }
 
         return $this;
@@ -486,9 +769,21 @@ final class Expectation
     public function toHaveKey(string|int $key): self
     {
         if ($this->isNot) {
-            Assert::keyNotExists($this->expectValue, $key, $this->message);
+            if (isset($this->expectValue[$key]) || \array_key_exists($key, $this->expectValue)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    '',
+                    $this->message ?: "Expected the key '$key' to not exist."
+                );
+            }
         } else {
-            Assert::keyExists($this->expectValue, $key, $this->message);
+            if (!(isset($this->expectValue[$key]) || \array_key_exists($key, $this->expectValue))) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    '',
+                    $this->message ?: "Expected the key '$key' to exist"
+                );
+            }
         }
 
         return $this;
@@ -510,9 +805,21 @@ final class Expectation
         }
 
         if (is_array($this->expectValue)) {
-            Assert::count($this->expectValue, $length, $this->message);
+            if (count($this->expectValue) !== $length) {
+                throw new ExpectException(
+                    count($this->expectValue),
+                    $length,
+                    $this->message ?: "Expected an array to contain $length elements"
+                );
+            }
         } else {
-            Assert::length($this->expectValue, $length, $this->message);
+            if ($length !== strlen($this->expectValue)) {
+                throw new ExpectException(
+                    strlen($this->expectValue),
+                    $length,
+                    $this->message ?: "Expected a value to contain $length characters"
+                );
+            }
         }
 
         return $this;
@@ -524,7 +831,13 @@ final class Expectation
             throw new Exception('The method "toBeReadableDirectory" cannot be used with "not()"');
         }
 
-        Assert::readable($this->expectValue, $this->message);
+        if (!\is_readable($this->expectValue)) {
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message ?: "The path is not readable."
+            );
+        }
 
         return $this;
     }
@@ -535,7 +848,13 @@ final class Expectation
             throw new Exception('The method "toBeWritableDirectory" cannot be used with "not()"');
         }
 
-        Assert::writable($this->expectValue, $this->message);
+        if (!\is_writable($this->expectValue)) {
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message ?: "The path is not writable."
+            );
+        }
 
         return $this;
     }
@@ -543,9 +862,21 @@ final class Expectation
     public function toStartWith(string $str): self
     {
         if ($this->isNot) {
-            Assert::notStartsWith($this->expectValue, $str, $this->message);
+            if (str_starts_with($this->expectValue, $str)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    '',
+                    $this->message ?: "Expected a value not to start with '$str'"
+                );
+            }
         } else {
-            Assert::startsWith($this->expectValue, $str, $this->message);
+            if (!str_starts_with($this->expectValue, $str)) {
+                throw new ExpectException(
+                    $this->expectValue,
+                    '',
+                    $this->message ?: "Expected a value to start with '$str'"
+                );
+            }
         }
 
         return $this;

@@ -17,6 +17,11 @@ it('toBeTrue', function () {
     expect(false)->not()->toBeTrue();
 });
 
+it('toBeEmpty', function () {
+    expect('')->toBeEmpty();
+    expect(true)->not()->toBeEmpty();
+});
+
 it('toBeTruthy', function () {
     expect(1)->toBeTruthy();
     expect('true')->toBeTruthy();
@@ -192,6 +197,7 @@ it('toBeJson', function () {
 
 it('toBeNull', function () {
     expect(null)->toBeNull();
+    expect('null')->not()->toBeNull();
 });
 
 it('toHaveKey', function () {

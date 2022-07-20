@@ -175,7 +175,7 @@ final class LogMaster
         $msg = '';
 
         if (!is_null($item->exception)) {
-            $msg = CliStr::cl('RL', ' ' . $item->exception->getMessage()) . "\n"
+            $msg = $item->exception->getMessage() . "\n"
                 . CliStr::cl('RL', '   ' . CliStr::trimPath($item->exception->getFile()))
                 . CliStr::cl('grey', ':' . $item->exception->getLine())
                 . "\n"
@@ -192,7 +192,7 @@ final class LogMaster
                 $msg .= DataConverter::parseTraceItem($t);
             }
 
-            $msg .= ' ' . $item->exception->getMessage();
+            $msg .= $item->exception->getMessage();
         }
 
         $title = ' ' . DataConverter::getIcon($item) . ' ' . DataConverter::getMessage($item, true);
