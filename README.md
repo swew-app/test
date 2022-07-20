@@ -48,4 +48,7 @@ It is now possible to run in the console:
 composer run test
 ```
 
+---
+
+License MIT.
 
