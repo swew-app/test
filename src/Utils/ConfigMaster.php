@@ -9,6 +9,7 @@ use SWEW\Test\Exceptions\Exception;
 final class ConfigMaster
 {
     private static array $config = [
+        'preloadFile' => '',
         'paths' => ['**/*.spec.php', '**/*.test.php'],
         'bail' => false,
         'log' => [
@@ -20,6 +21,8 @@ final class ConfigMaster
         ],
     ];
 
+    private static string $preloadFile = '';
+
     private function __construct()
     {
     }
@@ -29,7 +32,7 @@ final class ConfigMaster
         $root = self::getRootPath();
 
         if (empty($root)) {
-            throw new Exception("Can't find root dir with composer.json");
+            throw new Exception("CONFIG: Can't find root dir with composer.json");
         }
 
         $configFile = $root . DIRECTORY_SEPARATOR . 'swew-test.json';
@@ -86,7 +89,7 @@ final class ConfigMaster
         return self::$config;
     }
 
-    public static function setConfig(string $key, array|bool $val): void
+    public static function setConfig(string $key, array|bool|string $val): void
     {
         if (str_contains($key, '.')) {
             $conf = &self::$config;
@@ -109,7 +112,7 @@ final class ConfigMaster
 
 
             if (!file_exists($configFile)) {
-                throw new Exception("Can't find config file: '$configFile'");
+                throw new Exception("CONFIG: Can't find config file: '$configFile'");
             }
         } else {
             $configFile = getcwd() . DIRECTORY_SEPARATOR . 'swew-test.json';
@@ -127,14 +130,14 @@ final class ConfigMaster
                     . "\n\n"
                 );
 
-                throw new Exception("Can't find config file: '$configFile'");
+                throw new Exception("CONFIG: Can't find config file: '$configFile'");
             }
         }
 
         $json = file_get_contents($configFile);
 
         if (!$json) {
-            throw new Exception("Can't load config file: '$configFile'");
+            throw new Exception("CONFIG: Can't load config file: '$configFile'");
         }
 
         $config = json_decode($json, true);
@@ -153,12 +156,28 @@ final class ConfigMaster
         if (is_bool($config['bail'])) {
             self::setConfig('bail', $config['bail']);
         }
+
+        if (!empty($config['preloadFile'])) {
+            self::setConfig('preloadFile', $config['preloadFile']);
+
+            if (!file_exists($config['preloadFile'])) {
+                $preload = self::getRootPath() . DIRECTORY_SEPARATOR . $config['preloadFile'];
+
+                if (!file_exists($preload)) {
+                    throw new Exception("CONFIG: Can't load preloadFile file: '$preload'");
+                }
+
+                self::$preloadFile = $preload;
+            } else {
+                self::$preloadFile = $config['preloadFile'];
+            }
+        }
     }
 
     private static function checkConfigValidation(array $config): void
     {
         if (empty($config['paths'])) {
-            throw new Exception("'paths' - is required parameter in config file.");
+            throw new Exception("CONFIG: 'paths' - is required parameter in config file.");
         }
     }
 }

@@ -1,5 +1,8 @@
 {
-    "paths": ["**.spec.php"],
+    "preloadFile": "",
+    "paths": [
+        "**.spec.php"
+    ],
     "bail": true,
     "log": {
         "traceReverse": true,

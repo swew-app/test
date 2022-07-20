@@ -37,6 +37,14 @@ final class TestRunner
 
         self::$suiteGroupList = [];
 
+        if (ConfigMaster::getConfig('preloadFile')) {
+            $preloadFile = ConfigMaster::getConfig('preloadFile');
+
+            if (is_string($preloadFile)) {
+                self::loadTestFile($preloadFile);
+            }
+        }
+
         foreach ($testFiles as $file) {
             self::loadTestFile($file);
         }
