@@ -74,9 +74,9 @@ if (!function_exists('fit')) {
 }
 
 if (!function_exists('expect')) {
-    function expect(mixed $value): Expectation
+    function expect(mixed $value = null, string $message = ''): Expectation
     {
-        return new Expectation($value);
+        return new Expectation($value, $message);
     }
 } else {
     $_exit('expect');

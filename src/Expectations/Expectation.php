@@ -8,6 +8,7 @@ use SWEW\Test\Exceptions\Exception;
 use SWEW\Test\Exceptions\ExpectException;
 use SWEW\Test\TestRunner;
 use Traversable;
+use Closure;
 
 /**
  * @property Expectation $not
@@ -15,6 +16,11 @@ use Traversable;
 final class Expectation
 {
     private bool $isNot = false;
+
+    /**
+     * @var array <string, Closure>
+     */
+    private static array $extends = [];
 
     public function __construct(
         private readonly mixed $expectValue,
@@ -29,14 +35,38 @@ final class Expectation
 
     public function __get(string $name): self
     {
-        if ($name !== 'not') {
-            trigger_error('Call unimplemented property');
+        if ($name === 'not') {
+            $this->isNot = true;
+            return $this;
         }
 
-        $this->isNot = true;
+        trigger_error('Call unimplemented property');
+        return $this;
+    }
+
+    public function __call(string $name, array $arguments): self
+    {
+        if (array_key_exists($name, self::$extends)) {
+            /** @var Closure $fn */
+            $fn = self::$extends[$name];
+
+            $boundFn = $fn->bindTo($this);
+
+            if (is_callable($boundFn)) {
+                $boundFn($this->expectValue, ...$arguments);
+            } else {
+                trigger_error('Call unimplemented method');
+            }
+        }
 
         return $this;
     }
+
+    public function extend(string $name, Closure $extend): void
+    {
+        self::$extends[$name] = $extend;
+    }
+
 
     public function not(): self
     {
