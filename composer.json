@@ -16,7 +16,7 @@
         "optimize-autoloader": true
     },
     "bin": [
-        "bin/test"
+        "bin/t"
     ],
     "autoload": {
         "psr-4": {

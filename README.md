@@ -15,7 +15,7 @@ It's designed to help you write tests quickly and stick to TDD.
 ```sh
 composer require --dev swew/test
 
-php ./vendor/bin/test init
+composer exec t --init
 ```
 
 Next to the `composer.json` file, a config file will be created for tests - `swew-test.json`.
@@ -40,12 +40,12 @@ To write the test itself, you only need a few functions.
 `beforeAll` | Runs before the start of all tests in the file
 `beforeEach` | Runs before each test in the file
 `afterEach` | Runs after each test in the file
-`AfterAll` | Runs after all tests in the file
+`afterAll` | Runs after all tests in the file
 
 It is now possible to run in the console:
 
 ```sh
-composer run test
+composer exec t
 ```
 
 ---
