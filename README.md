@@ -15,7 +15,7 @@ It's designed to help you write tests quickly and stick to TDD.
 ```sh
 composer require --dev swew/test
 
-composer exec t --init
+composer exec t -- --init
 ```
 
 Next to the `composer.json` file, a config file will be created for tests - `swew-test.json`.
@@ -33,7 +33,7 @@ To write the test itself, you only need a few functions.
 `it` | container for the test case
 `expect` | function, to check the test case, must be inside `it`
 
-Могут так же понадобится еще функции:
+You may also need other functions:
 
 | Name | Description |
 |---|---|

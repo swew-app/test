@@ -62,7 +62,15 @@ final class ConfigMaster
                 break;
             }
 
-            if (file_exists($path . DIRECTORY_SEPARATOR . 'composer.json')) {
+            $composerFile = $path . DIRECTORY_SEPARATOR . 'composer.json';
+
+            if (file_exists($composerFile)) {
+                $json = json_decode(file_get_contents($composerFile), true);
+
+                if ($json['name'] === 'swew/test') {
+                    continue;
+                }
+
                 return $path;
             }
         }
