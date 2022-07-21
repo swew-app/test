@@ -223,6 +223,11 @@ final class TestRunner
             $files = array_merge($files, glob($path, GLOB_ERR));
         }
 
+        // filter vendor
+        $files = array_filter($files, function (string $path) {
+            return !str_contains($path, 'vendor');
+        });
+
         return array_unique($files);
     }
 
