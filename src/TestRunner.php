@@ -128,6 +128,10 @@ final class TestRunner
 
     public static function run(): LogState
     {
+        if (empty(getenv('__TEST__'))) {
+            putenv('__TEST__=true');
+        }
+
         return self::runTests();
     }
 
