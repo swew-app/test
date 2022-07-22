@@ -62,9 +62,9 @@ final class Diff
         foreach ($letters as $i => $v) {
             if (in_array($i, $indexes)) {
                 if ($isGood) {
-                    $res[] = CliStr::cl('Ug', $v);
+                    $res[] = CliStr::cl('g', $v);
                 } else {
-                    $res[] = CliStr::cl('Ur', $v);
+                    $res[] = CliStr::cl('r', $v);
                 }
             } else {
                 $res[] = $v;
