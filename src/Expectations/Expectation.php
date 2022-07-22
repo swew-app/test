@@ -427,8 +427,8 @@ final class Expectation
 
             if ($value != $valueAsArray[$key]) {
                 throw new ExpectException(
-                    $value,
-                    $valueAsArray[$key],
+                    $valueAsArray,
+                    $array,
                     $this->message ?: "Failed asserting that an array has a key $key with the value $value."
                 );
             }
