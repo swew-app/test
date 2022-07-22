@@ -534,6 +534,14 @@ final class Expectation
 
     public function toBeInstanceOf(mixed $class): self
     {
+        if (!class_exists($class) && !interface_exists($class)) {
+            throw new ExpectException(
+                $class,
+                '',
+                'An invalid value is passed'
+            );
+        }
+
         if ($this->isNot) {
             if ($this->expectValue instanceof $class) {
                 throw new ExpectException(
