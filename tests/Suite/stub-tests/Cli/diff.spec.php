@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use SWEW\Test\Utils\CliStr;
-use SWEW\Test\Utils\Diff;
+use Swew\Test\Utils\CliStr;
+use Swew\Test\Utils\Diff;
 
 beforeAll(fn () => CliStr::withColor(false));
 afterAll(fn () => CliStr::withColor(true));

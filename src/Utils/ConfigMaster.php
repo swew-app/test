@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\Utils;
+namespace Swew\Test\Utils;
 
-use SWEW\Test\Exceptions\Exception;
+use Swew\Test\Exceptions\Exception;
 
 final class ConfigMaster
 {

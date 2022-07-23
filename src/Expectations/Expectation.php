@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\Expectations;
+namespace Swew\Test\Expectations;
 
-use SWEW\Test\Exceptions\Exception;
-use SWEW\Test\Exceptions\ExpectException;
-use SWEW\Test\TestRunner;
+use Swew\Test\Exceptions\Exception;
+use Swew\Test\Exceptions\ExpectException;
+use Swew\Test\TestRunner;
 use Traversable;
 use Closure;
 

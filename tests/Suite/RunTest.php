@@ -2,8 +2,8 @@
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-use SWEW\Test\LogMaster\LogMaster;
-use SWEW\Test\TestRunner;
+use Swew\Test\LogMaster\LogMaster;
+use Swew\Test\TestRunner;
 
 chdir(__DIR__);
 

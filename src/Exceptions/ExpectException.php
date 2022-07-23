@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\Exceptions;
+namespace Swew\Test\Exceptions;
 
 use RuntimeException;
-use SWEW\Test\Utils\CliStr;
-use SWEW\Test\Utils\Diff;
+use Swew\Test\Utils\CliStr;
+use Swew\Test\Utils\Diff;
 use Throwable;
 
 final class ExpectException extends RuntimeException implements Throwable

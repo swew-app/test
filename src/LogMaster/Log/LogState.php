@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\LogMaster\Log;
+namespace Swew\Test\LogMaster\Log;
 
 final class LogState
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\Exceptions;
+namespace Swew\Test\Exceptions;
 
 use RuntimeException;
 use Throwable;

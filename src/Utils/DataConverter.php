@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\Utils;
+namespace Swew\Test\Utils;
 
-use SWEW\Test\LogMaster\Log\LogData;
+use Swew\Test\LogMaster\Log\LogData;
 
 final class DataConverter
 {

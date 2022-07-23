@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use SWEW\Test\Utils\CliStr;
+use Swew\Test\Utils\CliStr;
 
 beforeAll(fn () => CliStr::withColor(true));
 afterAll(fn () => CliStr::withColor(false));

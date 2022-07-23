@@ -20,7 +20,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "SWEW\\Test\\": "src/"
+            "Swew\\Test\\": "src/"
         },
         "files": [
             "src/Functions.php",

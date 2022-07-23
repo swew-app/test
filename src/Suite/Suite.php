@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\Suite;
+namespace Swew\Test\Suite;
 
 use Closure;
-use SWEW\Test\LogMaster\Log\LogData;
-use SWEW\Test\Utils\CliStr;
-use SWEW\Test\Utils\DataConverter;
+use Swew\Test\LogMaster\Log\LogData;
+use Swew\Test\Utils\CliStr;
+use Swew\Test\Utils\DataConverter;
 
 final class Suite
 {

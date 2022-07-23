@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\LogMaster;
+namespace Swew\Test\LogMaster;
 
-use SWEW\Test\Utils\CliArgs;
-use SWEW\Test\Utils\CliStr;
-use SWEW\Test\LogMaster\Log\LogData;
-use SWEW\Test\LogMaster\Log\LogState;
-use SWEW\Test\Utils\ConfigMaster;
-use SWEW\Test\Utils\DataConverter;
+use Swew\Test\Utils\CliArgs;
+use Swew\Test\Utils\CliStr;
+use Swew\Test\LogMaster\Log\LogData;
+use Swew\Test\LogMaster\Log\LogState;
+use Swew\Test\Utils\ConfigMaster;
+use Swew\Test\Utils\DataConverter;
 
 final class LogMaster
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\Suite;
+namespace Swew\Test\Suite;
 
 enum SuiteHook: string
 {

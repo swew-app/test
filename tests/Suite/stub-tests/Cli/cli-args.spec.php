@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use SWEW\Test\Utils\CliArgs;
-use SWEW\Test\Utils\CliStr;
+use Swew\Test\Utils\CliArgs;
+use Swew\Test\Utils\CliStr;
 
 it('CLI: parse args', function () {
     $args = ['path/to/file.php', '-f', 'spec.php', '--no-color'];

@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php declare(strict_types=1);
 
-use SWEW\Test\LogMaster\LogMaster;
-use SWEW\Test\TestRunner;
+use Swew\Test\LogMaster\LogMaster;
+use Swew\Test\TestRunner;
 
 (static function () {
     // Used when SWEW-test is required using composer.

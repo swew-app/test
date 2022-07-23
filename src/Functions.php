@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use SWEW\Test\Expectations\Expectation;
-use SWEW\Test\Suite\Suite;
-use SWEW\Test\Suite\SuiteHook;
-use SWEW\Test\TestRunner;
+use Swew\Test\Expectations\Expectation;
+use Swew\Test\Suite\Suite;
+use Swew\Test\Suite\SuiteHook;
+use Swew\Test\TestRunner;
 
 $_exit = function (string $name): void {
     fwrite(STDERR, "The global function `{$name}()`s can't be created because of some naming collisions with another library.\n");

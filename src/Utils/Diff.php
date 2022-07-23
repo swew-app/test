@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test\Utils;
+namespace Swew\Test\Utils;
 
 use DateTime;
 use DateTimeImmutable;

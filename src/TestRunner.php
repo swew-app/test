@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace SWEW\Test;
+namespace Swew\Test;
 
 use Closure;
-use SWEW\Test\LogMaster\Log\LogState;
-use SWEW\Test\Suite\Suite;
-use SWEW\Test\Suite\SuiteGroup;
-use SWEW\Test\Suite\SuiteHook;
-use SWEW\Test\Utils\CliArgs;
-use SWEW\Test\Utils\CliStr;
-use SWEW\Test\Utils\ConfigMaster;
+use Swew\Test\LogMaster\Log\LogState;
+use Swew\Test\Suite\Suite;
+use Swew\Test\Suite\SuiteGroup;
+use Swew\Test\Suite\SuiteHook;
+use Swew\Test\Utils\CliArgs;
+use Swew\Test\Utils\CliStr;
+use Swew\Test\Utils\ConfigMaster;
 
 final class TestRunner
 {
