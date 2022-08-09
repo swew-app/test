@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "01a1b8f51ec456e6c4d40a8fe61fbdb2",
+    "content-hash": "0dd1eb19fcd97e2ce3776a3e8af65068",
     "packages": [],
     "packages-dev": [
         {
@@ -1215,6 +1215,43 @@
                 }
             ],
             "time": "2020-10-26T13:10:38+00:00"
+        },
+        {
+            "name": "swew/dd",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/swew-app/dd.git",
+                "reference": "72bc152d022ec2d25f8d055eaefd538ea5b77d45"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/swew-app/dd/zipball/72bc152d022ec2d25f8d055eaefd538ea5b77d45",
+                "reference": "72bc152d022ec2d25f8d055eaefd538ea5b77d45",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/dd.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "AVIL13",
+                    "email": "avil@swew.app"
+                }
+            ],
+            "description": "The simplest way to debug variables. As in Laravel.",
+            "support": {
+                "issues": "https://github.com/swew-app/dd/issues",
+                "source": "https://github.com/swew-app/dd/tree/v1.0.0"
+            },
+            "time": "2022-08-02T14:43:39+00:00"
         },
         {
             "name": "symfony/console",
