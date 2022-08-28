@@ -189,6 +189,9 @@ final class LogMaster
             }
 
             foreach ($trace as $t) {
+                if (isset($t['file']) && str_contains($t['file'], 'vendor/swew/test')) {
+                    continue;
+                }
                 $msg .= DataConverter::parseTraceItem($t);
             }
 
