@@ -21,7 +21,7 @@ final class CliArgs
     public static function init(array $argv = [], array $options = []): void
     {
         if (count($argv) === 0) {
-            $argv = $_SERVER["argv"];
+            $argv = $_SERVER["argv"] ?? [];
         }
 
         self::$argv = array_slice($argv, 1);

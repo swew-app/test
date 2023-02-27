@@ -2,9 +2,9 @@
 
 A PHP test framework that solves the fatal flaw of all others.
 
----
+This composer package is a lightweight and fast testing library designed to provide an informative interface. It offers a variety of testing features, including unit testing, integration testing, and functional testing. The package is designed to make testing simple and easy, allowing developers to quickly identify and fix bugs in their code. With its fast and efficient testing tools, developers can ensure that their code is reliable and performs well in real-world scenarios.
 
-Another test framework, which aims to be fast, easy and simple.
+---
 
 It's designed to help you write tests quickly and stick to TDD.
 
@@ -46,6 +46,33 @@ It is now possible to run in the console:
 
 ```sh
 composer exec t
+```
+
+
+## Example
+
+```php
+<?php
+// example.spec.php
+
+declare(strict_types=1);
+
+ it('Test 1', function () {
+     expect(10)->not()->toBe(1);
+ });
+
+ it('Test 2: with dataset', function (int $num, int $n2 = 3) {
+     $a = str_repeat("Hello", $num * 100000);
+
+     return $a;
+ })->with([
+     1,
+     [2, 3]
+ ]);
+
+ it('Test 3: skip', function () {
+     sleep(2);
+ })->skip();
 ```
 
 ---
