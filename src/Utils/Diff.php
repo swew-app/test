@@ -88,7 +88,7 @@ final class Diff
     private static function valueToString(mixed $value): string
     {
         if (\is_string($value)) {
-            return '"' . $value . '"';
+            return $value;
         }
 
         if (is_null($value)) {
