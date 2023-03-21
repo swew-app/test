@@ -45,8 +45,8 @@ final class DataConverter
             $decimals = 6;
         }
 
-        $val = number_format($time, $decimals);
-        $val = str_pad($val, 6, ' ', STR_PAD_LEFT);
+        $val = substr(number_format($time, $decimals), 0, 8);
+        $val = str_pad($val, 8, ' ', STR_PAD_LEFT);
         $val .= CliStr::cl('grey', ' s');
 
         return $val;
