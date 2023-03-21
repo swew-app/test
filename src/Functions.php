@@ -12,7 +12,6 @@ $_exit = function (string $name): void {
 };
 
 
-
 if (!function_exists('__getFilePath')) {
     function __getFilePath(): string
     {
@@ -25,9 +24,15 @@ if (!function_exists('__getFilePath')) {
 }
 
 if (!function_exists('it')) {
-    function it(string $message, Closure $closure): Suite
+    function it(string $message, ?Closure $closure = null): Suite
     {
-        $suite = new Suite($message, $closure);
+        if (is_null($closure)) {
+            $suite = new Suite($message, function () {
+            });
+            $suite->todo();
+        } else {
+            $suite = new Suite($message, $closure);
+        }
 
         $suite->testFilePath = __getFilePath();
 

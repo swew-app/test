@@ -20,3 +20,5 @@ it('Test 2: with dataset', function (int $num, int $n2 = 3) {
 it('Test 3: skip', function () {
     sleep(2);
 })->skip();
+
+it('Test 4: todo with empty functions');
