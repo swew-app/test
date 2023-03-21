@@ -89,13 +89,22 @@ final class DataConverter
 
         $methodLine .= "\n";
 
+        $params = [];
+        if (count($v['args']) > 0) {
+            $params[] = CliStr::cl('Y', '    Arguments passed    ');
+            foreach ($v['args'] as $param) {
+                $params[] = CliStr::cl('y', '❯ ') . CliStr::cl('c', print_r($param, true));
+            }
+        }
+        $params[] = '';
+
         return CliStr::cl('R', "  " . $fileLine . "\t")
             . "\n"
             . self::getContentByLine($v['file'], $v['line'])
             . "\n"
             . CliStr::line('grey')
-            . CliStr::cl('c', $methodLine, false)
-            . (count($v['args']) ? print_r($v['args'], true) : '')
+            . CliStr::cl('c', $methodLine)
+            . implode("\n", $params)
             . CliStr::cl('off', '', false)
             . "\n";
     }
