@@ -1044,6 +1044,12 @@ final class Expectation
         return $this;
     }
 
+    public function dd(): void
+    {
+        /** @phpstan-ignore-next-line */
+        __dump($this->expectValue);
+    }
+
     public function json(): self
     {
         throw new Exception('// TODO');
