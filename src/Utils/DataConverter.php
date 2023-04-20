@@ -90,7 +90,7 @@ final class DataConverter
         $methodLine .= "\n";
 
         $params = [];
-        if (count($v['args']) > 0) {
+        if (isset($v['args']) && count($v['args']) > 0) {
             $params[] = CliStr::cl('Y', '    Arguments passed    ');
             foreach ($v['args'] as $param) {
                 $params[] = CliStr::cl('y', '❯ ') . CliStr::cl('c', print_r($param, true));
