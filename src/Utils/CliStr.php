@@ -91,11 +91,13 @@ final class CliStr
             return $str;
         }
 
-        return str_replace(
+        $str = str_replace(
             self::$rootPath,
             '',
             $str
         );
+
+        return ltrim($str, DIRECTORY_SEPARATOR);
     }
 
     public static function clear(): void
