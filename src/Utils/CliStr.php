@@ -87,8 +87,12 @@ final class CliStr
 
     public static function trimPath(string $str): string
     {
+        if (empty(self::$rootPath)) {
+            return $str;
+        }
+
         return str_replace(
-            rtrim(self::$rootPath, DIRECTORY_SEPARATOR),
+            self::$rootPath,
             '',
             $str
         );
