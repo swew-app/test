@@ -43,7 +43,6 @@
             "dev-master": "1.x-dev"
         }
     },
-    "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
         "php": ">=8.1",
