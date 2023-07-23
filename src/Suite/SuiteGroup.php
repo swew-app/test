@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Swew\Test\Suite;
 
 use Closure;
+use Swew\Test\Utils\CliStr;
 
 final class SuiteGroup
 {
@@ -62,6 +63,9 @@ final class SuiteGroup
 
         $this->callHook(SuiteHook::BeforeAll);
 
+        $progressbar = CliStr::vm()->output->createProgressBar(count($list));
+        $progressbar->start();
+
         /** @var Suite $suite */
         foreach ($list as $suite) {
             if (!is_null($filterSuiteByMsg)) {
@@ -79,7 +83,10 @@ final class SuiteGroup
             $this->callHook(SuiteHook::AfterEach);
 
             $setCurrentSuite(null);
+            $progressbar->increment();
         }
+
+        $progressbar->finish();
 
         $this->callHook(SuiteHook::AfterAll);
     }

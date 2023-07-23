@@ -15,10 +15,17 @@ final class DataConverter
 
     public static function getMessage(LogData $item, bool $isError = false): string
     {
-        $msg = str_pad($item->message, 55, ' ');
+        $width = CliStr::vm()->width() - 24;
+
+        if (strlen($item->message) > $width - 4) {
+            $msg = str_pad(mb_substr( $item->message, 0, $width - 3) . '<gray>...</>', $width, ' ');
+        } else {
+            $msg = str_pad($item->message, $width, ' ');
+        }
+
 
         if ($isError) {
-            return CliStr::cl('red', $msg);
+            return "<red>$msg</>";
         }
 
         return $msg;
@@ -28,10 +35,10 @@ final class DataConverter
     public static function getIcon(LogData $item): string
     {
         return match (true) {
-            $item->isSkip => CliStr::cl('grey', '-'),
-            $item->isTodo => CliStr::cl('yellow', '!'),
-            $item->isExcepted => CliStr::cl('red', '✘'),
-            default => CliStr::cl('green', '✓'),
+            $item->isSkip => '<gray>-</>',
+            $item->isTodo => '<yellow>!</>',
+            $item->isExcepted => '<red>✘</>',
+            default => '<green>✓</>',
         };
     }
 
@@ -42,14 +49,18 @@ final class DataConverter
         if ($len > 1) {
             $decimals = 0;
         } else {
-            $decimals = 6;
+            $decimals = 4;
+        }
+
+        $isMs = $time < 0.001;
+
+        if ($isMs) {
+            $time = $time * 1000;
         }
 
         $val = substr(number_format($time, $decimals), 0, 8);
-        $val = str_pad($val, 8, ' ', STR_PAD_LEFT);
-        $val .= CliStr::cl('grey', ' s');
 
-        return $val;
+        return str_pad($val, 8, ' ', STR_PAD_LEFT) . ($isMs ? '<gray>ms</>' : '<gray> s</>');
     }
 
     public static function memorySize(int $size): string
@@ -57,7 +68,7 @@ final class DataConverter
         $units = array('b ', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb');
         $power = $size > 0 ? intval(log($size, 1024)) : 0;
 
-        $unit = CliStr::cl('grey', $units[$power]);
+        $unit = '<gray>' . $units[$power] . '</>';
         $val = number_format(
             $size / pow(1024, $power),
             1,
@@ -67,13 +78,14 @@ final class DataConverter
 
         $val = str_pad($val, 7, ' ', STR_PAD_LEFT);
 
-        return "$val $unit";
+        return "$val$unit";
     }
 
     public static function parseTraceItem(array $v): string
     {
-        $fileLine = CliStr::cl('b', CliStr::trimPath($v['file']), false)
-            . CliStr::cl('w', ':' . $v['line'], false);
+        $fileLine = CliStr::vm()->trimPath($v['file']) . ':' . $v['line'];
+        $width = CliStr::vm()->width() - 2;
+        $fileLine = str_pad($fileLine, $width, ' ');
 
         $methodLine = '';
 
@@ -87,26 +99,22 @@ final class DataConverter
             $methodLine .= $v['function'] . "(...)";
         }
 
-        $methodLine .= "\n";
-
         $params = [];
         if (isset($v['args']) && count($v['args']) > 0) {
-            $params[] = CliStr::cl('Y', '    Arguments passed    ');
+            $params[] = '<bgYellow> ' . str_pad('Arguments passed', $width, ' ', STR_PAD_BOTH) . '</>';
             foreach ($v['args'] as $param) {
-                $params[] = CliStr::cl('y', '❯ ') . CliStr::cl('c', print_r($param, true));
+                $params[] = '<yellow> ❯ </>' . print_r($param, true);
             }
         }
         $params[] = '';
 
-        return CliStr::cl('R', "  " . $fileLine . "\t")
-            . "\n"
+        return "<red>❯</> $fileLine </>\n"
             . self::getContentByLine($v['file'], $v['line'])
             . "\n"
-            . CliStr::line('grey')
-            . CliStr::cl('c', $methodLine)
+            . CliStr::vm()->getLine()
+            . $methodLine
             . implode("\n", $params)
-            . CliStr::cl('off', '', false)
-            . "\n";
+            . "</>";
     }
 
 
@@ -117,13 +125,13 @@ final class DataConverter
 
         $content = file_get_contents($filePath);
         $lines = explode("\n", $content);
-        $lines = array_slice($lines, $start, $len, true);
+        $lines = array_slice($lines, $start, $len - 3, true);
 
         foreach ($lines as $i => &$v) {
             ++$start;
-            $v = CliStr::cl('grey', str_pad("$start:", 3, ' ', STR_PAD_LEFT))
+            $v = str_pad("<bgGray>$start:</>", 3, ' ', STR_PAD_LEFT)
                 . ' '
-                . ($start === $line ? CliStr::cl('r', $v) : $v);
+                . ($start === $line ? "<red>$v</>" : $v);
         }
 
         return implode("\n", $lines);

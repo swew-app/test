@@ -4,8 +4,76 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "16596989143b372d75553886b9bcc098",
+    "content-hash": "8cc13153bc466a2256ff942cf78cdd1e",
     "packages": [
+        {
+            "name": "swew/cli",
+            "version": "v1.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/swew-app/cli.git",
+                "reference": "991cd76d0eb9cf015db54cfe085bbc246205b13c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/swew-app/cli/zipball/991cd76d0eb9cf015db54cfe085bbc246205b13c",
+                "reference": "991cd76d0eb9cf015db54cfe085bbc246205b13c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "laravel/pint": "v1.9.0",
+                "phpstan/phpstan": "^1.10.14",
+                "psalm/phar": "^5.9.0",
+                "swew/dd": "v1.3.0",
+                "swew/test": "v1.3.1"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Functions/Functions.php"
+                ],
+                "psr-4": {
+                    "Swew\\Cli\\": "src/"
+                },
+                "exclude-from-classmap": [
+                    "spec",
+                    "/Tests/",
+                    "/test/",
+                    "/tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "AVIL13",
+                    "email": "avil@swew.app"
+                }
+            ],
+            "description": "SWEW/CLI: A PHP package for streamlined command line interface (CLI) development, providing an intuitive API for creating custom commands, handling input/output, and executing command logic effortlessly. Simplify your CLI application development with rapid development.",
+            "keywords": [
+                "cli",
+                "command-line",
+                "console",
+                "formatting",
+                "input",
+                "output",
+                "program",
+                "prompt",
+                "terminal",
+                "utility"
+            ],
+            "support": {
+                "issues": "https://github.com/swew-app/cli/issues",
+                "source": "https://github.com/swew-app/cli/tree/v1.1.5"
+            },
+            "time": "2023-07-22T22:47:42+00:00"
+        },
         {
             "name": "swew/dd",
             "version": "v1.3.0",
@@ -113,16 +181,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.15",
+            "version": "1.10.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "762c4dac4da6f8756eebb80e528c3a47855da9bd"
+                "reference": "5d660cbb7e1b89253a47147ae44044f49832351f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/762c4dac4da6f8756eebb80e528c3a47855da9bd",
-                "reference": "762c4dac4da6f8756eebb80e528c3a47855da9bd",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/5d660cbb7e1b89253a47147ae44044f49832351f",
+                "reference": "5d660cbb7e1b89253a47147ae44044f49832351f",
                 "shasum": ""
             },
             "require": {
@@ -171,7 +239,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-05-09T15:28:01+00:00"
+            "time": "2023-07-19T12:44:37+00:00"
         },
         {
             "name": "psalm/phar",
@@ -210,7 +278,7 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,

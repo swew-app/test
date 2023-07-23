@@ -73,12 +73,12 @@ final class Suite
     public function stopLogData(): LogData
     {
         if (is_null($this->logData)) {
-            throw new \Exception('Empty LogData');
+            throw new \LogicException('Empty LogData');
         }
 
         $log = $this->logData->stop(memory_get_usage());
 
-        CliStr::write(DataConverter::getIcon($log));
+//        CliStr::vm()->write(DataConverter::getIcon($log));
 
         return  $log;
     }

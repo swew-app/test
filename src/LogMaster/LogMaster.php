@@ -19,12 +19,13 @@ final class LogMaster
 
     public function __construct(
         private readonly LogState $logState
-    ) {
+    )
+    {
         if (!empty($this->logState)) {
             $this->config = (array)ConfigMaster::getConfig('log');
 
-            CliStr::withColor($this->config['color']);
-            CliStr::setRootPath($this->logState->getRootPath());
+            CliStr::vm()->withColor($this->config['color']);
+            CliStr::vm()->setRootPath($this->logState->getRootPath());
         }
     }
 
@@ -32,8 +33,8 @@ final class LogMaster
     {
         $list = $this->logState->getResults();
 
-        $results = array_filter($list, fn ($r) => $r->isExcepted === false);
-        $results += array_filter($list, fn ($r) => $r->isExcepted === true);
+        $results = array_filter($list, fn($r) => $r->isExcepted === false);
+        $results += array_filter($list, fn($r) => $r->isExcepted === true);
 
         $allTests = $this->logState->getTestsCount();
         $hasOnly = $this->logState->hasOnlyTests();
@@ -44,22 +45,20 @@ final class LogMaster
         $hasExcepted = false;
         $maxMemory = memory_get_peak_usage();
 
-        CliStr::write("\n");
+        CliStr::vm()->output->newLine();
 
         if ($this->config['short'] === false) {
-            CliStr::write(
-                [
-                    CliStr::line('grey', true, '-')
-                ]
+            CliStr::vm()->output->writeLn(
+                CliStr::vm()->getLine(), '<gray>%s</>'
             );
         }
 
         foreach ($results as $r) {
             if ($r->testFilePath !== $this->testFilePath) {
                 $this->testFilePath = $r->testFilePath;
-                $filePath = CliStr::trimPath($r->testFilePath) . "\n";
+                $filePath = CliStr::vm()->trimPath($r->testFilePath);
 
-                CliStr::write(CliStr::cl('cyan', $filePath));
+                CliStr::vm()->output->writeLn($filePath, '<cyan>%s</>');
             }
 
             if ($r->isExcepted) {
@@ -96,58 +95,57 @@ final class LogMaster
         $skippedStr = str_pad("$skipped", 3, ' ', STR_PAD_LEFT);
         $todoStr = str_pad("$todo", 3, ' ', STR_PAD_LEFT);
 
-        $passedStr = CliStr::cl($passedColor, $passedStr);
-        $exceptedStr = CliStr::cl($exceptedColor, $exceptedStr);
-        $skippedStr = CliStr::cl($skippedColor, $skippedStr);
-        $todoStr = CliStr::cl($todoColor, $todoStr);
+        $passedStr = "<$passedColor> $passedStr</>";
+        $exceptedStr = "<$exceptedColor> $exceptedStr</>";
+        $skippedStr = "<$skippedColor> $skippedStr</>";
+        $todoStr = "<$todoColor> $todoStr</>";
 
         if ($hasOnly) {
-            $passedStr .= ' | Tests are filtered by ' . CliStr::cl('cyan', '->only()');
+            $passedStr .= ' | Tests are filtered by <cyan>->only()</>';
         }
 
         // Log Text
         $lines = [""];
-        $lines[] = CliStr::line('grey', true, '-');
+        $lines[] = CliStr::vm()->getLine();
 
         // Filtering by file pattern
-        $filePattern = CliArgs::getGlobMaskPattern('file');
+        $filePattern = CliArgs::getGlobMaskPattern('filter`');
 
         if (!is_null($filePattern)) {
-            $lines[] = CliStr::cl('cyan', 'Filtered by file pattern (--file):');
-            $lines[] = ' "' . CliStr::cl('yellow', $filePattern) . '"';
+            $lines[] = '<cyan>Filtered by file pattern (--file):</>';
+            $lines[] = " \"<yellow>$filePattern</>\"";
             $lines[] = '';
         }
 
 
         // $filterSuiteByMsg
         if (!is_null($this->logState->getFilterSuiteByMsg())) {
-            $lines[] = CliStr::cl('cyan', 'Filtered by suite pattern (--suite):');
-            $lines[] = ' "' . CliStr::cl('yellow', $this->logState->getFilterSuiteByMsg()) . '"';
-            $lines[] = '';
+            $lines[] = '<cyan>Filtered by suite pattern (--suite):</>';
+            $lines[] = sprintf("<yellow>%s->getFilterSuiteByMsg() </>\"\n", $this->logState);
         }
 
         $lines[] = "  Tests:";
-        $lines[] = CliStr::cl('grey', '   - All suite:') . $allTests;
-        $lines[] = CliStr::cl('grey', '   - Passed:   ') . $passedStr;
+        $lines[] = "<gray>   - All suite:</> $allTests";
+        $lines[] = "<gray>   - Passed:  </> $passedStr";
 
         if ($excepted) {
-            $lines[] = CliStr::cl('grey', '   - Excepted: ') . $exceptedStr;
+            $lines[] = "<gray>   - Excepted:</> $exceptedStr";
         }
 
         if ($skipped) {
-            $lines[] = CliStr::cl('grey', '   - Skipped:  ') . $skippedStr;
+            $lines[] = "<gray>   - Skipped:</> $skippedStr";
         }
 
         if ($todo) {
-            $lines[] = CliStr::cl('grey', '   - Todo:     ') . $todoStr;
+            $lines[] = "<gray>   - Todo:   </> $todoStr";
         }
 
         $lines[] = " Memory: " . DataConverter::memorySize($maxMemory);
         $lines[] = "   Time: " . DataConverter::getTime($this->logState->getTestingTime());
         $lines[] = "";
-        $lines[] = CliStr::line('grey', true, '-');
+        $lines[] = CliStr::vm()->getLine();
 
-        CliStr::write($lines);
+        CliStr::vm()->write($lines);
 
         if ($hasExcepted) {
             exit(1);
@@ -167,7 +165,7 @@ final class LogMaster
             . DataConverter::getTime($item->timeUsage)
             . "\n";
 
-        CliStr::write($line);
+        CliStr::vm()->write($line);
     }
 
     private function echoExceptedSuite(LogData $item): void
@@ -175,11 +173,11 @@ final class LogMaster
         $msg = '';
 
         if (!is_null($item->exception)) {
+
+            $fileLine = CliStr::vm()->trimPath($item->exception->getFile()) . ':' . $item->exception->getLine();
+
             $msg = $item->exception->getMessage() . "\n"
-                . CliStr::cl('RL', '   ' . CliStr::trimPath($item->exception->getFile()))
-                . CliStr::cl('grey', ':' . $item->exception->getLine())
-                . "\n"
-                . CliStr::cl('RL')
+                . CliStr::vm()->getWithPrefix($fileLine, false)
                 . "\n";
 
             $trace = $item->exception->getTrace();
@@ -208,6 +206,6 @@ final class LogMaster
             $title,
         ];
 
-        CliStr::write($lines);
+        CliStr::vm()->write($lines);
     }
 }
