@@ -36,7 +36,16 @@ final class ConfigMaster
         }
 
         $configFile = $root . DIRECTORY_SEPARATOR . 'swew.json';
-        $json = json_encode(self::$config, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES);
+        $config = [
+            'test' => self::$config,
+        ];
+
+        if (file_exists($configFile)) {
+            $json = json_decode(file_get_contents($configFile), true);
+            $config = array_merge($json, $config);
+        }
+
+        $json = json_encode($config, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES);
 
         $file = fopen($configFile, 'w') or die("Unable to open file!");
         fwrite($file, $json);
