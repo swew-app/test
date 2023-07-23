@@ -20,39 +20,27 @@ final class Diff
         }
 
         if ($s2 === '') {
-            $res[] = CliStr::cl('y', 'value:');
-            $res[] = self::prefixColor(
-                'RL',
-                $s1
-            );
-
-            return implode("\n", $res);
+            return "<yellow> value:</>\n". CliStr::vm()->getWithPrefix($s1, false);
         } // END
 
         $letters1 = str_split($s1);
         $letters2 = str_split($s2);
 
         if ($isShowTitle) {
-            $res[] = CliStr::cl('y', 'actual:');
+            $res[] = '<yellow> actual:</>';
         }
 
         $indexes = array_keys(array_diff_assoc($letters1, $letters2));
-        $res[] = self::prefixColor(
-            'RL',
-            self::highlighter($letters1, $indexes, false)
-        );
+        $res[] = self::highlighter($letters1, $indexes, false);
 
         if ($isShowTitle) {
-            $res[] = CliStr::cl('y', 'expected:');
+            $res[] = '<yellow> expected:</>';
         }
 
         $indexes = array_keys(array_diff_assoc($letters2, $letters1));
-        $res[] = self::prefixColor(
-            'GL',
-            self::highlighter($letters2, $indexes, true)
-        );
+        $res[] = self::highlighter($letters2, $indexes, true);
 
-        return implode("\n", $res);
+        return CliStr::vm()->output->format(implode("\n", $res));
     }
 
     private static function highlighter(array &$letters, array &$indexes, bool $isGood): string
@@ -62,9 +50,9 @@ final class Diff
         foreach ($letters as $i => $v) {
             if (in_array($i, $indexes)) {
                 if ($isGood) {
-                    $res[] = CliStr::cl('g', $v);
+                    $res[] = "<green>$v</>";
                 } else {
-                    $res[] = CliStr::cl('r', $v);
+                    $res[] = "<red>$v</>";
                 }
             } else {
                 $res[] = $v;
@@ -72,17 +60,6 @@ final class Diff
         }
 
         return implode('', $res);
-    }
-
-    private static function prefixColor(string $color, string $text): string
-    {
-        $lines = explode("\n", $text);
-
-        foreach ($lines as &$line) {
-            $line = CliStr::cl($color, ' ' . $line);
-        }
-
-        return implode("\n", $lines);
     }
 
     private static function valueToString(mixed $value): string

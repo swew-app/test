@@ -4,78 +4,73 @@ declare(strict_types=1);
 
 namespace Swew\Test\Utils;
 
+use Swew\Cli\Terminal\Output;
+
 final class CliStr
 {
-    private static array $colors = [
-        'off' => "\033[0m",
-        'black' => "\033[30m",
-        'b' => "\033[30m",
-        'grey' => "\033[90m",
-        'red' => "\033[31m",
-        'r' => "\033[31m",
-        'green' => "\033[32m",
-        'g' => "\033[32m",
-        'cyan' => "\033[36m",
-        'c' => "\033[36m",
-        'yellow' => "\033[33m",
-        'y' => "\033[33m",
-        'white' => "\033[37m",
-        'w' => "\033[37m",
-        'R' => "\033[30m\033[41m",
-        'Rw' => "\033[38m\033[41m",
-        'G' => "\033[30m\033[42m",
-        'Y' => "\033[30m\033[43m",
-        'B' => "\033[30m\033[44m",
-        'RL' => "\033[30m\033[41m \033[0m",
-        'GL' => "\033[30m\033[42m \033[0m",
-        'YL' => "\033[30m\033[43m \033[0m",
-        'Ur' => "\e[4m\033[31m",
-        'Ug' => "\e[4m\033[32m",
-    ];
+    public readonly Output $output;
 
-    private static bool $hasColor = true;
+    private static ?CliStr $instance = null;
 
     private function __construct()
     {
+        $this->output = new Output();
+
+        self::$instance = $this;
     }
 
-    public static function write(string|array $line): void
+    public static function vm(): self
+    {
+        if (!is_null(self::$instance)) {
+            return self::$instance;
+        }
+
+        self::$instance = new self();
+
+        return self::$instance;
+    }
+
+    private int $widthSize = 0;
+
+    public function width(): int
+    {
+        if ($this->widthSize) {
+            return $this->widthSize;
+        }
+        return $this->widthSize = $this->output->width();
+    }
+
+    public function write(string|array $line): void
     {
         if (is_array($line)) {
             $line = implode("\n", $line);
         }
 
-        echo $line;
+        $this->output->write($line);
     }
 
-    public static function withColor(bool $hasColor): void
+    public function withColor(bool $hasColor): void
     {
-        self::$hasColor = $hasColor;
+        $this->output->setAnsi($hasColor);
     }
 
-    public static function cl(string $color, string $m = '', bool $close = true): string
+    public function getWithPrefix(string $text, bool $isGood): string
     {
-        if (self::$hasColor === false) {
-            return $m;
+        $lines = explode("\n", $text);
+        $color = $isGood ? '<bgGreen> </> ' : '<bgRed> </> ';
+
+        foreach ($lines as &$line) {
+            $line = $color . $line;
         }
 
-        return self::$colors[$color] . $m . ($close ? self::$colors['off'] : '');
+        return implode("\n", $lines);
     }
 
-
-    public static function line(string $color = '', bool $nl = false, string $line = '─  '): string
+    public function getLine(): string
     {
-        $line = str_pad('', 80, $line);
+        $width = $this->width() - 2;
 
-        if ($nl) {
-            $line .= "\n";
-        }
-
-        if ($color === '') {
-            return $line;
-        }
-
-        return CliStr::cl($color, $line);
+        return '<gray> ' . str_pad('', $width, '- ') . "</>\n";
     }
 
     private static string $rootPath = '';
@@ -85,7 +80,13 @@ final class CliStr
         self::$rootPath = $rootPath;
     }
 
-    public static function trimPath(string $str): string
+    /**
+     * Trim file path to root of project
+     *
+     * @param string $str
+     * @return string
+     */
+    public function trimPath(string $str): string
     {
         if (empty(self::$rootPath)) {
             return $str;
@@ -100,18 +101,25 @@ final class CliStr
         return ltrim($str, DIRECTORY_SEPARATOR);
     }
 
-    public static function clear(): void
+    /**
+     * Clear terminal
+     *
+     * @return void
+     */
+    public function clear(): void
     {
-        if (PHP_OS_FAMILY === 'Windows') {
-            self::write("\x1B[2J\x1B[0f");
-        } else {
-            self::write("\x1B[2J\x1B[3J\x1B[H");
-        }
+        $this->output->clear();
     }
 
+    /**
+     * Remove bash color symbols from string
+     *
+     * @param string $str
+     * @return string
+     */
     public static function clearColor(string $str): string
     {
-        $patterns = '/\033\[\d+m/';
+        $patterns = "/\e?\[[\d;]+m/";
 
         return (string)preg_replace($patterns, '', $str);
     }

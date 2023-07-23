@@ -16,17 +16,21 @@ final class ExpectException extends RuntimeException implements Throwable
         mixed  $gotValue,
         string $message = '',
     ) {
-        $msg = CliStr::cl('R', str_pad('', 77, ' '));
-        $msg .= "\n";
-        $msg .= CliStr::cl('Rw', str_pad(" $message", 77, ' '));
-        $msg .= "\n";
-        $msg .= CliStr::cl('R', str_pad('', 77, ' '));
+
+        $width = CliStr::vm()->width();
+
+        $msg = '<bgRed>';
+        $msg .= str_pad('', $width, ' ') . "\n";
+        $msg .= str_pad(" $message", $width, ' ') . "\n";
+        $msg .= str_pad('', $width, ' ') . "</>";
 
         $diff = Diff::diff($expectedValue, $gotValue);
 
         if ($diff !== '') {
             $msg .= "\n" . $diff . "\n";
         }
+
+        $msg = CliStr::vm()->output->format($msg);
 
         parent::__construct($msg);
     }

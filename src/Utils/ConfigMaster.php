@@ -35,7 +35,7 @@ final class ConfigMaster
             throw new Exception("CONFIG: Can't find root dir with composer.json");
         }
 
-        $configFile = $root . DIRECTORY_SEPARATOR . 'swew-test.json';
+        $configFile = $root . DIRECTORY_SEPARATOR . 'swew.json';
         $json = json_encode(self::$config, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES);
 
         $file = fopen($configFile, 'w') or die("Unable to open file!");
@@ -71,7 +71,7 @@ final class ConfigMaster
                     continue;
                 }
 
-                return $path;
+                return $path . DIRECTORY_SEPARATOR;
             }
         }
 
@@ -118,24 +118,24 @@ final class ConfigMaster
         if (CliArgs::hasArg('config')) {
             $configFile = (string)CliArgs::val('config');
 
-
             if (!file_exists($configFile)) {
                 throw new Exception("CONFIG: Can't find config file: '$configFile'");
             }
         } else {
-            $configFile = getcwd() . DIRECTORY_SEPARATOR . 'swew-test.json';
+            $configFile = getcwd() . DIRECTORY_SEPARATOR . 'swew.json';
 
             if (!file_exists($configFile)) {
-                $configFile = self::getRootPath() . DIRECTORY_SEPARATOR . 'swew-test.json';
+                $configFile = self::getRootPath() . 'swew.json';
             }
 
             if (!file_exists($configFile)) {
-                CliStr::write(
-                    "\n"
-                    . CliStr::cl('B', '  Try creating a new config by adding the ', false)
-                    . CliStr::cl('yellow', '--init', false)
-                    . CliStr::cl('B', ' argument  ')
-                    . "\n\n"
+                CliStr::vm()->write(
+                    [
+                        '',
+                        '  <b>  Try creating a new config by adding the</>',
+                        '<yellow> --init</>',
+                        ''
+                    ]
                 );
 
                 throw new Exception("CONFIG: Can't find config file: '$configFile'");
@@ -149,6 +149,10 @@ final class ConfigMaster
         }
 
         $config = json_decode($json, true);
+
+        if (isset($config['test'])) {
+            $config = $config['test'];
+        }
 
         self::checkConfigValidation($config);
 

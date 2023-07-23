@@ -30,7 +30,7 @@ composer require --dev swew/test
 composer exec t -- --init
 ```
 
-Next to the `composer.json` file, a config file will be created for tests - `swew-test.json`.
+Next to the `composer.json` file, a config file will be created for tests - `swew.json`.
 
 Now you can start writing tests.
 

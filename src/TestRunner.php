@@ -60,7 +60,7 @@ final class TestRunner
             'init' => [
                 'desc' => 'Create a new config file',
             ],
-            'file,f' => [
+            'filter,f' => [
                 'desc' => 'Filter files',
             ],
             'config,c' => [
@@ -81,14 +81,14 @@ final class TestRunner
     public static function cliPreload(): void
     {
         if (CliArgs::hasArg('help')) {
-            CliStr::write(CliArgs::getHelp());
+            CliStr::vm()->write(CliArgs::getHelp());
 
             exit(0);
         }
 
         if (CliArgs::hasArg('init')) {
             $configFile = ConfigMaster::createConfigFile();
-            CliStr::write([
+            CliStr::vm()->write([
                 CliStr::cl('cyan', 'Created new config file:'),
                 ' ' . $configFile,
                 ''
@@ -102,7 +102,7 @@ final class TestRunner
     {
         if (CliArgs::hasArg('no-color')) {
             ConfigMaster::setConfig('log.color', false);
-            CliStr::withColor(false);
+            CliStr::vm()->withColor(false);
         }
 
         if (CliArgs::hasArg('short')) {
@@ -250,7 +250,7 @@ final class TestRunner
             return;
         }
 
-        CliStr::clear();
+        CliStr::vm()->clear();
     }
 
     private static function showLogo(): void
@@ -260,16 +260,16 @@ final class TestRunner
         }
 
         $logo = [
-            '',
+            '<green>',
             '       __   _       ____  _',
             '      ( (` \ \    /| |_  \ \    /',
             '      _)_)  \_\/\/ |_|__  \_\/\/',
             '            .-. .-. .-. .-.',
             '             |  |-  `-.  |',
             '             \'  `-\' `-\'  \'',
-            '',
+            '</>',
         ];
 
-        CliStr::write($logo);
+        CliStr::vm()->write($logo);
     }
 }
