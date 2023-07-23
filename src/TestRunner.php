@@ -259,16 +259,25 @@ final class TestRunner
             return;
         }
 
+        $version = \Composer\InstalledVersions::getVersion('swew/test');
+
         $logo = [
             '<green>',
-            '       __   _       ____  _',
-            '      ( (` \ \    /| |_  \ \    /',
-            '      _)_)  \_\/\/ |_|__  \_\/\/',
-            '            .-. .-. .-. .-.',
-            '             |  |-  `-.  |',
-            '             \'  `-\' `-\'  \'',
+            ' __   _       ____  _      ',
+            '( (` \ \    /| |_  \ \    /',
+            '_)_)  \_\/\/ |_|__  \_\/\/ ',
+            '      .-. .-. .-. .-.      ',
+            '       |  |-  `-.  |       ',
+            '     \'  `-\' `-\'  \'     ',
+            $version,
             '</>',
         ];
+
+        $width = CliStr::vm()->width();
+
+        foreach ($logo as &$v) {
+            $v = str_pad($v, $width, ' ', STR_PAD_BOTH);
+        }
 
         CliStr::vm()->write($logo);
     }

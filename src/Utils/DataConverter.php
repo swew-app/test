@@ -60,7 +60,7 @@ final class DataConverter
 
         $val = substr(number_format($time, $decimals), 0, 8);
 
-        return str_pad($val, 8, ' ', STR_PAD_LEFT) . ($isMs ? '<gray>ms</>' : '<gray> s</>');
+        return str_pad($val, 8, ' ', STR_PAD_LEFT) . ($isMs ? '<gray>ms</>' : '<gray>s</>');
     }
 
     public static function memorySize(int $size): string

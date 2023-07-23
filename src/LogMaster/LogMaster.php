@@ -140,8 +140,8 @@ final class LogMaster
             $lines[] = "<gray>   - Todo:   </> $todoStr";
         }
 
-        $lines[] = " Memory: " . DataConverter::memorySize($maxMemory);
-        $lines[] = "   Time: " . DataConverter::getTime($this->logState->getTestingTime());
+        $lines[] = " Memory:  " . DataConverter::memorySize($maxMemory);
+        $lines[] = "   Time:  " . DataConverter::getTime($this->logState->getTestingTime());
         $lines[] = "";
         $lines[] = CliStr::vm()->getLine();
 
