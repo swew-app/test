@@ -89,7 +89,7 @@ final class TestRunner
         if (CliArgs::hasArg('init')) {
             $configFile = ConfigMaster::createConfigFile();
             CliStr::vm()->write([
-                CliStr::cl('cyan', 'Created new config file:'),
+                '<cyan>Created new config file:</>',
                 ' ' . $configFile,
                 ''
             ]);
