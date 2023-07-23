@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Swew\Test\Utils\CliArgs;
 use Swew\Test\Utils\CliStr;
+use Swew\Test\Utils\FileSearcher;
 
 it('CLI: parse args', function () {
     $args = ['path/to/file.php', '-f', 'spec.php', '--no-color'];
@@ -116,6 +117,34 @@ it('CLI: hasArgs,hasCommand,getCommands', function () {
     expect(CliArgs::getCommands())->toBe(['file.spec.php']);
 });
 
+it('CLI: Filter - FileSearcher "filtered"', function () {
+    $paths = FileSearcher::makeSubPathPatterns(['**.spec.php']);
+
+    $list = FileSearcher::getTestFilePaths(
+        $paths,
+        'tests/example'
+    );
+
+    expect($list)->toBe(['stub-tests/example.spec.php']);
+});
+
+it('CLI: Filter - FileSearcher "NOT filtered"', function () {
+    $paths = FileSearcher::makeSubPathPatterns(['**.spec.php']);
+
+    $list = FileSearcher::getTestFilePaths(
+        $paths,
+    );
+
+    expect($list)->toBe([
+        'stub-tests/example.spec.php',
+        'stub-tests/expectations.spec.php',
+        'stub-tests/extends.spec.php',
+        'stub-tests/Cli/cli-args.spec.php',
+        'stub-tests/Cli/diff.spec.php',
+    ]);
+});
+
+/*
 
 it('CLI: getFilePattern 1', function () {
     $args = ['path/to/file.php', 'file.spec.php'];
@@ -173,3 +202,4 @@ it('CLI: Suite Pattern', function () {
 
     expect(CliArgs::getGlobMaskPattern('suite'))->toBe('**suite.spec.php*');
 });
+// */

@@ -37,7 +37,7 @@ final class CliStr
         if ($this->widthSize) {
             return $this->widthSize;
         }
-        return $this->widthSize = $this->output->width();
+        return $this->widthSize = max($this->output->width() - 2, 60);
     }
 
     public function write(string|array $line): void

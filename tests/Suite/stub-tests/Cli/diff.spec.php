@@ -32,7 +32,7 @@ it('CLI: Diff::diff Arr==', function () {
     expect($res)->toBe($exp);
 });
 
-it('CLI: Diff::diff Arr!= Lorem dollar ifpslsda kla kilo laoa', function () {
+it('CLI: Diff::diff Arr!=', function () {
     $str1 = ["h1", "h2", "h3", "h4", "h5"];
     $str2 = ["h3", "h2", "h1", "h4", "h5"];
 

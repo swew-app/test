@@ -109,19 +109,15 @@ final class LogMaster
         $lines[] = CliStr::vm()->getLine();
 
         // Filtering by file pattern
-        $filePattern = CliArgs::getGlobMaskPattern('filter`');
+        $filePattern = CliArgs::val('filter');
 
-        if (!is_null($filePattern)) {
-            $lines[] = '<cyan>Filtered by file pattern (--file):</>';
-            $lines[] = " \"<yellow>$filePattern</>\"";
+        if ($filePattern) {
+            $lines[] = "<cyan>Filtered by file pattern (--file): <yellow>$filePattern</>";
             $lines[] = '';
         }
 
-
-        // $filterSuiteByMsg
         if (!is_null($this->logState->getFilterSuiteByMsg())) {
-            $lines[] = '<cyan>Filtered by suite pattern (--suite):</>';
-            $lines[] = sprintf("<yellow>%s->getFilterSuiteByMsg() </>\"\n", $this->logState);
+            $lines[] = "<cyan>Filtered by suite pattern (--suite):<yellow> {$this->logState->getFilterSuiteByMsg()} </>\n";
         }
 
         $lines[] = "  Tests:";

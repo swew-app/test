@@ -38,11 +38,6 @@ final class CliArgs
     public static function val(string $key): string|bool
     {
         $res = self::findArg($key);
-
-        if (is_null($res)) {
-            throw new Exception('Unknown argument');
-        }
-
         return $res ?: false;
     }
 
@@ -72,7 +67,9 @@ final class CliArgs
             if ($arg[0] === '-') {
                 $name = ltrim($arg, '-');
 
+                // Проверяем, есть ли переданный аргумент в списке опций
                 if (array_key_exists($name, self::$parsedOptions)) {
+                    // Проверяем, что искомый ключ входит в переданный аргумент
                     if (in_array($key, self::$parsedOptions[$name]['keys'])) {
                         // key is found, check the value
                         $nexIndex = intval($i) + 1;
@@ -135,20 +132,5 @@ final class CliArgs
     public static function getCommands(): array
     {
         return self::$argv;
-    }
-
-    public static function getGlobMaskPattern(string $key = ''): ?string
-    {
-        if (!empty($key)) {
-            if (!is_null(self::findArg($key))) {
-                return '**' . self::val($key) . '*';
-            }
-        }
-
-        if (self::hasArgs() === false && self::hasCommand() === true) {
-            return '**' . self::getCommands()[0] . '*';
-        }
-
-        return null;
     }
 }

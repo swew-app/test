@@ -12,6 +12,7 @@ use Swew\Test\Suite\SuiteHook;
 use Swew\Test\Utils\CliArgs;
 use Swew\Test\Utils\CliStr;
 use Swew\Test\Utils\ConfigMaster;
+use Swew\Test\Utils\FileSearcher;
 
 final class TestRunner
 {
@@ -31,9 +32,9 @@ final class TestRunner
 
         self::cliUpdateConfig();
 
-        $paths = self::makeSubPathPatterns((array) ConfigMaster::getConfig('paths'));
+        $paths = FileSearcher::makeSubPathPatterns((array) ConfigMaster::getConfig('paths'));
 
-        $testFiles = self::loadTestFilePaths($paths);
+        $testFiles = FileSearcher::getTestFilePaths($paths);
 
         self::$suiteGroupList = [];
 
@@ -82,7 +83,6 @@ final class TestRunner
     {
         if (CliArgs::hasArg('help')) {
             CliStr::vm()->write(CliArgs::getHelp());
-
             exit(0);
         }
 
@@ -107,12 +107,6 @@ final class TestRunner
 
         if (CliArgs::hasArg('short')) {
             ConfigMaster::setConfig('log.short', true);
-        }
-
-        $filePattern = CliArgs::getGlobMaskPattern('file');
-
-        if (!is_null($filePattern)) {
-            ConfigMaster::setConfig('paths', [$filePattern]);
         }
     }
 
@@ -198,41 +192,6 @@ final class TestRunner
     public static function getCurrentSuite(): Suite|null
     {
         return self::$currentSuite;
-    }
-
-    private static function makeSubPathPatterns(array $paths): array
-    {
-        $added = [];
-
-        foreach ($paths as $path) {
-            if (str_contains($path, '**')) {
-                $added[] = str_replace('**', '', $path);
-                $added[] = str_replace('**', '*', $path);
-                $added[] = str_replace('**', '*/*', $path);
-                $added[] = str_replace('**', '*/*/*', $path);
-                $added[] = str_replace('**', '*/*/*/*', $path);
-                $added[] = str_replace('**', '*/*/*/*/*', $path);
-                $added[] = str_replace('**', '*/*/*/*/*/*', $path);
-            }
-        }
-
-        return array_merge($paths, $added);
-    }
-
-    private static function loadTestFilePaths(array $paths): array
-    {
-        $files = [];
-
-        foreach ($paths as $path) {
-            $files = array_merge($files, glob($path, GLOB_ERR));
-        }
-
-        // filter vendor
-        $files = array_filter($files, function (string $path) {
-            return !str_contains($path, 'vendor');
-        });
-
-        return array_unique($files);
     }
 
     private static function loadTestFile(string $file): void
