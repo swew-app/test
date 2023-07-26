@@ -191,7 +191,9 @@ final class LogMaster
                 $msg .= DataConverter::parseTraceItem($t);
             }
 
-            $msg .= $item->exception->getMessage();
+            $errMsg = str_pad($item->exception->getMessage(), CliStr::vm()->width() -1, ' ');
+
+            $msg .= "\n<bgRed> $errMsg </>\n";
         }
 
         $suitTitle = ' ' . DataConverter::getIcon($item) . ' ' . DataConverter::getMessage($item, true);
