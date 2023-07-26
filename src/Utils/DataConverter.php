@@ -117,12 +117,13 @@ final class DataConverter
 
         $params = [];
         if (isset($v['args']) && count($v['args']) > 0) {
-            $params[] = '<bgYellow> ' . str_pad('Arguments passed', $width, ' ', STR_PAD_BOTH) . '</>';
+            $params[] = '<bgPurple> ' . str_pad('Passed arguments', $width, ' ', STR_PAD_BOTH) . '</>';
             foreach ($v['args'] as $param) {
-                $params[] = '<yellow> ❯ </>' . print_r($param, true);
+                $params[] = '<bgPurple> </><purple> ❯ </>' . print_r($param, true);
             }
+            $params[] = '<bgPurple> </>';
+            $params[] = '';
         }
-        $params[] = '';
 
         return "\n<red>❯</> $fileLine </>\n"
             . self::getContentByLine($v['file'], $v['line'])
@@ -133,7 +134,7 @@ final class DataConverter
     }
 
 
-    private static function getContentByLine(string $filePath, int $line = 0): string
+    private static function getContentByLine(string $filePath, int $line): string
     {
         $len = 8;
         $start = max($line - ($len / 2), 0);
@@ -144,9 +145,8 @@ final class DataConverter
 
         foreach ($lines as $i => &$v) {
             ++$start;
-            $v = str_pad("<bgGray>$start:</>", 3, ' ', STR_PAD_LEFT)
-                . ' '
-                . ($start === $line ? "<red>$v</>" : $v);
+            $bgNum = $start === $line ? '<bgRed>' : '<bgGray>';
+            $v = "{$bgNum}{$start}:</> " . ($start === $line ? "<red>$v</>" : $v);
         }
 
         return implode("\n", $lines);

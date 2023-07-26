@@ -254,6 +254,9 @@ final class TestRunner
 
     private static function customGlobalErrorHandler($e): void
     {
+        if (! ($e instanceof \Error || $e instanceof \Exception)) {
+            $e = new \Exception(strval($e));
+        }
         $msg = DataConverter::getParsedException($e, '[ Error outside of tests ]');
 
         CliStr::vm()->write($msg);
