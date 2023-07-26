@@ -19,10 +19,10 @@ final class LogMaster
 
     public function __construct(
         private readonly LogState $logState
-    )
-    {
+    ) {
+        $this->config = (array)ConfigMaster::getConfig('log');
+
         if (!empty($this->logState)) {
-            $this->config = (array)ConfigMaster::getConfig('log');
 
             CliStr::vm()->withColor($this->config['color']);
             CliStr::vm()->setRootPath($this->logState->getRootPath());
@@ -33,8 +33,8 @@ final class LogMaster
     {
         $list = $this->logState->getResults();
 
-        $results = array_filter($list, fn($r) => $r->isExcepted === false);
-        $results += array_filter($list, fn($r) => $r->isExcepted === true);
+        $results = array_filter($list, fn ($r) => $r->isExcepted === false);
+        $results += array_filter($list, fn ($r) => $r->isExcepted === true);
 
         $allTests = $this->logState->getTestsCount();
         $hasOnly = $this->logState->hasOnlyTests();
@@ -49,7 +49,8 @@ final class LogMaster
 
         if ($this->config['short'] === false) {
             CliStr::vm()->output->writeLn(
-                CliStr::vm()->getLine(), '<gray>%s</>'
+                CliStr::vm()->getLine(),
+                '<gray>%s</>'
             );
         }
 
@@ -65,7 +66,7 @@ final class LogMaster
                 ++$excepted;
                 $hasExcepted = true;
 
-                $this->echoExceptedSuite($r);
+                $this->echoExceptedSuite($r, $excepted);
             } else {
                 $this->echoSuite($r);
 
@@ -125,7 +126,7 @@ final class LogMaster
         $lines[] = "<gray>   - Passed:  </> $passedStr";
 
         if ($excepted) {
-            $lines[] = "<gray>   - Excepted:</> $exceptedStr";
+            $lines[] = "<gray>   - Excepted:</>$exceptedStr";
         }
 
         if ($skipped) {
@@ -136,8 +137,8 @@ final class LogMaster
             $lines[] = "<gray>   - Todo:   </> $todoStr";
         }
 
-        $lines[] = " Memory:  " . DataConverter::memorySize($maxMemory);
-        $lines[] = "   Time:  " . DataConverter::getTime($this->logState->getTestingTime());
+        $lines[] = "  Memory:  " . DataConverter::memorySize($maxMemory);
+        $lines[] = "    Time:  " . DataConverter::getTime($this->logState->getTestingTime());
         $lines[] = "";
         $lines[] = CliStr::vm()->getLine();
 
@@ -164,17 +165,15 @@ final class LogMaster
         CliStr::vm()->write($line);
     }
 
-    private function echoExceptedSuite(LogData $item): void
+    private function echoExceptedSuite(LogData $item, int $exceptNumber = 0): void
     {
         $msg = '';
 
         if (!is_null($item->exception)) {
 
-            $fileLine = CliStr::vm()->trimPath($item->exception->getFile()) . ':' . $item->exception->getLine();
+            $lineMsg = $exceptNumber ? "[$exceptNumber]" : '';
 
-            $msg = $item->exception->getMessage() . "\n"
-                . CliStr::vm()->getWithPrefix($fileLine, false)
-                . "\n";
+            $msg = "\n\n" . CliStr::vm()->getLine($lineMsg, '<red>');
 
             $trace = $item->exception->getTrace();
 
@@ -195,11 +194,11 @@ final class LogMaster
             $msg .= $item->exception->getMessage();
         }
 
-        $title = ' ' . DataConverter::getIcon($item) . ' ' . DataConverter::getMessage($item, true);
+        $suitTitle = ' ' . DataConverter::getIcon($item) . ' ' . DataConverter::getMessage($item, true);
 
         $lines = [
             ($msg ?: $item->exception),
-            $title,
+            $suitTitle,
         ];
 
         CliStr::vm()->write($lines);

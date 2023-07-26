@@ -19,10 +19,7 @@ final class ExpectException extends RuntimeException implements Throwable
 
         $width = CliStr::vm()->width();
 
-        $msg = '<bgRed>';
-        $msg .= str_pad('', $width, ' ') . "\n";
-        $msg .= str_pad(" $message", $width, ' ') . "\n";
-        $msg .= str_pad('', $width, ' ') . "</>";
+        $msg = "\n<bgRed>" .str_pad(" $message ", $width, ' ', STR_PAD_BOTH) . "</>";
 
         $diff = Diff::diff($expectedValue, $gotValue);
 

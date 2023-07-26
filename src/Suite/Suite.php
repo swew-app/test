@@ -78,7 +78,7 @@ final class Suite
 
         $log = $this->logData->stop(memory_get_usage());
 
-//        CliStr::vm()->write(DataConverter::getIcon($log));
+        //        CliStr::vm()->write(DataConverter::getIcon($log));
 
         return  $log;
     }

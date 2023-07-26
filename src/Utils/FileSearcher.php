@@ -6,7 +6,6 @@ namespace Swew\Test\Utils;
 
 class FileSearcher
 {
-
     public static function makeSubPathPatterns(array $paths): array
     {
         $added = [];

@@ -220,6 +220,8 @@ final class TestRunner
 
         $version = \Composer\InstalledVersions::getVersion('swew/test');
 
+
+        /** @var array<string> $logo */
         $logo = [
             '<green>',
             ' __   _       ____  _      ',

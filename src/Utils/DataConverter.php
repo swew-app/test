@@ -18,7 +18,7 @@ final class DataConverter
         $width = CliStr::vm()->width() - 24;
 
         if (strlen($item->message) > $width - 4) {
-            $msg = str_pad(mb_substr( $item->message, 0, $width - 3) . '<gray>...</>', $width, ' ');
+            $msg = str_pad(mb_substr($item->message, 0, $width - 3) . '<gray>...</>', $width, ' ');
         } else {
             $msg = str_pad($item->message, $width, ' ');
         }
@@ -35,7 +35,7 @@ final class DataConverter
     public static function getIcon(LogData $item): string
     {
         return match (true) {
-            $item->isSkip => '<gray>-</>',
+            $item->isSkip => '<gray>￬</>',
             $item->isTodo => '<yellow>!</>',
             $item->isExcepted => '<red>✘</>',
             default => '<green>✓</>',
@@ -84,8 +84,7 @@ final class DataConverter
     public static function parseTraceItem(array $v): string
     {
         $fileLine = CliStr::vm()->trimPath($v['file']) . ':' . $v['line'];
-        $width = CliStr::vm()->width() - 2;
-        $fileLine = str_pad($fileLine, $width, ' ');
+        $width = CliStr::vm()->width();
 
         $methodLine = '';
 
@@ -108,10 +107,9 @@ final class DataConverter
         }
         $params[] = '';
 
-        return "<red>❯</> $fileLine </>\n"
+        return "\n<red>❯</> $fileLine </>\n"
             . self::getContentByLine($v['file'], $v['line'])
             . "\n"
-            . CliStr::vm()->getLine()
             . $methodLine
             . implode("\n", $params)
             . "</>";
@@ -120,7 +118,7 @@ final class DataConverter
 
     private static function getContentByLine(string $filePath, int $line = 0): string
     {
-        $len = 10;
+        $len = 8;
         $start = max($line - ($len / 2), 0);
 
         $content = file_get_contents($filePath);

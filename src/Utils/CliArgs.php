@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Swew\Test\Utils;
 
-use Swew\Test\Exceptions\Exception;
-
 final class CliArgs
 {
     private static array $argv = [];
