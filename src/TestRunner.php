@@ -33,7 +33,7 @@ final class TestRunner
 
         self::cliUpdateConfig();
 
-        $paths = FileSearcher::makeSubPathPatterns((array) ConfigMaster::getConfig('paths'));
+        $paths = FileSearcher::makeSubPathPatterns((array)ConfigMaster::getConfig('paths'));
 
         $testFiles = FileSearcher::getTestFilePaths($paths);
 
@@ -127,7 +127,7 @@ final class TestRunner
             putenv('__TEST__=true');
         }
 
-        set_error_handler(function ($e) {
+        set_error_handler(function ($eerNumber, $e) {
             self::customGlobalErrorHandler($e);
         });
 
@@ -172,7 +172,7 @@ final class TestRunner
             $suiteGroup->run(
                 $results,
                 $hasOnlyFilteredTests,
-                fn (Suite|null $suite) => TestRunner::setCurrentSuite($suite),
+                fn(Suite|null $suite) => TestRunner::setCurrentSuite($suite),
                 $filterSuiteByMsg
             );
         }
@@ -252,9 +252,9 @@ final class TestRunner
         CliStr::vm()->write($logo);
     }
 
-    private static function customGlobalErrorHandler($e): void
+    private static function customGlobalErrorHandler(\Throwable|string $e): void
     {
-        if (! ($e instanceof \Error || $e instanceof \Exception)) {
+        if (!($e instanceof \Throwable)) {
             $e = new \Exception(strval($e));
         }
         $msg = DataConverter::getParsedException($e, '[ Error outside of tests ]');

@@ -126,7 +126,7 @@ final class LogMaster
         $lines[] = "<gray>   - Passed:  </> $passedStr";
 
         if ($excepted) {
-            $lines[] = "<gray>   - Excepted:</>$exceptedStr";
+            $lines[] = "<gray>   - Excepted:</> $exceptedStr";
         }
 
         if ($skipped) {
