@@ -81,6 +81,23 @@ final class DataConverter
         return "$val$unit";
     }
 
+    public static function getParsedException(\Exception|\Error $exception, string $msg = ''): string
+    {
+        $msg = "\n\n" . CliStr::vm()->getLine($msg, '<red>');
+
+        $trace = $exception->getTrace();
+
+        $trace = array_reverse($trace);
+
+        foreach ($trace as $t) {
+            $msg .= DataConverter::parseTraceItem($t);
+        }
+
+        $msg .= "\n<bgRed> " . $exception->getMessage() ."\n</>\n\n";
+
+        return $msg;
+    }
+
     public static function parseTraceItem(array $v): string
     {
         $fileLine = CliStr::vm()->trimPath($v['file']) . ':' . $v['line'];

@@ -70,7 +70,7 @@ final class CliStr
     {
         $width = $this->width();
 
-        return $color . ' ' . str_pad($message, $width, '- ', STR_PAD_BOTH) . "</>\n";
+        return $color . ' ' . str_pad($message, $width, ' - ', STR_PAD_BOTH) . "</>\n";
     }
 
     private static string $rootPath = '';

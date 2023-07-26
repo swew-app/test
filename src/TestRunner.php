@@ -12,6 +12,7 @@ use Swew\Test\Suite\SuiteHook;
 use Swew\Test\Utils\CliArgs;
 use Swew\Test\Utils\CliStr;
 use Swew\Test\Utils\ConfigMaster;
+use Swew\Test\Utils\DataConverter;
 use Swew\Test\Utils\FileSearcher;
 
 final class TestRunner
@@ -125,6 +126,14 @@ final class TestRunner
         if (empty(getenv('__TEST__'))) {
             putenv('__TEST__=true');
         }
+
+        set_error_handler(function ($e) {
+            self::customGlobalErrorHandler($e);
+        });
+
+        set_exception_handler(function ($e) {
+            self::customGlobalErrorHandler($e);
+        });
 
         return self::runTests();
     }
@@ -241,5 +250,12 @@ final class TestRunner
         }
 
         CliStr::vm()->write($logo);
+    }
+
+    private static function customGlobalErrorHandler($e): void
+    {
+        $msg = DataConverter::getParsedException($e, '[ Error outside of tests ]');
+
+        CliStr::vm()->write($msg);
     }
 }
