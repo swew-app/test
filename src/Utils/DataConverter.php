@@ -93,14 +93,13 @@ final class DataConverter
             $msg .= DataConverter::parseTraceItem($t);
         }
 
-        $msg .= "\n<bgRed> " . $exception->getMessage() ."\n</>\n\n";
+        $msg .= "\n<bgRed> " . $exception->getMessage() . "\n</>\n\n";
 
         return $msg;
     }
 
     public static function parseTraceItem(array $v): string
     {
-        $fileLine = CliStr::vm()->trimPath($v['file']) . ':' . $v['line'];
         $width = CliStr::vm()->width();
 
         $methodLine = '';
@@ -125,11 +124,19 @@ final class DataConverter
             $params[] = '';
         }
 
-        return "\n<red>❯</> $fileLine </>\n"
-            . self::getContentByLine($v['file'], $v['line'])
-            . "\n"
+        $fileLine = '';
+        $fileContentByLine = '';
+
+        if (!empty($v['file']) && !empty($v['line'])) {
+            $fileLine = '<red>❯</> ' . CliStr::vm()->trimPath($v['file']) . ':' . $v['line'] . '</>' . PHP_EOL;
+            $fileContentByLine = self::getContentByLine($v['file'], $v['line']) . PHP_EOL;
+        }
+
+        return PHP_EOL
+            . $fileLine
+            . $fileContentByLine
             . $methodLine
-            . implode("\n", $params)
+            . implode(PHP_EOL, $params)
             . "</>";
     }
 
