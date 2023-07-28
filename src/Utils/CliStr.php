@@ -43,7 +43,7 @@ final class CliStr
     public function write(string|array $line): void
     {
         if (is_array($line)) {
-            $line = implode("\n", $line);
+            $line = implode(PHP_EOL, $line);
         }
 
         $this->output->write($line);

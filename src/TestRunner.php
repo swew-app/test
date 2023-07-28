@@ -29,7 +29,12 @@ final class TestRunner
 
         self::cliPreload();
 
-        ConfigMaster::loadConfig();
+        $loadConfigError = ConfigMaster::loadConfig();
+
+        if ($loadConfigError) {
+            CliStr::vm()->write($loadConfigError);
+            die();
+        }
 
         self::cliUpdateConfig();
 
@@ -88,12 +93,27 @@ final class TestRunner
         }
 
         if (CliArgs::hasArg('init')) {
+            $result = [];
+
             $configFile = ConfigMaster::createConfigFile();
-            CliStr::vm()->write([
-                '<cyan>Created new config file:</>',
-                ' ' . $configFile,
-                ''
-            ]);
+
+            $result[] = '<cyan>Created new config file:</>';
+            $result[] = '<bgGreen> </> <green>' . $configFile . '</>' . PHP_EOL . PHP_EOL;
+
+            $answer = CliStr::vm()->output->ask(' <yellow>Add a "test" script to composer.json to run tests?</> [Y/n]');
+            $answer = strtolower($answer) ?? 'y';
+
+            if ($answer === 'y') {
+                $isScriptAdded = ConfigMaster::addTestScriptToComposer();
+
+
+                if ($isScriptAdded) {
+                    $result[] = ' <cyan> "test" added</>';
+                    $result[] = ' <green> Now you can run the tests with the "composer test" command</>' . PHP_EOL;
+                }
+            }
+
+            CliStr::vm()->write($result);
 
             exit(0);
         }

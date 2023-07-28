@@ -35,7 +35,7 @@ final class ConfigMaster
             throw new Exception("CONFIG: Can't find root dir with composer.json");
         }
 
-        $configFile = $root . DIRECTORY_SEPARATOR . 'swew.json';
+        $configFile = $root . 'swew.json';
         $config = [
             'test' => self::$config,
         ];
@@ -52,6 +52,33 @@ final class ConfigMaster
         fclose($file);
 
         return $configFile;
+    }
+
+    public static function addTestScriptToComposer(): bool
+    {
+        $root = self::getRootPath();
+
+        if (empty($root)) {
+            throw new Exception("CONFIG: Can't find root dir with composer.json");
+        }
+
+        $composerFile = $root . 'composer.json';
+
+        if (!file_exists($composerFile)) {
+            throw new Exception("CONFIG: Can't find file '$composerFile'");
+        }
+
+        $json = json_decode(file_get_contents($composerFile), true);
+
+        if (empty($json['scripts'])) {
+            $json['scripts'] = [];
+        }
+
+        $json['scripts']['test'] = 't';
+
+        $composerContent = json_encode($json, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES);
+
+        return !!file_put_contents($composerFile, $composerContent);
     }
 
     public static function getRootPath(): string
@@ -122,13 +149,13 @@ final class ConfigMaster
         self::$config[$key] = $val;
     }
 
-    public static function loadConfig(): void
+    public static function loadConfig(): string|null
     {
         if (CliArgs::hasArg('config')) {
             $configFile = (string)CliArgs::val('config');
 
             if (!file_exists($configFile)) {
-                throw new Exception("CONFIG: Can't find config file: '$configFile'");
+                return "<bgRed> CONFIG: Can't find config file: '$configFile' </>";
             }
         } else {
             $configFile = getcwd() . DIRECTORY_SEPARATOR . 'swew.json';
@@ -138,16 +165,10 @@ final class ConfigMaster
             }
 
             if (!file_exists($configFile)) {
-                CliStr::vm()->write(
-                    [
-                        '',
-                        '  <b>  Try creating a new config by adding the</>',
-                        '<yellow> --init</>',
-                        ''
-                    ]
-                );
-
-                throw new Exception("CONFIG: Can't find config file: '$configFile'");
+                return "<bgRed> CONFIG: Can't find config file: '$configFile' </>" . PHP_EOL . PHP_EOL .
+                    '  <b>Try creating a new config by adding the</> <yellow>--init</>' . PHP_EOL . PHP_EOL .
+                    '<b>example:</>' . PHP_EOL .
+                    '  <yellow>composer exec t -- --init</>' . PHP_EOL . PHP_EOL;
             }
         }
 
@@ -193,6 +214,8 @@ final class ConfigMaster
                 self::$preloadFile = $config['preloadFile'];
             }
         }
+
+        return null;
     }
 
     private static function checkConfigValidation(array $config): void
