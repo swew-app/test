@@ -141,7 +141,7 @@ final class DataConverter
         $width = CliStr::vm()->width() - 24;
 
         if (strlen($item->message) > $width - 4) {
-            $msg = str_pad(mb_substr($item->message, 0, $width - 3) . '<gray>...</>', $width, ' ');
+            $msg = str_pad(mb_substr($item->message, 0, $width - 1) . '<gray>…</>', $width, ' ');
         } else {
             $msg = str_pad($item->message, $width, ' ');
         }
