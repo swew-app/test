@@ -4,33 +4,16 @@ declare(strict_types=1);
 
 namespace Swew\Test\Utils;
 
+use Error;
+use Exception;
 use Swew\Test\LogMaster\Log\LogData;
+use Throwable;
 
 final class DataConverter
 {
     private function __construct()
     {
     }
-
-
-    public static function getMessage(LogData $item, bool $isError = false): string
-    {
-        $width = CliStr::vm()->width() - 24;
-
-        if (strlen($item->message) > $width - 4) {
-            $msg = str_pad(mb_substr($item->message, 0, $width - 3) . '<gray>...</>', $width, ' ');
-        } else {
-            $msg = str_pad($item->message, $width, ' ');
-        }
-
-
-        if ($isError) {
-            return "<red>$msg</>";
-        }
-
-        return $msg;
-    }
-
 
     public static function getIcon(LogData $item): string
     {
@@ -81,7 +64,7 @@ final class DataConverter
         return "$val$unit";
     }
 
-    public static function getParsedException(\Exception|\Error $exception, string $msg = ''): string
+    public static function getParsedException(Exception|Error|Throwable $exception, string $msg = ''): string
     {
         $msg = "\n\n" . CliStr::vm()->getLine($msg, '<red>');
 
@@ -93,13 +76,16 @@ final class DataConverter
             $msg .= DataConverter::parseTraceItem($t);
         }
 
-        $msg .= "\n<bgRed> " . $exception->getMessage() . "\n</>\n\n";
+        $msg .= PHP_EOL . "<bgYellow> </>" . PHP_EOL;
+        $msg .= "<bgYellow> </> <bgRed> " . trim($exception->getMessage(), PHP_EOL) . "</>";
+        $msg .= PHP_EOL . "<bgYellow> </>" . PHP_EOL . PHP_EOL;
 
         return $msg;
     }
 
     public static function parseTraceItem(array $v): string
     {
+        $fileLine = CliStr::vm()->trimPath($v['file']) . ':' . $v['line'];
         $width = CliStr::vm()->width();
 
         $methodLine = '';
@@ -124,22 +110,13 @@ final class DataConverter
             $params[] = '';
         }
 
-        $fileLine = '';
-        $fileContentByLine = '';
-
-        if (!empty($v['file']) && !empty($v['line'])) {
-            $fileLine = '<red>❯</> ' . CliStr::vm()->trimPath($v['file']) . ':' . $v['line'] . '</>' . PHP_EOL;
-            $fileContentByLine = self::getContentByLine($v['file'], $v['line']) . PHP_EOL;
-        }
-
-        return PHP_EOL
-            . $fileLine
-            . $fileContentByLine
+        return PHP_EOL . "<red>❯</> $fileLine </>" . PHP_EOL
+            . self::getContentByLine($v['file'], $v['line'])
+            . PHP_EOL
             . $methodLine
             . implode(PHP_EOL, $params)
             . "</>";
     }
-
 
     private static function getContentByLine(string $filePath, int $line): string
     {
@@ -157,5 +134,23 @@ final class DataConverter
         }
 
         return implode("\n", $lines);
+    }
+
+    public static function getMessage(LogData $item, bool $isError = false): string
+    {
+        $width = CliStr::vm()->width() - 24;
+
+        if (strlen($item->message) > $width - 4) {
+            $msg = str_pad(mb_substr($item->message, 0, $width - 3) . '<gray>...</>', $width, ' ');
+        } else {
+            $msg = str_pad($item->message, $width, ' ');
+        }
+
+
+        if ($isError) {
+            return "<red>$msg</>";
+        }
+
+        return $msg;
     }
 }

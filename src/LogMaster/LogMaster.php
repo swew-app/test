@@ -155,12 +155,11 @@ final class LogMaster
             return;
         }
 
-        $line = ' '
-            . DataConverter::getIcon($item) . ' '
+        $line = DataConverter::getIcon($item) . ' '
             . DataConverter::getMessage($item)
             . DataConverter::memorySize($item->memoryUsage) . ' '
             . DataConverter::getTime($item->timeUsage)
-            . "\n";
+            . PHP_EOL;
 
         CliStr::vm()->write($line);
     }
@@ -191,12 +190,12 @@ final class LogMaster
                 $msg .= DataConverter::parseTraceItem($t);
             }
 
-            $errMsg = str_pad($item->exception->getMessage(), CliStr::vm()->width() -1, ' ');
+            $errMsg = str_pad($item->exception->getMessage(), CliStr::vm()->width() - 1, ' ');
 
             $msg .= "\n<bgRed> $errMsg </>\n";
         }
 
-        $suitTitle = ' ' . DataConverter::getIcon($item) . ' ' . DataConverter::getMessage($item, true);
+        $suitTitle = DataConverter::getIcon($item) . ' ' . DataConverter::getMessage($item, true);
 
         $lines = [
             ($msg ?: $item->exception),

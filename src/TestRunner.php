@@ -147,10 +147,6 @@ final class TestRunner
             putenv('__TEST__=true');
         }
 
-        set_error_handler(function ($eerNumber, $e) {
-            self::customGlobalErrorHandler($e);
-        });
-
         set_exception_handler(function ($e) {
             self::customGlobalErrorHandler($e);
         });
@@ -192,7 +188,7 @@ final class TestRunner
             $suiteGroup->run(
                 $results,
                 $hasOnlyFilteredTests,
-                fn(Suite|null $suite) => TestRunner::setCurrentSuite($suite),
+                fn (Suite|null $suite) => TestRunner::setCurrentSuite($suite),
                 $filterSuiteByMsg
             );
         }
@@ -272,11 +268,8 @@ final class TestRunner
         CliStr::vm()->write($logo);
     }
 
-    private static function customGlobalErrorHandler(\Throwable|string $e): void
+    private static function customGlobalErrorHandler(\Throwable $e): void
     {
-        if (!($e instanceof \Throwable)) {
-            $e = new \Exception(strval($e));
-        }
         $msg = DataConverter::getParsedException($e, '[ Error outside of tests ]');
 
         CliStr::vm()->write($msg);
