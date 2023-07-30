@@ -90,14 +90,18 @@ final class DataConverter
 
         $methodLine = '';
 
-        if (in_array('class', $v)) {
+        if (isset($v['class'])) {
             $methodLine .= $v['class'];
         }
-        if (in_array('type', $v)) {
+        if (isset($v['type'])) {
             $methodLine .= $v['type'];
         }
-        if (in_array('function', $v)) {
+        if (isset($v['function'])) {
             $methodLine .= $v['function'] . "(...)";
+        }
+
+        if (!empty($methodLine)) {
+            $methodLine = '<bgBlue> ' . str_pad($methodLine, $width, ' ') . '</>' . PHP_EOL;
         }
 
         $params = [];
@@ -111,10 +115,10 @@ final class DataConverter
         }
 
         return PHP_EOL . "<red>❯</> $fileLine </>" . PHP_EOL
-            . self::getContentByLine($v['file'], $v['line'])
-            . PHP_EOL
             . $methodLine
             . implode(PHP_EOL, $params)
+            . self::getContentByLine($v['file'], $v['line'])
+            . PHP_EOL
             . "</>";
     }
 
