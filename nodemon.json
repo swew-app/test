@@ -1,12 +1,12 @@
 {
     "ignore": ["vendor"],
     "watch": ["src", "tests"],
-    "exec": "php ./tests/Suite/RunTest.php",
-    "_exec": "php ./tests/Suite/RunTest.php -s -sf 'CLI: getFilePattern 3' -c tests/Suite/swew.json",
-    "_exec": "php ./tests/Suite/RunTest.php -f example",
-    "_exec": "php ./tests/Suite/RunTest.php -f example -sf CLI:",
-    "_exec": "php ./tests/Suite/RunTest.php -C -f spec.php",
-    "_exec": "php ./tests/Suite/RunTest.php -h",
+    "exec": "php ./tests/Suite/RunTest.php --dir .",
+    "_exec": "php ./tests/Suite/RunTest.php --dir . -s -sf 'CLI: getFilePattern 3' -c tests/Suite/swew.json",
+    "_exec": "php ./tests/Suite/RunTest.php --dir . -f example",
+    "_exec": "php ./tests/Suite/RunTest.php --dir . -f example -sf CLI:",
+    "_exec": "php ./tests/Suite/RunTest.php --dir . -C -f spec.php",
+    "_exec": "php ./tests/Suite/RunTest.php --dir . -h",
     "ext": "php,json",
     "delay": 1000
 }

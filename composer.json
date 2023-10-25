@@ -55,7 +55,7 @@
         "psalm/phar": "5.10.0"
     },
     "scripts": {
-        "test": "php ./tests/Suite/RunTest.php",
+        "test": "php ./tests/Suite/RunTest.php --dir .",
         "static": "./vendor/psalm/phar/psalm.phar --no-cache",
         "stan": "vendor/bin/phpstan analyse src --level=3",
         "code-check": "./vendor/bin/pint",

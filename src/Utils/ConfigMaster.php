@@ -81,9 +81,17 @@ final class ConfigMaster
         return !!file_put_contents($composerFile, $composerContent);
     }
 
+    // TODO: добавить аргумент --dir для указания папки
     public static function getRootPath(): string
     {
-        $dirs = explode(DIRECTORY_SEPARATOR, __DIR__);
+        $dir = __DIR__;
+        $hasDirArg =CliArgs::hasArg('dir');
+
+        if ($hasDirArg) {
+            $dir = realpath($_SERVER['PWD'] . DIRECTORY_SEPARATOR . CliArgs::val('dir'));
+        }
+
+        $dirs = explode(DIRECTORY_SEPARATOR, $dir);
 
         $i = count($dirs) + 1;
 
@@ -103,7 +111,7 @@ final class ConfigMaster
             if (file_exists($composerFile)) {
                 $json = json_decode(file_get_contents($composerFile), true);
 
-                if ($json['name'] === 'swew/test') {
+                if ($json['name'] === 'swew/test' && !$hasDirArg) {
                     continue;
                 }
 

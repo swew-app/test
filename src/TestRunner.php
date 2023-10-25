@@ -38,7 +38,10 @@ final class TestRunner
 
         self::cliUpdateConfig();
 
-        $paths = FileSearcher::makeSubPathPatterns((array)ConfigMaster::getConfig('paths'));
+        $paths = FileSearcher::glob(
+            (array)ConfigMaster::getConfig('paths'),
+            ConfigMaster::getRootPath()
+        );
 
         $testFiles = FileSearcher::getTestFilePaths($paths);
 
@@ -81,6 +84,9 @@ final class TestRunner
             ],
             'short,s' => [
                 'desc' => 'Do not show test names and statistics',
+            ],
+            'dir' => [
+                'desc' => 'Base directory to scan for the test files',
             ],
         ]);
     }

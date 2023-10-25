@@ -118,29 +118,37 @@ it('CLI: hasArgs,hasCommand,getCommands', function () {
 });
 
 it('CLI: Filter - FileSearcher "filtered"', function () {
-    $paths = FileSearcher::makeSubPathPatterns(['**.spec.php']);
+    $paths = FileSearcher::glob(['*.spec.php'], __DIR__ . '/..');
 
     $list = FileSearcher::getTestFilePaths(
         $paths,
         'tests/example'
     );
 
-    expect($list)->toBe(['stub-tests/example.spec.php']);
+    expect(count($list))->toBe(1);
+    expect(current($list))->toContain('stub-tests/example.spec.php');
 });
 
 it('CLI: Filter - FileSearcher "NOT filtered"', function () {
-    $paths = FileSearcher::makeSubPathPatterns(['**.spec.php']);
+    $paths = FileSearcher::glob(['**.spec.php'], __DIR__ . '/..');
 
     $list = FileSearcher::getTestFilePaths(
         $paths,
     );
 
+    $list = array_map(
+        fn ($filePath) => basename($filePath),
+        $list
+    );
+
+    sort($list);
+
     expect($list)->toBe([
-        'stub-tests/example.spec.php',
-        'stub-tests/expectations.spec.php',
-        'stub-tests/extends.spec.php',
-        'stub-tests/Cli/cli-args.spec.php',
-        'stub-tests/Cli/diff.spec.php',
+        'cli-args.spec.php',
+        'diff.spec.php',
+        'example.spec.php',
+        'expectations.spec.php',
+        'extends.spec.php',
     ]);
 });
 

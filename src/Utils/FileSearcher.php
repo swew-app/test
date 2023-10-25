@@ -4,27 +4,39 @@ declare(strict_types=1);
 
 namespace Swew\Test\Utils;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+
 class FileSearcher
 {
-    public static function makeSubPathPatterns(array $paths): array
+    public static function glob(array $patterns, string $directory): array
     {
-        $added = [];
-        // TODO: Заменить на поиск по файлам
+        $matchingFiles = [];
 
-        foreach ($paths as $path) {
-            if (str_contains($path, '**')) {
-                $added[] = str_replace('**', '', $path);
-                $added[] = str_replace('**', '*', $path);
-                $added[] = str_replace('**', '*/*', $path);
-                $added[] = str_replace('**', '*/*/*', $path);
-                $added[] = str_replace('**', '*/*/*/*', $path);
-                $added[] = str_replace('**', '*/*/*/*/*', $path);
-                $added[] = str_replace('**', '*/*/*/*/*/*', $path);
-            }
+        $directory = realpath($directory);
+
+        foreach ($patterns as $pattern) {
+            self::globPath($directory, $pattern, $matchingFiles);
         }
 
-        return array_merge($paths, $added);
+        return $matchingFiles;
     }
+
+    private static function globPath(string $directory, string $pattern, array &$matchingFiles): void
+    {
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directory),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isFile() && fnmatch($pattern, $file->getFilename())) {
+                $matchingFiles[] = $file->getPathname();
+            }
+        }
+    }
+
+
 
     public static function getTestFilePaths(array $pathPatterns, string $filter = ''): array
     {
