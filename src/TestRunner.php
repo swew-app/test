@@ -43,7 +43,9 @@ final class TestRunner
             ConfigMaster::getRootPath()
         );
 
-        $testFiles = FileSearcher::getTestFilePaths($paths);
+        $filter = CliArgs::val('filter') ?: '';
+
+        $testFiles = FileSearcher::getTestFilePaths($paths, $filter);
 
         self::$suiteGroupList = [];
 

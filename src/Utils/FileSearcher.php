@@ -38,7 +38,7 @@ class FileSearcher
 
 
 
-    public static function getTestFilePaths(array $pathPatterns, string $filter = ''): array
+    public static function getTestFilePaths(array $pathPatterns, string $filter): array
     {
         $files = [];
 

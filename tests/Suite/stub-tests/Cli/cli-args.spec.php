@@ -134,6 +134,7 @@ it('CLI: Filter - FileSearcher "NOT filtered"', function () {
 
     $list = FileSearcher::getTestFilePaths(
         $paths,
+        ''
     );
 
     $list = array_map(

@@ -113,7 +113,7 @@ final class LogMaster
         $filePattern = CliArgs::val('filter');
 
         if ($filePattern) {
-            $lines[] = "<cyan>Filtered by file pattern (--file): <yellow>$filePattern</>";
+            $lines[] = "<cyan>Filtered by file pattern (--filter): <yellow>$filePattern</>";
             $lines[] = '';
         }
 
