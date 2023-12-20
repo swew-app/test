@@ -13,7 +13,7 @@
     ],
     "config": {
         "platform": {
-            "php": "8.1"
+            "php": ">=8.2"
         },
         "sort-packages": true,
         "optimize-autoloader": true
@@ -44,17 +44,26 @@
         }
     },
     "prefer-stable": true,
+    "repositories": [
+        {
+            "_": "удалить ссылку после проверки",
+            "type": "path",
+            "url": "../swew-cli",
+            "canonical": true
+        }
+    ],
     "require": {
         "php": ">=8.1",
-        "swew/cli": "^1.1",
-        "swew/dd": "^1.3"
+        "swew/cli": "dev-feat/cli-for-test",
+        "swew/dd": "^1.3.1"
     },
     "require-dev": {
         "laravel/pint": "v1.10.0",
-        "phpstan/phpstan": "^1.10.15",
+        "phpstan/phpstan": "^1.10.49",
         "psalm/phar": "5.10.0"
     },
     "scripts": {
+        "xxx": "php ./src/TextMaster.php",
         "test": "php ./tests/Suite/RunTest.php --dir .",
         "static": "./vendor/psalm/phar/psalm.phar --no-cache",
         "stan": "vendor/bin/phpstan analyse src --level=3",

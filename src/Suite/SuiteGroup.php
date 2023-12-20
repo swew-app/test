@@ -19,26 +19,34 @@ final class SuiteGroup
 
     private array $suiteList = [];
 
+    public static ?SuiteGroup $currentGroupInstance = null;
+
     public function __construct(
         public readonly string $testFilePath = ''
-    ) {
-    }
-
-    public function getTestsCount(): int
+    )
     {
-        return count($this->suiteList);
+        self::$currentGroupInstance = $this;
+
+        require_once $testFilePath;
+
+        self::$currentGroupInstance = null;
     }
 
-    public function addSuite(Suite $suite): void
+    public static function addSuite(Suite $suite): void
     {
-        $this->suiteList[] = $suite;
+        self::$currentGroupInstance->suiteList[] = $suite;
     }
 
-    public function addHook(SuiteHook $hook, Closure $hookFunction): void
+    public static function addHook(SuiteHook $hook, Closure $hookFunction): void
     {
         $hookMethod = $hook->value;
 
-        $this->$hookMethod = $hookFunction;
+        self::$currentGroupInstance->$hookMethod = $hookFunction;
+    }
+
+    public function getCount(): int
+    {
+        return count($this->suiteList);
     }
 
     private function callHook(SuiteHook $hook): void
@@ -51,42 +59,25 @@ final class SuiteGroup
         }
     }
 
-    public function run(
-        array   &$results,
-        bool    $hasOnlyFilteredTests,
-        Closure $setCurrentSuite,
-        ?string $filterSuiteByMsg = null
+    public function runSuiteTests(
+        array &$results,
+        bool  $isFilteredByOnly,
+        Closure $callback
     ): void {
-        $list = $hasOnlyFilteredTests
-            ? array_filter($this->suiteList, fn ($s): bool => $s->isOnly)
-            : $this->suiteList;
+        $list = $this->getSuites($isFilteredByOnly);
 
         $this->callHook(SuiteHook::BeforeAll);
 
-        $progressbar = CliStr::vm()->output->createProgressBar(count($list));
-        $progressbar->start();
-
         /** @var Suite $suite */
         foreach ($list as $suite) {
-            if (!is_null($filterSuiteByMsg)) {
-                if (!str_contains($suite->message, $filterSuiteByMsg)) {
-                    continue;
-                }
-            }
-
-            $setCurrentSuite($suite);
-
             $this->callHook(SuiteHook::BeforeEach);
 
             $results[] = $suite->run(memory_get_usage());
 
             $this->callHook(SuiteHook::AfterEach);
 
-            $setCurrentSuite(null);
-            $progressbar->increment();
+            $callback();
         }
-
-        $progressbar->finish();
 
         $this->callHook(SuiteHook::AfterAll);
     }
@@ -99,5 +90,20 @@ final class SuiteGroup
             }
         }
         return false;
+    }
+
+    public function filterSuiteByMessage(string $messageFilter): void
+    {
+        $this->suiteList = array_filter(
+            $this->suiteList,
+            fn (Suite $suite) => str_contains($suite->message, $messageFilter)
+        );
+    }
+
+    private function getSuites(bool $isFilteredByOnly): array
+    {
+        return $isFilteredByOnly
+            ? array_filter($this->suiteList, fn($s): bool => $s->isOnly)
+            : $this->suiteList;
     }
 }

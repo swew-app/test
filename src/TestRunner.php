@@ -193,7 +193,7 @@ final class TestRunner
         foreach ($list as $suiteGroup) {
             $testsCount += $suiteGroup->getTestsCount();
 
-            $suiteGroup->run(
+            $suiteGroup->runSuiteTests(
                 $results,
                 $hasOnlyFilteredTests,
                 fn (Suite|null $suite) => TestRunner::setCurrentSuite($suite),

@@ -4,40 +4,33 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8cc13153bc466a2256ff942cf78cdd1e",
+    "content-hash": "36af95c73f753d66c1bb6e0cc71ca7ac",
     "packages": [
         {
             "name": "swew/cli",
-            "version": "v1.1.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/swew-app/cli.git",
-                "reference": "991cd76d0eb9cf015db54cfe085bbc246205b13c"
-            },
+            "version": "dev-feat/cli-for-test",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/swew-app/cli/zipball/991cd76d0eb9cf015db54cfe085bbc246205b13c",
-                "reference": "991cd76d0eb9cf015db54cfe085bbc246205b13c",
-                "shasum": ""
+                "type": "path",
+                "url": "../swew-cli",
+                "reference": "5fdbf7f7388225cc02453da3562a20c203cf34b5"
             },
             "require": {
                 "php": ">=8.1"
             },
             "require-dev": {
-                "laravel/pint": "v1.9.0",
-                "phpstan/phpstan": "^1.10.14",
-                "psalm/phar": "^5.9.0",
-                "swew/dd": "v1.3.0",
-                "swew/test": "v1.3.1"
+                "laravel/pint": "1.9.0",
+                "phpstan/phpstan": "^1.10.26",
+                "psalm/phar": "^5.13.1",
+                "swew/dd": "^1.3.0"
             },
             "type": "library",
             "autoload": {
-                "files": [
-                    "src/Functions/Functions.php"
-                ],
                 "psr-4": {
                     "Swew\\Cli\\": "src/"
                 },
+                "files": [
+                    "src/Functions/Functions.php"
+                ],
                 "exclude-from-classmap": [
                     "spec",
                     "/Tests/",
@@ -45,7 +38,30 @@
                     "/tests/"
                 ]
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "archive": {
+                "exclude": [
+                    "tests/*"
+                ]
+            },
+            "scripts": {
+                "test": [
+                    "t"
+                ],
+                "static": [
+                    "./vendor/psalm/phar/psalm.phar --no-cache"
+                ],
+                "stan": [
+                    "vendor/bin/phpstan analyse src --level=5"
+                ],
+                "code-check": [
+                    "./vendor/bin/pint"
+                ],
+                "check": [
+                    "@static",
+                    "@stan",
+                    "@code-check"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -68,24 +84,22 @@
                 "terminal",
                 "utility"
             ],
-            "support": {
-                "issues": "https://github.com/swew-app/cli/issues",
-                "source": "https://github.com/swew-app/cli/tree/v1.1.5"
-            },
-            "time": "2023-07-22T22:47:42+00:00"
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "swew/dd",
-            "version": "v1.3.0",
+            "version": "v1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swew-app/dd.git",
-                "reference": "84190be93662296d35dbfb4843714f5deabf8f26"
+                "reference": "184e62b6dcb302531bdd192e253fc692b60ef9f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swew-app/dd/zipball/84190be93662296d35dbfb4843714f5deabf8f26",
-                "reference": "84190be93662296d35dbfb4843714f5deabf8f26",
+                "url": "https://api.github.com/repos/swew-app/dd/zipball/184e62b6dcb302531bdd192e253fc692b60ef9f2",
+                "reference": "184e62b6dcb302531bdd192e253fc692b60ef9f2",
                 "shasum": ""
             },
             "type": "library",
@@ -107,9 +121,9 @@
             "description": "The simplest way to debug variables. As in Laravel.",
             "support": {
                 "issues": "https://github.com/swew-app/dd/issues",
-                "source": "https://github.com/swew-app/dd/tree/v1.3.0"
+                "source": "https://github.com/swew-app/dd/tree/v1.3.1"
             },
-            "time": "2023-03-19T15:14:34+00:00"
+            "time": "2023-07-30T13:55:18+00:00"
         }
     ],
     "packages-dev": [
@@ -181,16 +195,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.26",
+            "version": "1.10.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "5d660cbb7e1b89253a47147ae44044f49832351f"
+                "reference": "9367ba4c4f6ad53e9efb594d74a8941563caccf6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/5d660cbb7e1b89253a47147ae44044f49832351f",
-                "reference": "5d660cbb7e1b89253a47147ae44044f49832351f",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9367ba4c4f6ad53e9efb594d74a8941563caccf6",
+                "reference": "9367ba4c4f6ad53e9efb594d74a8941563caccf6",
                 "shasum": ""
             },
             "require": {
@@ -239,7 +253,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-07-19T12:44:37+00:00"
+            "time": "2023-12-12T10:05:12+00:00"
         },
         {
             "name": "psalm/phar",
@@ -279,7 +293,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "swew/cli": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Swew\Test\Expectations\Expectation;
 use Swew\Test\Suite\Suite;
+use Swew\Test\Suite\SuiteGroup;
 use Swew\Test\Suite\SuiteHook;
-use Swew\Test\TestRunner;
 
 $_exit = function (string $name): void {
     fwrite(STDERR, "The global function `{$name}()`s can't be created because of some naming collisions with another library.\n");
@@ -36,7 +36,7 @@ if (!function_exists('it')) {
 
         $suite->testFilePath = __getFilePath();
 
-        TestRunner::add($suite);
+        SuiteGroup::addSuite($suite);
 
         return $suite;
     }
@@ -53,7 +53,7 @@ if (!function_exists('xit')) {
 
         $suite->skip();
 
-        TestRunner::add($suite);
+        SuiteGroup::addSuite($suite);
 
         return $suite;
     }
@@ -70,7 +70,7 @@ if (!function_exists('fit')) {
 
         $suite->only();
 
-        TestRunner::add($suite);
+        SuiteGroup::addSuite($suite);
 
         return $suite;
     }
@@ -90,7 +90,7 @@ if (!function_exists('expect')) {
 if (!function_exists('beforeAll')) {
     function beforeAll(Closure $closure): void
     {
-        TestRunner::addHook(SuiteHook::BeforeAll, $closure);
+        SuiteGroup::addHook(SuiteHook::BeforeAll, $closure);
     }
 } else {
     $_exit('beforeAll');
@@ -99,7 +99,7 @@ if (!function_exists('beforeAll')) {
 if (!function_exists('beforeEach')) {
     function beforeEach(Closure $closure): void
     {
-        TestRunner::addHook(SuiteHook::BeforeEach, $closure);
+        SuiteGroup::addHook(SuiteHook::BeforeEach, $closure);
     }
 } else {
     $_exit('beforeEach');
@@ -108,7 +108,7 @@ if (!function_exists('beforeEach')) {
 if (!function_exists('afterEach')) {
     function afterEach(Closure $closure): void
     {
-        TestRunner::addHook(SuiteHook::AfterEach, $closure);
+        SuiteGroup::addHook(SuiteHook::AfterEach, $closure);
     }
 } else {
     $_exit('afterEach');
@@ -117,7 +117,7 @@ if (!function_exists('afterEach')) {
 if (!function_exists('afterAll')) {
     function afterAll(Closure $closure): void
     {
-        TestRunner::addHook(SuiteHook::AfterAll, $closure);
+        SuiteGroup::addHook(SuiteHook::AfterAll, $closure);
     }
 } else {
     $_exit('afterAll');
