@@ -37,7 +37,7 @@ final class CliStr
         if ($this->widthSize) {
             return $this->widthSize;
         }
-        return $this->widthSize = max($this->output->width() - 1, 60);
+        return $this->widthSize = max($this->output->width(), 60);
     }
 
     public function write(string|array $line): void
@@ -68,9 +68,9 @@ final class CliStr
 
     public function getLine(string $message = '', string $color = '<gray>'): string
     {
-        $width = $this->width();
+        $width = $this->width() - 1;
 
-        return $color . ' ' . str_pad($message, $width, ' - ', STR_PAD_BOTH) . "</>\n";
+        return $color . ' ' . str_pad($message, $width, '-', STR_PAD_BOTH) . "</>";
     }
 
     private static string $rootPath = '';

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Swew\Test\CliCommands;
 
 use LogicException;
@@ -92,6 +94,7 @@ class RunTests extends Command
         // Run tests
         /** @var SuiteGroup $suiteGroup */
         foreach ($this->suiteGroupList as $suiteGroup) {
+            // TODO: stop on bail
             $suiteGroup->runSuiteTests(
                 $results,
                 $isFilteredByOnly,

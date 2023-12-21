@@ -19,7 +19,7 @@ final class DataConverter
     {
         return match (true) {
             $item->isSkip => '<gray>￬</>',
-            $item->isTodo => '<yellow>!</>',
+            $item->isTodo => '<yellow>✎</>',
             $item->isExcepted => '<red>✘</>',
             default => '<green>✓</>',
         };
@@ -43,12 +43,25 @@ final class DataConverter
 
         $val = substr(number_format($time, $decimals), 0, 8);
 
-        return str_pad($val, 8, ' ', STR_PAD_LEFT) . ($isMs ? '<gray>ms</>' : '<gray>s</>');
+        return $val . ($isMs ? '<gray>ms</>' : '<gray>s </>');
+    }
+
+    public static function formatMicrotime(float $microtime): string {
+        $seconds = (int) $microtime; // Получаем число полных секунд
+        $microseconds = $microtime - $seconds; // Получаем дробную часть (милисекунды)
+        $minutes = (int) ($seconds / 60); // Конвертируем секунды в минуты
+        $remainingSeconds = $seconds % 60; // Определяем оставшиеся секунды после вычисления минут
+
+        // Переводим микросекунды в милисекунды и форматируем вывод
+        $formattedMicroseconds = sprintf("%03d", (int) round($microseconds * 1000));
+
+        // Форматируем вывод, добавляя нули ведущие нули для минут и секунд при необходимости
+        return sprintf("%02d:%02d.%s", $minutes, $remainingSeconds, $formattedMicroseconds);
     }
 
     public static function memorySize(int $size): string
     {
-        $units = array('b ', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb');
+        $units = array('b', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb');
         $power = $size > 0 ? intval(log($size, 1024)) : 0;
 
         $unit = '<gray>' . $units[$power] . '</>';
@@ -58,8 +71,6 @@ final class DataConverter
             '.',
             '\''
         );
-
-        $val = str_pad($val, 7, ' ', STR_PAD_LEFT);
 
         return "$val$unit";
     }
@@ -86,7 +97,7 @@ final class DataConverter
     public static function parseTraceItem(array $v): string
     {
         $fileLine = CliStr::vm()->trimPath($v['file']) . ':' . $v['line'];
-        $width = CliStr::vm()->width();
+        $width = CliStr::vm()->width() - 1;
 
         $methodLine = '';
 
@@ -134,27 +145,41 @@ final class DataConverter
         foreach ($lines as $i => &$v) {
             ++$start;
             $bgNum = $start === $line ? '<bgRed>' : '<bgGray>';
-            $v = "{$bgNum}{$start}:</> " . ($start === $line ? "<red>$v</>" : $v);
+            $v = "{$bgNum}{$start}:</> " . ($start === $line ? "<red>$v</>" : "<gray>$v</>");
         }
 
         return implode("\n", $lines);
     }
 
-    public static function getMessage(LogData $item, bool $isError = false): string
+    public static function getMessage(LogData $item): string
     {
         $width = CliStr::vm()->width() - 24;
 
-        if (strlen($item->message) > $width - 4) {
-            $msg = str_pad(mb_substr($item->message, 0, $width - 1) . '<gray>…</>', $width, ' ');
+        if (strlen($item->message) > $width) {
+            return mb_substr($item->message, 0, $width) . '<gray>…</>';
         } else {
-            $msg = str_pad($item->message, $width, ' ');
+            return $item->message;
         }
+    }
 
+    public static function getLine(LogData $item, bool $isError = false): string
+    {
+        $icon = self::getIcon($item) . ' ';
+        $msg = self::getMessage($item);
+        $delimiter = ' ';
+        $right = ' ' . self::memorySize($item->memoryUsage) . '  ' . self::getTime($item->timeUsage);
+        $width = CliStr::vm()->width();
+
+        $delimiterWidth = 2 + $width - strlen(strip_tags($icon)) - strlen(strip_tags($msg)) - strlen(strip_tags($right));
+
+        if ($delimiterWidth > 4) {
+            $delimiter = str_pad(' ', $delimiterWidth, ' .');
+        }
 
         if ($isError) {
-            return "<red>$msg</>";
+            $msg = '<red>' . $msg . '</>';
         }
 
-        return $msg;
+        return $icon . $msg . '<gray>' . $delimiter . '</>' . $right;
     }
 }

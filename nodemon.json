@@ -1,7 +1,10 @@
 {
     "ignore": ["vendor"],
     "watch": ["src", "tests"],
-    "exec": "php ./src/test-run.php --sf 'Test 1'",
+    "exec": "php ./src/test-run.php",
+    "_exec": "php ./src/test-run.php --sf 'Test 1'",
+    "_exec": "php ./src/test-run.php -f 'example.spec'",
+
     "_exec": "php ./tests/Suite/RunTest.php --dir .",
     "_exec": "php ./tests/Suite/RunTest.php --dir . -s -sf 'CLI: getFilePattern 3' -c tests/Suite/swew.json",
     "_exec": "php ./tests/Suite/RunTest.php --dir . -f example",

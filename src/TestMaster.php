@@ -11,6 +11,7 @@ use Swew\Cli\Terminal\Output;
 use Swew\Test\CliCommands\LoadConfig;
 use Swew\Test\CliCommands\RunTests;
 use Swew\Test\CliCommands\SearchFiles;
+use Swew\Test\CliCommands\ShowTestResults;
 use Swew\Test\LogMaster\Log\LogData;
 
 class TestMaster extends SwewCommander
@@ -38,10 +39,13 @@ class TestMaster extends SwewCommander
 
     public float $testingTime = 0;
 
+    public float $startAt = 0;
+
     protected array $commands = [
         LoadConfig::class,
         SearchFiles::class,
         RunTests::class,
+        ShowTestResults::class,
     ];
 
     public function __construct(
@@ -54,6 +58,8 @@ class TestMaster extends SwewCommander
         if (count($argvLocal) === 0) {
             $argvLocal = $argv;
         }
+
+        $this->startAt = microtime(true);
 
         parent::__construct($argvLocal, $output);
 
