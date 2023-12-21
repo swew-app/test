@@ -22,3 +22,6 @@ it('Test 3: skip', function () {
 })->skip();
 
 it('Test 4: todo with empty functions');
+it('Test 4: todo with empty functions', function () {
+    expect('1')->toBe(1);
+});

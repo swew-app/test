@@ -40,15 +40,6 @@ final class CliStr
         return $this->widthSize = max($this->output->width(), 60);
     }
 
-    public function write(string|array $line): void
-    {
-        if (is_array($line)) {
-            $line = implode(PHP_EOL, $line);
-        }
-
-        $this->output->write($line);
-    }
-
     public function withColor(bool $hasColor): void
     {
         $this->output->setAnsi($hasColor);
@@ -99,28 +90,5 @@ final class CliStr
         );
 
         return ltrim($str, DIRECTORY_SEPARATOR);
-    }
-
-    /**
-     * Clear terminal
-     *
-     * @return void
-     */
-    public function clear(): void
-    {
-        $this->output->clear();
-    }
-
-    /**
-     * Remove bash color symbols from string
-     *
-     * @param string $str
-     * @return string
-     */
-    public static function clearColor(string $str): string
-    {
-        $patterns = "/\e?\[[\d;]+m/";
-
-        return (string)preg_replace($patterns, '', $str);
     }
 }

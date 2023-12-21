@@ -21,6 +21,8 @@ final class SuiteGroup
 
     public static ?SuiteGroup $currentGroupInstance = null;
 
+    public static ?Suite $currentSuite = null;
+
     public function __construct(
         public readonly string $testFilePath = ''
     )
@@ -42,6 +44,11 @@ final class SuiteGroup
         $hookMethod = $hook->value;
 
         self::$currentGroupInstance->$hookMethod = $hookFunction;
+    }
+
+    public static function getCurrentSuite(): ?Suite
+    {
+        return  self::$currentSuite;
     }
 
     public function getCount(): int
@@ -70,6 +77,8 @@ final class SuiteGroup
 
         /** @var Suite $suite */
         foreach ($list as $suite) {
+            self::$currentSuite = $suite;
+
             $this->callHook(SuiteHook::BeforeEach);
 
             $results[] = $suite->run(memory_get_usage());
@@ -84,6 +93,7 @@ final class SuiteGroup
 
     public function hasOnly(): bool
     {
+        /** @var Suite $suite */
         foreach ($this->suiteList as $suite) {
             if ($suite->isOnly) {
                 return true;

@@ -1,7 +1,8 @@
 {
     "ignore": ["vendor"],
     "watch": ["src", "tests"],
-    "exec": "php ./src/test-run.php",
+    "exec": "./bin/t",
+    "_exec": "php ./src/test-run.php",
     "_exec": "php ./src/test-run.php --sf 'Test 1'",
     "_exec": "php ./src/test-run.php -f 'example.spec'",
 

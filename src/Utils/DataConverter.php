@@ -48,11 +48,11 @@ final class DataConverter
 
     public static function formatMicrotime(float $microtime): string {
         $seconds = (int) $microtime; // Получаем число полных секунд
-        $microseconds = $microtime - $seconds; // Получаем дробную часть (милисекунды)
+        $microseconds = $microtime - $seconds; // Получаем дробную часть (миллисекунды)
         $minutes = (int) ($seconds / 60); // Конвертируем секунды в минуты
         $remainingSeconds = $seconds % 60; // Определяем оставшиеся секунды после вычисления минут
 
-        // Переводим микросекунды в милисекунды и форматируем вывод
+        // Переводим микросекунды в миллисекунды и форматируем вывод
         $formattedMicroseconds = sprintf("%03d", (int) round($microseconds * 1000));
 
         // Форматируем вывод, добавляя нули ведущие нули для минут и секунд при необходимости
@@ -73,25 +73,6 @@ final class DataConverter
         );
 
         return "$val$unit";
-    }
-
-    public static function getParsedException(Exception|Error|Throwable $exception, string $msg = ''): string
-    {
-        $msg = "\n\n" . CliStr::vm()->getLine($msg, '<red>');
-
-        $trace = $exception->getTrace();
-
-        $trace = array_reverse($trace);
-
-        foreach ($trace as $t) {
-            $msg .= DataConverter::parseTraceItem($t);
-        }
-
-        $msg .= PHP_EOL . "<bgYellow> </>" . PHP_EOL;
-        $msg .= "<bgYellow> </> <bgRed> " . trim($exception->getMessage(), PHP_EOL) . "</>";
-        $msg .= PHP_EOL . "<bgYellow> </>" . PHP_EOL . PHP_EOL;
-
-        return $msg;
     }
 
     public static function parseTraceItem(array $v): string
