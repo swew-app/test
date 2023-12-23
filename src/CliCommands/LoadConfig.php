@@ -7,6 +7,7 @@ namespace Swew\Test\CliCommands;
 use LogicException;
 use Swew\Cli\Command;
 use Swew\Test\TestMaster;
+use Swew\Test\Utils\CliStr;
 
 class LoadConfig extends Command
 {
@@ -26,6 +27,10 @@ class LoadConfig extends Command
             throw new LogicException('Is not testMaster');
         }
 
+        if (!($this->output)) {
+            throw new LogicException('Empty output');
+        }
+
         // Create config if not exists
         $needCreateConfig = $this->argv('init');
         if ($needCreateConfig) {
@@ -42,8 +47,11 @@ class LoadConfig extends Command
 
         $this->updateConfig($configFile, $commander->config);
 
-        $color = !empty($commander->config['log']['color']);
-        $this->output?->setAnsi($color);
+        $color = $commander->config['log']['color'];
+        $this->output->setAnsi($color);
+
+        // Устанавливаем Output что бы был один объект для вывода
+        CliStr::vm()->setOutput($this->output);
 
         return self::SUCCESS;
     }
@@ -72,15 +80,38 @@ class LoadConfig extends Command
             $config = array_merge($json, $config);
         }
 
-        $json = json_encode($config, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES);
-
-        $file = fopen($configFile, 'w') or die("Unable to open file!");
-        fwrite($file, $json);
-        fclose($file);
+        $this->writeJsonFile($configFile, $config);
 
         $this->output?->info("File: '$configFile' created");
 
+        $this->addScriptToComposerJson();
+
         return self::SUCCESS;
+    }
+
+    private function addScriptToComposerJson(): void
+    {
+        $answer = $this->output?->askYesNo('Add script "test" to composer.json?');
+
+        if (empty($answer)) {
+            return;
+        }
+
+        $root = $this->getRootPath();
+
+        $composerFile = realpath($root . 'composer.json');
+
+        $json = json_decode(file_get_contents($composerFile), true);
+
+        if (empty($json['scripts'])) {
+            $json['scripts'] = [];
+        }
+
+        $json['scripts']['test'] = 't';
+
+        $this->writeJsonFile($composerFile, $json);
+
+        $this->output?->info('script "test" added to composer.json');
     }
 
     private function getRootPath(string $dirArg = '', string $searchFile = 'composer.json'): string
@@ -163,5 +194,14 @@ class LoadConfig extends Command
         if (empty(getenv('__TEST__'))) {
             putenv('__TEST__=true');
         }
+    }
+
+    private function writeJsonFile(string $filePath, array $json): void
+    {
+        $jsonStr = json_encode($json, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+        $file = fopen($filePath, 'w') or die("Unable to open file '$filePath'!");
+        fwrite($file, $jsonStr);
+        fclose($file);
     }
 }

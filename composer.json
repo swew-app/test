@@ -3,7 +3,11 @@
     "description": "A test framework that is designed to fix the fatal flaw of other test frameworks.",
     "license": "MIT",
     "keywords": [
-        "TDD", "testing", "fast", "lightweight", "informative interface"
+        "TDD",
+        "testing",
+        "fast",
+        "lightweight",
+        "informative interface"
     ],
     "authors": [
         {
@@ -36,7 +40,10 @@
         ]
     },
     "archive": {
-        "exclude": ["tests", "swew.json"]
+        "exclude": [
+            "tests",
+            "swew.json"
+        ]
     },
     "extra": {
         "branch-alias": {
@@ -63,8 +70,7 @@
         "psalm/phar": "5.10.0"
     },
     "scripts": {
-        "xxx": "php ./src/TextMaster.php",
-        "test": "php ./tests/Suite/RunTest.php --dir .",
+        "test": "t",
         "static": "./vendor/psalm/phar/psalm.phar --no-cache",
         "stan": "vendor/bin/phpstan analyse src --level=3",
         "code-check": "./vendor/bin/pint",

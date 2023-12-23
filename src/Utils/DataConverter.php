@@ -77,7 +77,8 @@ final class DataConverter
 
     public static function parseTraceItem(array $v): string
     {
-        $fileLine = CliStr::vm()->trimPath($v['file']) . ':' . $v['line'];
+        $fileLine = self::getExceptionTraceLine($v);
+
         $width = CliStr::vm()->width() - 1;
 
         $methodLine = '';
@@ -137,13 +138,13 @@ final class DataConverter
         $width = CliStr::vm()->width() - 24;
 
         if (strlen($item->message) > $width) {
-            return mb_substr($item->message, 0, $width) . '<gray>…</>';
+            return mb_substr($item->message, 0, $width) . '…';
         } else {
             return $item->message;
         }
     }
 
-    public static function getLine(LogData $item, bool $isError = false): string
+    public static function getTestSuiteLine(LogData $item, bool $isError = false): string
     {
         $icon = self::getIcon($item) . ' ';
         $msg = self::getMessage($item);
@@ -162,5 +163,16 @@ final class DataConverter
         }
 
         return $icon . $msg . '<gray>' . $delimiter . '</>' . $right;
+    }
+
+    public static function getExceptionTraceLine(?array $item): string
+    {
+        if (empty($item)) {
+            return '';
+        }
+        $file = $item['file'];
+        $line = $item['line'];
+
+        return CliStr::vm()->trimPath("$file:$line");
     }
 }

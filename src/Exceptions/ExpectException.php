@@ -23,12 +23,8 @@ final class ExpectException extends RuntimeException implements Throwable
 
         $diff = Diff::diff($expectedValue, $gotValue);
 
-        if ($diff !== '') {
-            $msg .= "\n" . $diff . "\n";
-        }
-
-        $msg = CliStr::vm()->output->format($msg);
-
-        parent::__construct($msg);
+        parent::__construct(
+            CliStr::vm()->output->format($msg . $diff)
+        );
     }
 }

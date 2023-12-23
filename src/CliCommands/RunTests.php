@@ -41,7 +41,6 @@ class RunTests extends Command
         // Tests
         $files = $this->commander->config['_testFiles'];
 
-
         foreach ($files as $file) {
             $this->loadTestFile($file, $suiteFilter);
         }

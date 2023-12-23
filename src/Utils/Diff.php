@@ -13,53 +13,27 @@ final class Diff
     {
         $s1 = self::valueToString($v1);
         $s2 = self::valueToString($v2);
-        $res = [];
 
         if ($s1 === $s2) {
             return '';
         }
 
         if ($s2 === '') {
-            return "<yellow> value:</>\n". CliStr::vm()->getWithPrefix($s1, false);
-        } // END
+            return "<yellow> value:</>" . PHP_EOL . CliStr::vm()->getWithPrefix($s1, false);
+        }
 
-        $letters1 = str_split($s1);
-        $letters2 = str_split($s2);
-
+        $res = [];
         if ($isShowTitle) {
             $res[] = '<yellow> actual:</>';
         }
-
-        $indexes = array_keys(array_diff_assoc($letters1, $letters2));
-        $res[] = self::highlighter($letters1, $indexes, false);
+        $res[] = $s1;
 
         if ($isShowTitle) {
             $res[] = '<yellow> expected:</>';
         }
+        $res[] = $s2;
 
-        $indexes = array_keys(array_diff_assoc($letters2, $letters1));
-        $res[] = self::highlighter($letters2, $indexes, true);
-
-        return CliStr::vm()->output->format(implode("\n", $res));
-    }
-
-    private static function highlighter(array &$letters, array &$indexes, bool $isGood): string
-    {
-        $res = [];
-
-        foreach ($letters as $i => $v) {
-            if (in_array($i, $indexes)) {
-                if ($isGood) {
-                    $res[] = "<green>$v</>";
-                } else {
-                    $res[] = "<red>$v</>";
-                }
-            } else {
-                $res[] = $v;
-            }
-        }
-
-        return implode('', $res);
+        return CliStr::vm()->output->format(implode(PHP_EOL, $res));
     }
 
     private static function valueToString(mixed $value): string

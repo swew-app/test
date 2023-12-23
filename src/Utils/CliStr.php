@@ -8,26 +8,27 @@ use Swew\Cli\Terminal\Output;
 
 final class CliStr
 {
-    public readonly Output $output;
-
     private static ?CliStr $instance = null;
 
-    private function __construct()
+    private function __construct(
+        public Output $output = new Output()
+    )
     {
-        $this->output = new Output();
-
         self::$instance = $this;
     }
 
     public static function vm(): self
     {
-        if (!is_null(self::$instance)) {
-            return self::$instance;
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
         }
 
-        self::$instance = new self();
-
         return self::$instance;
+    }
+
+    public function setOutput(Output $output): void
+    {
+        $this->output = $output;
     }
 
     private int $widthSize = 0;
@@ -47,21 +48,21 @@ final class CliStr
 
     public function getWithPrefix(string $text, bool $isGood): string
     {
-        $lines = explode("\n", $text);
+        $lines = explode(PHP_EOL, $text);
         $color = $isGood ? '<bgGreen> </> ' : '<bgRed> </> ';
 
         foreach ($lines as &$line) {
             $line = $color . $line;
         }
 
-        return implode("\n", $lines);
+        return implode(PHP_EOL, $lines);
     }
 
     public function getLine(string $message = '', string $color = '<gray>'): string
     {
-        $width = $this->width() - 1;
+        $width = $this->width();
 
-        return $color . ' ' . str_pad($message, $width, '-', STR_PAD_BOTH) . "</>";
+        return $color . str_pad($message, $width, '-', STR_PAD_BOTH) . "</>";
     }
 
     private static string $rootPath = '';

@@ -23,7 +23,7 @@ class ShowTestResults extends Command
     private bool $isShort = false;
 
     private int $allTests = 0;
-    private int $allTestFiles = 0;
+    private int $allTestFilesCount = 0;
     private int $passedTests = 0;
     private int $exceptedTests = 0;
     private int $skippedTests = 0;
@@ -90,7 +90,7 @@ class ShowTestResults extends Command
             '      .-. .-. .-. .-.      ',
             '       |  |-  `-.  |       ',
             '     \'  `-\' `-\'  \'     ',
-            $version,
+            'php: ' . PHP_VERSION . '; package ver.: ' . $version,
             '</>',
         ];
 
@@ -120,18 +120,15 @@ class ShowTestResults extends Command
             }
 
             if ($filePath !== $item->testFilePath) {
-                $this->allTestFiles++;
+                $this->allTestFilesCount++;
 
                 $filePath = $item->testFilePath;
 
-                $this->output->writeLn(
-                    CliStr::vm()->trimPath($filePath),
-                    '<cyan>%s</>'
-                );
+                $this->output->writeLn(CliStr::vm()->trimPath($filePath), '<cyan>%s</>');
             }
 
             if (!$this->isShort) {
-                $line = DataConverter::getLine($item);
+                $line = DataConverter::getTestSuiteLine($item);
                 $this->output->writeLn($line);
             }
 
@@ -174,9 +171,9 @@ class ShowTestResults extends Command
             }
 
             ++$exceptNumber;
+            $suitTitle = DataConverter::getMessage($item);
 
-            $this->output->writeLn(
-                CliStr::vm()->getLine("[ $exceptNumber ]", '<red>')
+            $this->output->writeLn(CliStr::vm()->getLine("[ $exceptNumber | $suitTitle ]", '<red>')
             );
 
             $trace = $item->exception->getTrace();
@@ -203,10 +200,13 @@ class ShowTestResults extends Command
 
             $this->output->writeLn($msg);
 
-            $suitTitle = DataConverter::getIcon($item) . ' <red>' . DataConverter::getMessage($item) . '</><br>';
-            $this->output->writeLn($suitTitle);
 
-            $this->output->writeLn($item->exception->getMessage(), '<bgRed>%s</>');
+            $filePath = DataConverter::getExceptionTraceLine($item->exception?->getTrace()[0]);
+            $this->output->writeLn($filePath, '<cyan>%s</>');
+
+            $this->output->writeLn(DataConverter::getIcon($item) . ' <red>' . $suitTitle . '</>');
+
+            $this->output->writeLn($item->exception->getMessage());
         }
     }
 
@@ -228,7 +228,13 @@ class ShowTestResults extends Command
             $this->output->writeLn("<cyan>Filtered by suite pattern (--suite):<yellow> {$suiteFilter}</>");
         }
 
-        $tests = ["<green>{$this->passedTests} passed</>"];
+        $tests = [];
+
+        if ($this->exceptedTests > 0) {
+            $tests[] = "<red>{$this->exceptedTests} excepted</>";
+        }
+
+        $tests[] = "<green>{$this->passedTests} passed</>";
 
         if ($this->skippedTests > 0) {
             $tests[] = "<gray>{$this->skippedTests} skipped</>";
@@ -236,10 +242,6 @@ class ShowTestResults extends Command
 
         if ($this->todoTests > 0) {
             $tests[] = "<yellow>{$this->todoTests} todo</>";
-        }
-
-        if ($this->exceptedTests > 0) {
-            $tests[] = "<red>{$this->exceptedTests} excepted</>";
         }
 
         $tst = implode(' | ', $tests);
@@ -251,7 +253,7 @@ class ShowTestResults extends Command
 
         $lines = [
             CliStr::vm()->getLine(),
-            " Test Files  <cyan>{$this->allTestFiles}</>",
+            " Test Files  <cyan>{$this->allTestFilesCount}</>",
             "      Tests  $tst <green>({$this->allTests})</>",
             "",
             " Max memory  <yellow>{$memory}</>",

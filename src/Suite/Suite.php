@@ -19,6 +19,8 @@ final class Suite
 
     public bool $isOnly = false;
 
+    public bool $isExcepted = false;
+
     public string $testFilePath = '';
 
     private ?LogData $logData = null;
@@ -64,6 +66,8 @@ final class Suite
                 $this->executeTestCase();
             }
         } catch (\Exception $e) {
+            $this->isExcepted = true;
+
             return $this->logData->setException($e);
         }
 
