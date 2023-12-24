@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Swew\Test\Suite;
 
 use Closure;
-use Swew\Test\Utils\CliStr;
 
 final class SuiteGroup
 {
@@ -25,8 +24,7 @@ final class SuiteGroup
 
     public function __construct(
         public readonly string $testFilePath = ''
-    )
-    {
+    ) {
         self::$currentGroupInstance = $this;
 
         require_once $testFilePath;
@@ -116,7 +114,7 @@ final class SuiteGroup
     private function getSuites(bool $isFilteredByOnly): array
     {
         return $isFilteredByOnly
-            ? array_filter($this->suiteList, fn($s): bool => $s->isOnly)
+            ? array_filter($this->suiteList, fn ($s): bool => $s->isOnly)
             : $this->suiteList;
     }
 }

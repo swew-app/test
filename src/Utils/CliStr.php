@@ -14,8 +14,7 @@ final class CliStr
 
     private function __construct(
         public Output $output = new Output()
-    )
-    {
+    ) {
         self::$instance = $this;
     }
 

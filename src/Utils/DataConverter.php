@@ -46,7 +46,8 @@ final class DataConverter
         return $val . ($isMs ? '<gray>ms</>' : '<gray>s </>');
     }
 
-    public static function formatMicrotime(float $microtime): string {
+    public static function formatMicrotime(float $microtime): string
+    {
         $seconds = (int) $microtime; // Получаем число полных секунд
         $microseconds = $microtime - $seconds; // Получаем дробную часть (миллисекунды)
         $minutes = (int) ($seconds / 60); // Конвертируем секунды в минуты
@@ -155,7 +156,7 @@ final class DataConverter
         $delimiterWidth = 2 + $width - strlen(strip_tags($icon)) - strlen(strip_tags($msg)) - strlen(strip_tags($right));
 
         if ($delimiterWidth > 4) {
-            $delimiter = str_pad(' ', $delimiterWidth, ' .');
+            $delimiter = str_pad(' ', $delimiterWidth, '.');
         }
 
         if ($isError) {

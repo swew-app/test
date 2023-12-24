@@ -169,7 +169,8 @@ class ShowTestResults extends Command
             ++$exceptNumber;
             $suitTitle = DataConverter::getMessage($item);
 
-            $this->output->writeLn(CliStr::vm()->getLine("[ $exceptNumber | $suitTitle ]", '<red>')
+            $this->output->writeLn(
+                CliStr::vm()->getLine("[ $exceptNumber | $suitTitle ]", '<red>')
             );
 
             $trace = $item->exception->getTrace();

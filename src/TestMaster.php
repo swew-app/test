@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Swew\Test;
 
-
 use Swew\Cli\Command;
 use Swew\Cli\SwewCommander;
 use Swew\Cli\Terminal\Output;

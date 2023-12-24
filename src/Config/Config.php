@@ -36,16 +36,18 @@ class Config implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return  [
-            'preloadFile' => $this->preloadFile,
-            'paths' => $this->paths,
-            'bail' => $this->bail,
-            'log' => [
-                'logo' => $this->logLogo,
-                'color' => $this->logColor,
-                'traceReverse' => $this->logTraceReverse,
-                'clear' => $this->logClear,
-                'short' => $this->logShort,
+        return [
+            'test' => [
+                'preloadFile' => $this->preloadFile,
+                'paths' => $this->paths,
+                'bail' => $this->bail,
+                'log' => [
+                    'logo' => $this->logLogo,
+                    'color' => $this->logColor,
+                    'traceReverse' => $this->logTraceReverse,
+                    'clear' => $this->logClear,
+                    'short' => $this->logShort,
+                ],
             ],
         ];
     }
