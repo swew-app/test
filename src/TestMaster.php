@@ -63,11 +63,7 @@ class TestMaster extends SwewCommander
 
         parent::__construct($argvLocal, $output);
 
-        // Если есть загружаем прелоад файл
-        // Запускаем, если выставлен bail:true то останавливаем при первой ошибке
-        // показываем список результатов в консоль
-        //
-        //
+        // TODO: Запускаем, если выставлен bail:true то останавливаем при первой ошибке
     }
 
     public function run(): void
@@ -97,8 +93,12 @@ class TestMaster extends SwewCommander
             $class = new $commandClass();
             $this->fillCommandArguments($class, []);
 
-            $result[] = $class->getHelpMessage();
+            $result[] = $class->getHelpMessage('{options}');
         }
+
+        $this->output->writeLn('╭──────────────────────────────────╮');
+        $this->output->writeLn('│<green><b>     swew/test</> help message       │');
+        $this->output->writeLn('╰──────────────────────────────────╯');
 
         $helpMessage = implode("\n", $result);
 

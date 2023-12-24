@@ -17,7 +17,7 @@ class LoadConfig extends Command
         {--dir= (str): Directory to scan for the test files}
         ';
 
-    public const DESCRIPTION = 'Path to configuration file';
+    public const DESCRIPTION = 'Configuration manager';
 
     public function __invoke(): int
     {
@@ -157,7 +157,7 @@ class LoadConfig extends Command
                 '<b>example:</>' . PHP_EOL .
                 '  <yellow>composer exec t -- --init</>' . PHP_EOL . PHP_EOL;
 
-            $this->output->writeLn($errorMessage);
+            $this->output?->writeLn($errorMessage);
             exit(self::ERROR);
         }
 
