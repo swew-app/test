@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0d63414d55fcd6fea11ba60db1e8dd7c",
+    "content-hash": "af00a714ef949382b5a96ac1863e55bf",
     "packages": [
         {
             "name": "swew/cli",
-            "version": "v1.1.13",
+            "version": "v1.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swew-app/cli.git",
-                "reference": "7a581d916ed3161f33fcee78e708b8cac6efcf19"
+                "reference": "4a6a90dfedbfa7f6384890046e4007609c2859c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swew-app/cli/zipball/7a581d916ed3161f33fcee78e708b8cac6efcf19",
-                "reference": "7a581d916ed3161f33fcee78e708b8cac6efcf19",
+                "url": "https://api.github.com/repos/swew-app/cli/zipball/4a6a90dfedbfa7f6384890046e4007609c2859c8",
+                "reference": "4a6a90dfedbfa7f6384890046e4007609c2859c8",
                 "shasum": ""
             },
             "require": {
@@ -69,9 +69,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swew-app/cli/issues",
-                "source": "https://github.com/swew-app/cli/tree/v1.1.13"
+                "source": "https://github.com/swew-app/cli/tree/v1.1.14"
             },
-            "time": "2023-12-24T19:29:57+00:00"
+            "time": "2023-12-24T20:41:35+00:00"
         },
         {
             "name": "swew/dd",

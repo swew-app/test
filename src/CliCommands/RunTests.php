@@ -31,15 +31,15 @@ class RunTests extends Command
 
         // Preload file
         $this->requirePreloadFile(
-            $this->commander->config['_root'],
-            $this->commander->config['preloadFile']
+            $commander->config->getRoot(),
+            $commander->config->preloadFile
         );
 
         // Filter Suite
-        $suiteFilter = $this->commander->config['_suite'];
+        $suiteFilter = $commander->config->getSuite();
 
         // Tests
-        $files = $this->commander->config['_testFiles'];
+        $files = $commander->config->getTestFiles();
 
         foreach ($files as $file) {
             $this->loadTestFile($file, $suiteFilter);

@@ -43,17 +43,17 @@ class ShowTestResults extends Command
         }
 
         // clear
-        if ($commander->config['log']['clear']) {
+        if ($commander->config->logClear) {
             $this->output->clear();
         }
 
         // logo
-        if ($commander->config['log']['logo']) {
+        if ($commander->config->logLogo) {
             $this->showLogo();
         }
 
         // TODO: короткое отображение
-        if ($commander->config['log']['short']) {
+        if ($commander->config->logShort) {
             $this->isShort = true;
         }
 
@@ -64,7 +64,7 @@ class ShowTestResults extends Command
         if ($this->hasException) {
             $this->showExceptions(
                 $commander->testResults,
-                $commander->config['log']['traceReverse']
+                $commander->config->logTraceReverse
             );
         }
 
@@ -78,7 +78,6 @@ class ShowTestResults extends Command
     {
         $version = InstalledVersions::getVersion('swew/test');
 
-        /** @var array<string> $logo */
         $logo = [
             '<green>',
             ' __   _       ____  _      ',
@@ -209,8 +208,8 @@ class ShowTestResults extends Command
 
     private function showSummary(TestMaster $commander): void
     {
-        $filePattern = $commander->config['_filter'];
-        $suiteFilter = $commander->config['_suite'];
+        $filePattern = $commander->config->getFilter();
+        $suiteFilter = $commander->config->getSuite();
         $startAt = $commander->startAt;
 
         if (!($this->output)) {

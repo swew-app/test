@@ -6,6 +6,7 @@ namespace Swew\Test\CliCommands;
 
 use LogicException;
 use Swew\Cli\Command;
+use Swew\Test\Config\Config;
 use Swew\Test\TestMaster;
 use Swew\Test\Utils\CliStr;
 
@@ -40,7 +41,7 @@ class LoadConfig extends Command
 
         // Search root dir
         $dirPath = $this->argv('dir');
-        $commander->config['_root'] = $this->getRootPath($dirPath);
+        $commander->config->setRoot($this->getRootPath($dirPath));
 
         // Search config file
         $configPath = $this->argv('config') ?: 'swew.json';
@@ -48,20 +49,20 @@ class LoadConfig extends Command
 
         $this->updateConfig($configFile, $commander->config);
 
-        $color = $commander->config['log']['color'];
         if ($this->argv('no-color')) {
-            $color = false;
+            $this->output->setAnsi(false);
+        } else {
+            $this->output->setAnsi($commander->config->logColor);
         }
-        $this->output->setAnsi($color);
 
         // Устанавливаем Output что бы был один объект для вывода
         CliStr::vm()->setOutput($this->output);
-        CliStr::vm()->setRootPath($commander->config['_root']);
+        CliStr::vm()->setRootPath($commander->config->getRoot());
 
         return self::SUCCESS;
     }
 
-    private function createNewConfigFile(array $configData): int
+    private function createNewConfigFile(Config $config): int
     {
         $root = $this->getRootPath();
 
@@ -71,19 +72,6 @@ class LoadConfig extends Command
         }
 
         $configFile = $root . 'swew.json';
-
-        $config = [
-            'test' => array_filter(
-                $configData,
-                fn($key) => !str_starts_with($key, '_'),
-                ARRAY_FILTER_USE_KEY
-            ),
-        ];
-
-        if (file_exists($configFile)) {
-            $json = json_decode(file_get_contents($configFile), true);
-            $config = array_merge($json, $config);
-        }
 
         $this->writeJsonFile($configFile, $config);
 
@@ -154,7 +142,7 @@ class LoadConfig extends Command
         return '';
     }
 
-    private function updateConfig(string $configFile, array &$defaultConfig): void
+    private function updateConfig(string $configFile, Config $conf): void
     {
         if (!file_exists($configFile)) {
             $errorMessage = "<bgRed> CONFIG: Can't find config file: '$configFile' </>" . PHP_EOL . PHP_EOL .
@@ -169,21 +157,18 @@ class LoadConfig extends Command
         $json = json_decode(file_get_contents($configFile), true);
 
         $this->checkKey('test', $json, $configFile);
-        $config = $json['test'];
+        $jsonConfig = $json['test'];
+        $this->checkKey('paths', $jsonConfig, $configFile);
 
-        $this->checkKey('paths', $config, $configFile);
+        $conf->paths = $jsonConfig['paths'] ?? $conf->paths;
+        $conf->preloadFile = $jsonConfig['preloadFile'] ?? $conf->preloadFile;
+        $conf->bail = $jsonConfig['bail'] ?? $conf->bail;
 
-        $newConfig = [
-            'paths' => $config['paths'] ?? $defaultConfig['paths'],
-            'bail' => $config['bail'] ?? $defaultConfig['bail'],
-            'preloadFile' => $config['preloadFile'] ?? $defaultConfig['preloadFile'],
-            'log' => array_merge(
-                $defaultConfig['log'],
-                $config['log'] ?? []
-            ),
-        ];
-
-        $defaultConfig = array_merge($defaultConfig, $newConfig);
+        $conf->logLogo = $jsonConfig['log']['logo'] ?? $conf->logLogo;
+        $conf->logColor = $jsonConfig['log']['color'] ?? $conf->logColor;
+        $conf->logClear = $jsonConfig['log']['clear'] ?? $conf->logClear;
+        $conf->logShort = $jsonConfig['log']['short'] ?? $conf->logShort;
+        $conf->logTraceReverse = $jsonConfig['log']['traceReverse'] ?? $conf->logTraceReverse;
     }
 
     private function checkKey(string $key, array $arr, string $file): void
@@ -201,7 +186,7 @@ class LoadConfig extends Command
         }
     }
 
-    private function writeJsonFile(string $filePath, array $json): void
+    private function writeJsonFile(string $filePath, array|Config $json): void
     {
         $jsonStr = json_encode($json, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 

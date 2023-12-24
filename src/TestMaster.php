@@ -12,27 +12,14 @@ use Swew\Test\CliCommands\LoadConfig;
 use Swew\Test\CliCommands\RunTests;
 use Swew\Test\CliCommands\SearchFiles;
 use Swew\Test\CliCommands\ShowTestResults;
+use Swew\Test\Config\Config;
 use Swew\Test\LogMaster\Log\LogData;
+use Swew\Test\Utils\CliStr;
+use Swew\Test\Utils\DataConverter;
 
 class TestMaster extends SwewCommander
 {
-    public array $config = [
-        'preloadFile' => '',
-        'paths' => ['*.spec.php', '*.test.php'],
-        'bail' => false,
-        'log' => [
-            'logo' => true,
-            'color' => true,
-            'traceReverse' => true,
-            'clear' => true,
-            'short' => false,
-        ],
-        '_filter' => '',
-        '_suite' => '',
-        '_root' => '',
-        // Будем хранить список файлов, после можем очистить
-        '_testFiles' => [],
-    ];
+    public readonly Config $config;
 
     /** @var array<LogData> $testResults */
     public array $testResults = [];
@@ -49,21 +36,25 @@ class TestMaster extends SwewCommander
     ];
 
     public function __construct(
-        array                   $argvLocal = [],
+        array $argvLocal = [],
         private readonly Output $output = new Output(),
-    )
-    {
+    ) {
         global $argv;
 
         if (count($argvLocal) === 0) {
             $argvLocal = $argv;
         }
 
+        $this->config = new Config();
+
         $this->startAt = microtime(true);
 
-        parent::__construct($argvLocal, $output);
+        set_exception_handler(function ($e) {
+            $msg = DataConverter::getParsedException($e, '[ Error outside of tests ]');
+            CliStr::vm()->output->writeLn($msg);
+        });
 
-        // TODO: Запускаем, если выставлен bail:true то останавливаем при первой ошибке
+        parent::__construct($argvLocal, $output);
     }
 
     public function run(): void

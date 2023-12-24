@@ -175,4 +175,22 @@ final class DataConverter
 
         return CliStr::vm()->trimPath("$file:$line");
     }
+
+    public static function getParsedException(Exception|Error|Throwable $exception, string $msg = ''): string
+    {
+        $msg = PHP_EOL . PHP_EOL . CliStr::vm()->getLine($msg, '<red>');
+
+        $trace = array_reverse($exception->getTrace());
+
+        foreach ($trace as $t) {
+            $msg .= DataConverter::parseTraceItem($t);
+        }
+
+        $msg .= '<red>❯❯</> ' .$exception->getFile() . ':' . $exception->getLine() . PHP_EOL;
+        $msg .= self::getContentByLine($exception->getFile(), $exception->getLine());
+
+        $msg .= "<br><br><bgYellow> </> <bgRed> " . trim($exception->getMessage(), PHP_EOL) . '</><br>';
+
+        return $msg;
+    }
 }

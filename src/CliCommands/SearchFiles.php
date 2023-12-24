@@ -30,8 +30,8 @@ class SearchFiles extends Command
         }
 
         // Получаем паттерны по которым искать
-        $directory = realpath($commander->config['_root']);
-        $patterns = $commander->config['paths'];
+        $directory = $commander->config->getRoot();
+        $patterns = $commander->config->paths;
 
         if (count($patterns) === 0) {
             $this->output?->error('Empty search patterns');
@@ -48,16 +48,23 @@ class SearchFiles extends Command
 
         // Фильтруем список файлов относительно аргументов
         if ($filter) {
+            if (gettype($filter) !== 'string') {
+                throw new LogicException('Passed wrong type');
+            }
+            $commander->config->setFilter($filter);
             $matchingFiles = $this->filterFiles($filter, $matchingFiles);
         }
 
         $suite = $this->argv('suite');
 
         if (!empty($suite)) {
-            $commander->config['_suite'] = $suite;
+            if (gettype($suite) !== 'string') {
+                throw new LogicException('Passed wrong type');
+            }
+            $commander->config->setSuite($suite);
         }
 
-        $commander->config['_testFiles'] = $matchingFiles;
+        $commander->config->setTestFiles($matchingFiles);
 
         return self::SUCCESS;
     }
