@@ -201,7 +201,7 @@ class ShowTestResults extends Command
             $this->output->writeLn($msg);
 
 
-            $filePath = DataConverter::getExceptionTraceLine($item->exception?->getTrace()[0]);
+            $filePath = DataConverter::getExceptionTraceLine($item->exception->getTrace()[0]);
             $this->output->writeLn($filePath, '<cyan>%s</>');
 
             $this->output->writeLn(DataConverter::getIcon($item) . ' <red>' . $suitTitle . '</>');

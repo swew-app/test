@@ -36,6 +36,9 @@ final class SuiteGroup
 
     public static function addSuite(Suite $suite): void
     {
+        if (is_null(self::$currentGroupInstance)) {
+            throw new \LogicException('Empty $currentGroupInstance');
+        }
         self::$currentGroupInstance->suiteList[] = $suite;
     }
 

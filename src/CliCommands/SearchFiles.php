@@ -72,7 +72,7 @@ class SearchFiles extends Command
         foreach ($iterator as $file) {
             if (
                 $file->isFile()
-                && !str_contains($file->getFilename(), 'vendor')
+                && !str_contains($file->getPathname(), 'vendor')
                 && fnmatch($pattern, $file->getFilename())
             ) {
                 $matchingFiles[] = $file->getPathname();
