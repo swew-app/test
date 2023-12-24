@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "swew/cli",
-            "version": "v1.1.12",
+            "version": "v1.1.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swew-app/cli.git",
-                "reference": "e33cb77bd1cd3d632271d3f999153c17b74f2b1a"
+                "reference": "7a581d916ed3161f33fcee78e708b8cac6efcf19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swew-app/cli/zipball/e33cb77bd1cd3d632271d3f999153c17b74f2b1a",
-                "reference": "e33cb77bd1cd3d632271d3f999153c17b74f2b1a",
+                "url": "https://api.github.com/repos/swew-app/cli/zipball/7a581d916ed3161f33fcee78e708b8cac6efcf19",
+                "reference": "7a581d916ed3161f33fcee78e708b8cac6efcf19",
                 "shasum": ""
             },
             "require": {
@@ -69,9 +69,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swew-app/cli/issues",
-                "source": "https://github.com/swew-app/cli/tree/v1.1.12"
+                "source": "https://github.com/swew-app/cli/tree/v1.1.13"
             },
-            "time": "2023-12-24T18:26:15+00:00"
+            "time": "2023-12-24T19:29:57+00:00"
         },
         {
             "name": "swew/dd",

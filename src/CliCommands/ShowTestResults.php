@@ -42,9 +42,6 @@ class ShowTestResults extends Command
             throw new LogicException('Empty output');
         }
 
-        CliStr::vm()->withColor($commander->config['log']['color']);
-        CliStr::vm()->setRootPath($commander->config['_root']);
-
         // clear
         if ($commander->config['log']['clear']) {
             $this->output->clear();

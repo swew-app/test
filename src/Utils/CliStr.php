@@ -10,6 +10,8 @@ final class CliStr
 {
     private static ?CliStr $instance = null;
 
+    private static string $rootPath = '';
+
     private function __construct(
         public Output $output = new Output()
     )
@@ -26,6 +28,11 @@ final class CliStr
         return self::$instance;
     }
 
+    public static function setRootPath(string $rootPath): void
+    {
+        self::$rootPath = $rootPath;
+    }
+
     public function setOutput(Output $output): void
     {
         $this->output = $output;
@@ -39,11 +46,6 @@ final class CliStr
             return $this->widthSize;
         }
         return $this->widthSize = max($this->output->width(), 60);
-    }
-
-    public function withColor(bool $hasColor): void
-    {
-        $this->output->setAnsi($hasColor);
     }
 
     public function getWithPrefix(string $text, bool $isGood): string
@@ -65,13 +67,6 @@ final class CliStr
         return $color . str_pad($message, $width, '-', STR_PAD_BOTH) . "</>";
     }
 
-    private static string $rootPath = '';
-
-    public static function setRootPath(string $rootPath): void
-    {
-        self::$rootPath = $rootPath;
-    }
-
     /**
      * Trim file path to root of project
      *
@@ -84,11 +79,7 @@ final class CliStr
             return $str;
         }
 
-        $str = str_replace(
-            self::$rootPath,
-            '',
-            $str
-        );
+        $str = str_replace(self::$rootPath, '', $str);
 
         return ltrim($str, DIRECTORY_SEPARATOR);
     }

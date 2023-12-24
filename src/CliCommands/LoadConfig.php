@@ -15,6 +15,7 @@ class LoadConfig extends Command
         {--init= (bool): Create new config file}
         {--config|-c= (str): Path to config file}
         {--dir= (str): Directory to scan for the test files}
+        {--no-color=false (bool): Disable color output}
         ';
 
     public const DESCRIPTION = 'Configuration manager';
@@ -48,10 +49,14 @@ class LoadConfig extends Command
         $this->updateConfig($configFile, $commander->config);
 
         $color = $commander->config['log']['color'];
+        if ($this->argv('no-color')) {
+            $color = false;
+        }
         $this->output->setAnsi($color);
 
         // Устанавливаем Output что бы был один объект для вывода
         CliStr::vm()->setOutput($this->output);
+        CliStr::vm()->setRootPath($commander->config['_root']);
 
         return self::SUCCESS;
     }
