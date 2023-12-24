@@ -70,7 +70,16 @@ class TestMaster extends SwewCommander
             /** @var Command $command */
             $command = $this->getCommand($commandClass);
 
-            $command();
+            $result = $command();
+
+            if ($result === -1) {
+                // кастомный овтет, когда надо досрочно завершить работу без ошибки
+                exit();
+            }
+            if ($result > 0) {
+                // Handle error
+                exit($result);
+            }
         }
     }
 

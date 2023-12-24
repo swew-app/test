@@ -12,6 +12,8 @@ use Swew\Test\Utils\CliStr;
 
 class LoadConfig extends Command
 {
+    public const CUSTOM_SUCCESS = -1;
+
     public const NAME = 'config
         {--init= (bool): Create new config file}
         {--config|-c= (str): Path to config file}
@@ -79,14 +81,14 @@ class LoadConfig extends Command
 
         $this->addScriptToComposerJson();
 
-        return self::SUCCESS;
+        return self::CUSTOM_SUCCESS;
     }
 
     private function addScriptToComposerJson(): void
     {
         $answer = $this->output?->askYesNo('Add script "test" to composer.json?');
 
-        if (empty($answer)) {
+        if (!$answer) {
             return;
         }
 
