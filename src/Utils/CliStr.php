@@ -59,11 +59,11 @@ final class CliStr
         return implode(PHP_EOL, $lines);
     }
 
-    public function getLine(string $message = '', string $color = '<gray>'): string
+    public function getLine(string $message = '', string $color = '<gray>', string $delimiter = '-'): string
     {
         $width = $this->width();
 
-        return $color . str_pad($message, $width, '-', STR_PAD_BOTH) . "</>";
+        return $color . str_pad($message, $width, $delimiter, STR_PAD_BOTH) . "</>";
     }
 
     /**
