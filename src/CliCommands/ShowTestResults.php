@@ -28,6 +28,7 @@ class ShowTestResults extends Command
     private int $exceptedTests = 0;
     private int $skippedTests = 0;
     private int $todoTests = 0;
+    private int $finishAt = 0;
 
     public function __invoke(): int
     {
@@ -41,6 +42,8 @@ class ShowTestResults extends Command
         if (!($this->output)) {
             throw new LogicException('Empty output');
         }
+
+        $this->finishAt = time();
 
         // clear
         if ($commander->config->logClear) {
@@ -244,7 +247,7 @@ class ShowTestResults extends Command
         $tst = implode(' | ', $tests);
 
         $timeSrt = date('Y.m.d H:i:s', intval($startAt));
-        $duration = DataConverter::formatMicrotime($startAt - time());
+        $duration = DataConverter::formatMicrotime($startAt - $this->finishAt);
         $memory = DataConverter::memorySize(memory_get_peak_usage());
 
 
