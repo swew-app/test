@@ -8,26 +8,33 @@ use Swew\Cli\Terminal\Output;
 
 final class CliStr
 {
-    public readonly Output $output;
-
     private static ?CliStr $instance = null;
 
-    private function __construct()
-    {
-        $this->output = new Output();
+    private static string $rootPath = '';
 
+    private function __construct(
+        public Output $output = new Output()
+    ) {
         self::$instance = $this;
     }
 
     public static function vm(): self
     {
-        if (!is_null(self::$instance)) {
-            return self::$instance;
+        if (is_null(self::$instance)) {
+            self::$instance = new self();
         }
 
-        self::$instance = new self();
-
         return self::$instance;
+    }
+
+    public static function setRootPath(string $rootPath): void
+    {
+        self::$rootPath = $rootPath;
+    }
+
+    public function setOutput(Output $output): void
+    {
+        $this->output = $output;
     }
 
     private int $widthSize = 0;
@@ -37,47 +44,26 @@ final class CliStr
         if ($this->widthSize) {
             return $this->widthSize;
         }
-        return $this->widthSize = max($this->output->width() - 1, 60);
-    }
-
-    public function write(string|array $line): void
-    {
-        if (is_array($line)) {
-            $line = implode(PHP_EOL, $line);
-        }
-
-        $this->output->write($line);
-    }
-
-    public function withColor(bool $hasColor): void
-    {
-        $this->output->setAnsi($hasColor);
+        return $this->widthSize = max($this->output->width(), 60);
     }
 
     public function getWithPrefix(string $text, bool $isGood): string
     {
-        $lines = explode("\n", $text);
+        $lines = explode(PHP_EOL, $text);
         $color = $isGood ? '<bgGreen> </> ' : '<bgRed> </> ';
 
         foreach ($lines as &$line) {
             $line = $color . $line;
         }
 
-        return implode("\n", $lines);
+        return implode(PHP_EOL, $lines);
     }
 
-    public function getLine(string $message = '', string $color = '<gray>'): string
+    public function getLine(string $message = '', string $color = '<gray>', string $delimiter = '-'): string
     {
         $width = $this->width();
 
-        return $color . ' ' . str_pad($message, $width, ' - ', STR_PAD_BOTH) . "</>\n";
-    }
-
-    private static string $rootPath = '';
-
-    public static function setRootPath(string $rootPath): void
-    {
-        self::$rootPath = $rootPath;
+        return $color . str_pad($message, $width, $delimiter, STR_PAD_BOTH) . "</>";
     }
 
     /**
@@ -92,35 +78,8 @@ final class CliStr
             return $str;
         }
 
-        $str = str_replace(
-            self::$rootPath,
-            '',
-            $str
-        );
+        $str = str_replace(self::$rootPath, '', $str);
 
         return ltrim($str, DIRECTORY_SEPARATOR);
-    }
-
-    /**
-     * Clear terminal
-     *
-     * @return void
-     */
-    public function clear(): void
-    {
-        $this->output->clear();
-    }
-
-    /**
-     * Remove bash color symbols from string
-     *
-     * @param string $str
-     * @return string
-     */
-    public static function clearColor(string $str): string
-    {
-        $patterns = "/\e?\[[\d;]+m/";
-
-        return (string)preg_replace($patterns, '', $str);
     }
 }

@@ -22,3 +22,8 @@ it('Test 3: skip', function () {
 })->skip();
 
 it('Test 4: todo with empty functions');
+
+it('DIFF: new', function () {
+    expect("Привет дивный \n новый")
+        ->toBe('Привет Мир дивный');
+})->skip();

@@ -6,7 +6,7 @@ namespace Swew\Test\Expectations;
 
 use Swew\Test\Exceptions\Exception;
 use Swew\Test\Exceptions\ExpectException;
-use Swew\Test\TestRunner;
+use Swew\Test\Suite\SuiteGroup;
 use Traversable;
 use Closure;
 
@@ -26,7 +26,7 @@ final class Expectation
         private readonly mixed $expectValue,
         private string         $message = ''
     ) {
-        $suite = TestRunner::getCurrentSuite();
+        $suite = SuiteGroup::getCurrentSuite();
 
         if (!is_null($suite)) {
             $suite->stopLogData();

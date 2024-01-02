@@ -5,10 +5,6 @@ declare(strict_types=1);
 use Swew\Test\Utils\CliStr;
 use Swew\Test\Utils\Diff;
 
-beforeAll(fn () => CliStr::vm()->withColor(false));
-afterAll(fn () => CliStr::vm()->withColor(true));
-
-
 it('CLI: Diff::diff Str==', function () {
     $str1 = "Hello woman!";
     $str2 = "Hi Man!";
@@ -27,6 +23,7 @@ it('CLI: Diff::diff Arr==', function () {
     $str2 = ["h1"];
 
     $res = Diff::diff($str1, $str2);
+    $res =  CliStr::vm()->output->clearColor($res);
     $exp = '';
 
     expect($res)->toBe($exp);
@@ -37,7 +34,7 @@ it('CLI: Diff::diff Arr!=', function () {
     $str2 = ["h3", "h2", "h1", "h4", "h5"];
 
     $res = Diff::diff($str1, $str2, false);
-
+    $res =  CliStr::vm()->output->clearColor($res);
     $exp = <<<PHP_DATA
 array (
   0 => 'h1',
