@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "af00a714ef949382b5a96ac1863e55bf",
+    "content-hash": "55c7c130a6f6231c98a6034db8e54919",
     "packages": [
         {
             "name": "swew/cli",
