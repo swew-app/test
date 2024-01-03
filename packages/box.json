@@ -1,23 +1,30 @@
 {
     "chmod": "0750",
-    "output": "../phar/dist/sw-t.phar",
-    "base-path": "../swew-test/",
+    "output": "./phar/src/swew-test.phar",
+    "base-path": "./swew-test/",
     "finder": [
         {
             "notName": "/LICENSE|.*\\.md|.*\\.dist|Makefile|composer\\.json|composer\\.lock/",
             "exclude": [
                 "doc",
                 "test",
-                "test_old",
                 "tests",
                 "Tests",
-                "vendor-bin"
+                "vendor-bin",
+                "laravel",
+                "psalm",
+                "phpstan",
+                "composer",
+                "bin"
             ],
             "in": "vendor"
         },
         {
             "name": "composer.json",
-            "in": "../swew-test/"
+            "in": "."
         }
+    ],
+    "directories": [
+        "src/"
     ]
 }

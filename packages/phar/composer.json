@@ -1,5 +1,5 @@
 {
-    "name": "swew/test",
+    "name": "swew/test.phar",
     "description": "A test framework that is designed to fix the fatal flaw of other test frameworks.",
     "type": "library",
     "license": "MIT",
@@ -16,19 +16,12 @@
             "email": "avil@swew.app"
         }
     ],
-    "config": {
-        "sort-packages": true,
-        "optimize-autoloader": true
-    },
     "bin": [
         "bin/t"
     ],
     "autoload": {
-        "psr-4": {
-            "Swew\\Test\\": "src/"
-        },
         "files": [
-            "src/Functions.php"
+            "src/swew-test.phar"
         ],
         "exclude-from-classmap": [
             "spec",
