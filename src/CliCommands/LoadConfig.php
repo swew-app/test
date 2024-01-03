@@ -115,8 +115,7 @@ class LoadConfig extends Command
             if (str_starts_with($dirArg, '/')) {
                 return $dirArg;
             }
-            // getcwd()
-            return realpath($_SERVER['PWD'] . DIRECTORY_SEPARATOR . $dirArg);
+            return realpath(getcwd() . DIRECTORY_SEPARATOR . $dirArg);
         }
 
         $dirs = explode(DIRECTORY_SEPARATOR, __DIR__);
@@ -125,10 +124,28 @@ class LoadConfig extends Command
 
         while ($i--) {
             array_splice($dirs, $i);
-            $path = implode(
-                DIRECTORY_SEPARATOR,
-                $dirs
-            );
+            $path = implode(DIRECTORY_SEPARATOR, $dirs);
+
+            if ($path === '') {
+                break;
+            }
+
+            $composerFile = $path . DIRECTORY_SEPARATOR . $searchFile;
+
+            if (file_exists($composerFile)) {
+                return $path . DIRECTORY_SEPARATOR;
+            }
+        }
+
+        //
+
+        $dirs = explode(DIRECTORY_SEPARATOR, getcwd());
+
+        $i = count($dirs) + 1;
+
+        while ($i--) {
+            array_splice($dirs, $i);
+            $path = implode(DIRECTORY_SEPARATOR, $dirs);
 
             if ($path === '') {
                 break;
