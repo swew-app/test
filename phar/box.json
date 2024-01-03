@@ -1,7 +1,7 @@
 {
     "chmod": "0755",
-    "output": "./src/swew-test.phar",
-    "base-path": "../",
+    "output": "../box/src/swew-test.phar",
+    "base-path": "..",
     "finder": [
         {
             "notName": "/LICENSE|.*\\.md|.*\\.dist|Makefile|composer\\.json|composer\\.lock/",
