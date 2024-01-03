@@ -1,5 +1,7 @@
 # SWEW/test
 
+## phar version [swew/test.phar](https://github.com/swew-app/test.phar)
+
 A PHP test framework that solves the fatal flaw of all others.
 
 This composer package is a lightweight and fast testing library designed to provide an informative interface. It offers a variety of testing features, including unit testing, integration testing, and functional testing. The package is designed to make testing simple and easy, allowing developers to quickly identify and fix bugs in their code. With its fast and efficient testing tools, developers can ensure that their code is reliable and performs well in real-world scenarios.

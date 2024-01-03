@@ -50,6 +50,7 @@ Temporary Items
 # CodeSniffer
 
 /vendor/*
+/vendor-bin/*
 /wpcs/*
 
 ### PhpStorm ###
