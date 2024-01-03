@@ -1,6 +1,7 @@
 {
     "name": "swew/test",
     "description": "A test framework that is designed to fix the fatal flaw of other test frameworks.",
+    "type": "library",
     "license": "MIT",
     "keywords": [
         "TDD",

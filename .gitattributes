@@ -1,0 +1,1 @@
+*.phar -text -diff -merge
