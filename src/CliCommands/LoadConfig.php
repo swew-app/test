@@ -49,7 +49,9 @@ class LoadConfig extends Command
         $configPath = $this->argv('config') ?: 'swew.json';
         $configFile = $this->getRootPath('', $configPath) . $configPath;
 
-        $this->updateConfig($configFile, $commander->config);
+        if (!empty($configFile)) {
+            $this->updateConfig($configFile, $commander->config);
+        }
 
         if ($this->argv('no-color')) {
             $this->output->setAnsi(false);
