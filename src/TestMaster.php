@@ -56,6 +56,11 @@ class TestMaster extends SwewCommander
         parent::__construct($argvLocal, $output);
     }
 
+    public static function runTest(): void
+    {
+        (new self())->run();
+    }
+
     public function run(): void
     {
         if ($this->isNeedHelp()) {

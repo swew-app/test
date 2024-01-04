@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Swew\Test\CliCommands;
 
-use Composer\InstalledVersions;
 use LogicException;
 use Swew\Cli\Command;
 use Swew\Test\LogMaster\Log\LogData;
@@ -79,8 +78,6 @@ class ShowTestResults extends Command
 
     private function showLogo(): void
     {
-        $version = InstalledVersions::getVersion('swew/test');
-
         $logo = [
             '<green>',
             ' __   _       ____  _      ',
@@ -89,7 +86,7 @@ class ShowTestResults extends Command
             '      .-. .-. .-. .-.      ',
             '       |  |-  `-.  |       ',
             '     \'  `-\' `-\'  \'     ',
-            'php: ' . PHP_VERSION . '; package ver.: ' . $version,
+            'php: ' . PHP_VERSION . ';',
             '</>',
         ];
 

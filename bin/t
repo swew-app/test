@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php declare(strict_types=1);
 
- use Swew\Test\TestMaster;
+use Swew\Test\TestMaster;
 
 (static function () {
     // Used when SWEW-test is required using composer.
@@ -18,8 +18,6 @@
         $autoloadPath = $localPath;
     }
 
-    $tm = new TestMaster();
-
-    $tm->run();
+    TestMaster::runTest();
 
 })();
