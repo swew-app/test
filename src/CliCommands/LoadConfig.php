@@ -125,43 +125,34 @@ class LoadConfig extends Command
             return realpath(getcwd() . DIRECTORY_SEPARATOR . $dirArg);
         }
 
-        $dirs = explode(DIRECTORY_SEPARATOR, __DIR__);
+        $dirsForSearch = [__DIR__, getcwd()];
 
-        $i = count($dirs) + 1;
+        foreach ($dirsForSearch as $dir) {
+            $dirs = explode(DIRECTORY_SEPARATOR, $dir);
 
-        while ($i--) {
-            array_splice($dirs, $i);
-            $path = implode(DIRECTORY_SEPARATOR, $dirs);
+            $i = count($dirs) + 1;
 
-            if ($path === '') {
-                break;
-            }
+            while ($i--) {
+                array_splice($dirs, $i);
+                $path = implode(DIRECTORY_SEPARATOR, $dirs);
 
-            $composerFile = $path . DIRECTORY_SEPARATOR . $searchFile;
+                if ($path === '') {
+                    break;
+                }
 
-            if (file_exists($composerFile)) {
-                return $path . DIRECTORY_SEPARATOR;
-            }
-        }
+                $composerFile = $path . DIRECTORY_SEPARATOR . $searchFile;
 
-        //
+                if (file_exists($composerFile)) {
+                    if ($searchFile === 'composer.json') {
+                        // Skip current package
+                        $json = json_decode(file_get_contents($composerFile), true);
+                        if ($json['name'] === 'swew/test' || $json['name'] === 'swew/test.phar') {
+                            break;
+                        }
+                    }
 
-        $dirs = explode(DIRECTORY_SEPARATOR, getcwd());
-
-        $i = count($dirs) + 1;
-
-        while ($i--) {
-            array_splice($dirs, $i);
-            $path = implode(DIRECTORY_SEPARATOR, $dirs);
-
-            if ($path === '') {
-                break;
-            }
-
-            $composerFile = $path . DIRECTORY_SEPARATOR . $searchFile;
-
-            if (file_exists($composerFile)) {
-                return $path . DIRECTORY_SEPARATOR;
+                    return $path . DIRECTORY_SEPARATOR;
+                }
             }
         }
 
