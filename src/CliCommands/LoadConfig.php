@@ -19,6 +19,7 @@ class LoadConfig extends Command
         {--config|-c= (str): Path to config file}
         {--dir= (str): Directory to scan for the test files}
         {--no-color=false (bool): Disable color output}
+        {--short|-s=false (bool): Short output}
         ';
 
     public const DESCRIPTION = 'Configuration manager';
@@ -51,6 +52,10 @@ class LoadConfig extends Command
 
         if (!empty($configFile)) {
             $this->updateConfig($configFile, $commander->config);
+        }
+
+        if ($this->argv('short')) {
+            $commander->config->logShort = true;
         }
 
         if ($this->argv('no-color')) {

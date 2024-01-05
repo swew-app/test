@@ -56,7 +56,8 @@ class RunTests extends Command
     private function requirePreloadFile(string $root, string $preloadFile): void
     {
         if (!empty($preloadFile)) {
-            require realpath($root . $preloadFile);
+            $this->output->writeLn($root . DIRECTORY_SEPARATOR . $preloadFile, '<green>Preload file</><br><cyan> %s</>');
+            require realpath($root . DIRECTORY_SEPARATOR . $preloadFile);
         }
     }
 
