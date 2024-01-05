@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "439320fc1d25bf131a83ae190523dea8",
+    "content-hash": "7c80b97349fa5c893b5a60132a141ec0",
     "packages": [
         {
             "name": "swew/cli",
-            "version": "v1.1.16",
+            "version": "v1.1.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swew-app/cli.git",
-                "reference": "2fb121b339e0381360bc7a2fbea010482993c8fd"
+                "reference": "f01b44b6b3458e1661b4add5b31c93654ed4b60f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swew-app/cli/zipball/2fb121b339e0381360bc7a2fbea010482993c8fd",
-                "reference": "2fb121b339e0381360bc7a2fbea010482993c8fd",
+                "url": "https://api.github.com/repos/swew-app/cli/zipball/f01b44b6b3458e1661b4add5b31c93654ed4b60f",
+                "reference": "f01b44b6b3458e1661b4add5b31c93654ed4b60f",
                 "shasum": ""
             },
             "require": {
@@ -25,10 +25,10 @@
             },
             "require-dev": {
                 "laravel/pint": "1.9.0",
-                "phpstan/phpstan": "^1.10.52",
+                "phpstan/phpstan": "^1.10.53",
                 "psalm/phar": "^5.18.0",
                 "swew/dd": "^1.3.1",
-                "swew/test.phar": "^1.5.12"
+                "swew/test.phar": "^1.5.13"
             },
             "type": "library",
             "autoload": {
@@ -70,9 +70,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swew-app/cli/issues",
-                "source": "https://github.com/swew-app/cli/tree/v1.1.16"
+                "source": "https://github.com/swew-app/cli/tree/v1.1.17"
             },
-            "time": "2024-01-05T14:15:46+00:00"
+            "time": "2024-01-05T18:39:45+00:00"
         },
         {
             "name": "swew/dd",
@@ -181,16 +181,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.53",
+            "version": "1.10.54",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "0c48595cce15f67d6a7faf30e9d13c775e6e9875"
+                "reference": "3e25f279dada0adc14ffd7bad09af2e2fc3523bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/0c48595cce15f67d6a7faf30e9d13c775e6e9875",
-                "reference": "0c48595cce15f67d6a7faf30e9d13c775e6e9875",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/3e25f279dada0adc14ffd7bad09af2e2fc3523bb",
+                "reference": "3e25f279dada0adc14ffd7bad09af2e2fc3523bb",
                 "shasum": ""
             },
             "require": {
@@ -239,7 +239,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-01-05T13:55:38+00:00"
+            "time": "2024-01-05T15:50:47+00:00"
         },
         {
             "name": "psalm/phar",
