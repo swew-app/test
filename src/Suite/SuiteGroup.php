@@ -70,6 +70,7 @@ final class SuiteGroup
     public function runSuiteTests(
         array &$results,
         bool  $isFilteredByOnly,
+        bool $isStopOnException,
         Closure $callback
     ): void {
         $list = $this->getSuites($isFilteredByOnly);
@@ -82,11 +83,17 @@ final class SuiteGroup
 
             $this->callHook(SuiteHook::BeforeEach);
 
-            $results[] = $suite->run(memory_get_usage());
+            $result = $suite->run(memory_get_usage());
+
+            $results[] = $result;
 
             $this->callHook(SuiteHook::AfterEach);
 
-            $callback();
+            $callback($isStopOnException && $result->isExcepted);
+
+            if ($isStopOnException && $result->isExcepted) {
+                break;
+            }
         }
 
         $this->callHook(SuiteHook::AfterAll);

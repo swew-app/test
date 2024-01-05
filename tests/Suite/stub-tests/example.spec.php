@@ -27,3 +27,13 @@ it('DIFF: new', function () {
     expect("Привет дивный \n новый")
         ->toBe('Привет Мир дивный');
 })->skip();
+
+it('DIFF: new 001', function () {
+    expect("Привет дивный \n новый")
+        ->toBe('Привет Мир дивный');
+});
+
+it('DIFF: new 002', function () {
+    expect("Привет дивный \n новый")
+        ->toBe('Привет Мир дивный');
+});

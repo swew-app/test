@@ -46,7 +46,7 @@ class RunTests extends Command
         }
 
         // Run Tests
-        $commander->testResults = $this->runTests($suiteFilter);
+        $commander->testResults = $this->runTests($commander);
 
         $commander->testingTime = $this->testingTime;
 
@@ -56,7 +56,7 @@ class RunTests extends Command
     private function requirePreloadFile(string $root, string $preloadFile): void
     {
         if (!empty($preloadFile)) {
-            $this->output->writeLn($root . DIRECTORY_SEPARATOR . $preloadFile, '<green>Preload file</><br><cyan> %s</>');
+            $this->output?->writeLn($root . DIRECTORY_SEPARATOR . $preloadFile, '<green>Preload file</><br><cyan> %s</>');
             require realpath($root . DIRECTORY_SEPARATOR . $preloadFile);
         }
     }
@@ -73,11 +73,13 @@ class RunTests extends Command
         $this->suiteGroupList[] = $group;
     }
 
-    private function runTests(string $suiteFilter): array
+    private function runTests(TestMaster $commander): array
     {
         if (!($this->output)) {
             throw new LogicException('Empty output');
         }
+
+        $isStopOnException = $commander->config->bail;
 
         $testsCount = $this->getCount();
 
@@ -91,14 +93,25 @@ class RunTests extends Command
         /** @var array<LogData> $results */
         $results = [];
 
+        $isStoppedByException = false;
+
         // Run tests
         /** @var SuiteGroup $suiteGroup */
         foreach ($this->suiteGroupList as $suiteGroup) {
-            // TODO: stop on bail
+            if ($isStoppedByException) {
+                break;
+            }
+
+            // stop on bail
             $suiteGroup->runSuiteTests(
                 $results,
                 $isFilteredByOnly,
-                function () use ($bar) {
+                $isStopOnException,
+                function (bool $isStopByException) use ($bar, &$isStoppedByException) {
+                    if ($isStopByException) {
+                        $isStoppedByException = true;
+                    }
+
                     $bar->increment(); // progress
                 }
             );
