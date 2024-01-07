@@ -76,11 +76,15 @@ class SearchFiles extends Command
             RecursiveIteratorIterator::SELF_FIRST
         );
 
+        if ($pattern[0] !== '*') {
+            $pattern = '*' . $pattern;
+        }
+
         foreach ($iterator as $file) {
             if (
                 $file->isFile()
                 && !str_contains($file->getPathname(), 'vendor')
-                && fnmatch($pattern, $file->getFilename())
+                && fnmatch($pattern, $file->getPathname())
             ) {
                 $matchingFiles[] = $file->getPathname();
             }
