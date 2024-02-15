@@ -109,9 +109,9 @@ final class DataConverter
         }
 
         return PHP_EOL . "<red>❯</> $fileLine </>" . PHP_EOL
-            . $methodLine
-            . implode(PHP_EOL, $params)
-            . self::getContentByLine($v['file'], $v['line'])
+        . $methodLine
+        . implode(PHP_EOL, $params)
+        . empty($v['line']) ? '' : self::getContentByLine($v['file'], $v['line'])
             . PHP_EOL
             . "</>";
     }
@@ -168,7 +168,7 @@ final class DataConverter
 
     public static function getExceptionTraceLine(?array $item): string
     {
-        if (empty($item)) {
+        if (empty($item) || empty($item['file'])) {
             return '';
         }
         $file = $item['file'];
