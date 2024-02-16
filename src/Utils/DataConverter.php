@@ -111,7 +111,7 @@ final class DataConverter
         return PHP_EOL . "<red>❯</> $fileLine </>" . PHP_EOL
         . $methodLine
         . implode(PHP_EOL, $params)
-        . empty($v['line']) ? '' : self::getContentByLine($v['file'], $v['line'])
+        . (empty($v['line']) ? '' : self::getContentByLine($v['file'], $v['line']))
             . PHP_EOL
             . "</>";
     }
