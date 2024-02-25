@@ -44,6 +44,10 @@ class TestMaster extends SwewCommander
             $argvLocal = $argv;
         }
 
+        if (empty(getenv('__TEST__'))) {
+            putenv('__TEST__=true');
+        }
+
         $this->config = new Config();
 
         $this->startAt = microtime(true);

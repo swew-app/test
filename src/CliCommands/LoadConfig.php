@@ -196,13 +196,6 @@ class LoadConfig extends Command
         }
     }
 
-    public function init(): void
-    {
-        if (empty(getenv('__TEST__'))) {
-            putenv('__TEST__=true');
-        }
-    }
-
     private function writeJsonFile(string $filePath, array|Config $json): void
     {
         $jsonStr = json_encode($json, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
