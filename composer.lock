@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7c80b97349fa5c893b5a60132a141ec0",
+    "content-hash": "562a796f33d951e23acb1184d6fe19f0",
     "packages": [
         {
             "name": "swew/cli",
@@ -76,16 +76,16 @@
         },
         {
             "name": "swew/dd",
-            "version": "v1.3.1",
+            "version": "v1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swew-app/dd.git",
-                "reference": "184e62b6dcb302531bdd192e253fc692b60ef9f2"
+                "reference": "afcb52970e149fd5d01dd2916d1e3a95f841e1c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swew-app/dd/zipball/184e62b6dcb302531bdd192e253fc692b60ef9f2",
-                "reference": "184e62b6dcb302531bdd192e253fc692b60ef9f2",
+                "url": "https://api.github.com/repos/swew-app/dd/zipball/afcb52970e149fd5d01dd2916d1e3a95f841e1c0",
+                "reference": "afcb52970e149fd5d01dd2916d1e3a95f841e1c0",
                 "shasum": ""
             },
             "type": "library",
@@ -107,9 +107,9 @@
             "description": "The simplest way to debug variables. As in Laravel.",
             "support": {
                 "issues": "https://github.com/swew-app/dd/issues",
-                "source": "https://github.com/swew-app/dd/tree/v1.3.1"
+                "source": "https://github.com/swew-app/dd/tree/v1.4.2"
             },
-            "time": "2023-07-30T13:55:18+00:00"
+            "time": "2024-01-11T09:55:43+00:00"
         }
     ],
     "packages-dev": [
@@ -181,16 +181,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.54",
+            "version": "1.10.59",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "3e25f279dada0adc14ffd7bad09af2e2fc3523bb"
+                "reference": "e607609388d3a6d418a50a49f7940e8086798281"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/3e25f279dada0adc14ffd7bad09af2e2fc3523bb",
-                "reference": "3e25f279dada0adc14ffd7bad09af2e2fc3523bb",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e607609388d3a6d418a50a49f7940e8086798281",
+                "reference": "e607609388d3a6d418a50a49f7940e8086798281",
                 "shasum": ""
             },
             "require": {
@@ -239,7 +239,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-01-05T15:50:47+00:00"
+            "time": "2024-02-20T13:59:13+00:00"
         },
         {
             "name": "psalm/phar",
@@ -284,7 +284,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.1",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-mbstring": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"

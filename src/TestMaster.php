@@ -75,13 +75,12 @@ class TestMaster extends SwewCommander
         // RUN
 
         foreach ($this->commands as $commandClass) {
-            /** @var Command $command */
             $command = $this->getCommand($commandClass);
 
             $result = $command();
 
             if ($result === -1) {
-                // кастомный овтет, когда надо досрочно завершить работу без ошибки
+                // кастомный ответ, когда надо досрочно завершить работу без ошибки
                 exit();
             }
             if ($result > 0) {

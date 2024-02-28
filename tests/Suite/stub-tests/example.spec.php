@@ -30,10 +30,12 @@ it('DIFF: new', function () {
 
 it('DIFF: new 001', function () {
     expect("Привет дивный \n новый")
+        ->not
         ->toBe('Привет Мир дивный');
 });
 
 it('DIFF: new 002', function () {
     expect("Привет дивный \n новый")
+        ->not
         ->toBe('Привет Мир дивный');
 });
