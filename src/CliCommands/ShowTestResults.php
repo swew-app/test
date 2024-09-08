@@ -93,7 +93,7 @@ class ShowTestResults extends Command
         $width = $this->output?->width() ?? 80;
 
         foreach ($logo as &$v) {
-            $v = str_pad($v, $width, ' ', STR_PAD_BOTH);
+            $v = str_pad($v, $width - 2, ' ', STR_PAD_BOTH);
         }
 
         $this->output?->writeLn(implode("\n", $logo));
