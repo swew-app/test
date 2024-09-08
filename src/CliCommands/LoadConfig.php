@@ -186,6 +186,17 @@ class LoadConfig extends Command
         $conf->logClear = $jsonConfig['log']['clear'] ?? $conf->logClear;
         $conf->logShort = $jsonConfig['log']['short'] ?? $conf->logShort;
         $conf->logTraceReverse = $jsonConfig['log']['traceReverse'] ?? $conf->logTraceReverse;
+
+        if (!empty($jsonConfig['env'])) {
+            if (!is_array($jsonConfig['env'])) {
+                throw new \Exception('In the “swew.json” config, the field “test.env” - should have a key-value view');
+            }
+
+            // TODO: Добавить ключ для загрузки .env файла
+            foreach($jsonConfig['env'] as $key => $value) {
+                putenv("$key=$value");
+            }
+        }
     }
 
     private function checkKey(string $key, array $arr, string $file): void

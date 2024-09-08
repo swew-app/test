@@ -34,6 +34,8 @@ class Config implements JsonSerializable
      */
     private array $testFiles = [];
 
+    private array $env = [];
+
     public function jsonSerialize(): array
     {
         return [
@@ -47,6 +49,9 @@ class Config implements JsonSerializable
                     'traceReverse' => $this->logTraceReverse,
                     'clear' => $this->logClear,
                     'short' => $this->logShort,
+                ],
+                'env' => [
+                    "__TEST__" => true,
                 ],
             ],
         ];
