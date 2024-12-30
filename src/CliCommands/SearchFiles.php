@@ -25,7 +25,7 @@ class SearchFiles extends Command
 
         $commander = $this->getCommander();
 
-        if (!($commander instanceof TestMaster)) {
+        if (! ($commander instanceof TestMaster)) {
             throw new LogicException('Is not testMaster');
         }
 
@@ -46,6 +46,20 @@ class SearchFiles extends Command
         // Получаем аргументы для фильтрации списка fileName SuiteName
         $filter = $this->argv('filter');
 
+        // Если фильтр пуст, а последним аргументом передали название файла
+        if (empty($filter)) {
+            $args = $this->getArgs();
+
+            if (count($args) === 1) {
+                // Проверяем, что последний аргумент подходит
+                $namePattern = $args[0];
+                // Название не начинается на `-`
+                if ($namePattern[0] !== '-') {
+                    $filter = $namePattern;
+                }
+            }
+        }
+
         // Фильтруем список файлов относительно аргументов
         if ($filter) {
             if (gettype($filter) !== 'string') {
@@ -57,7 +71,7 @@ class SearchFiles extends Command
 
         $suite = $this->argv('suite');
 
-        if (!empty($suite)) {
+        if (! empty($suite)) {
             if (gettype($suite) !== 'string') {
                 throw new LogicException('Passed wrong type');
             }
@@ -77,13 +91,13 @@ class SearchFiles extends Command
         );
 
         if ($pattern[0] !== '*') {
-            $pattern = '*' . $pattern;
+            $pattern = '*'.$pattern;
         }
 
         foreach ($iterator as $file) {
             if (
                 $file->isFile()
-                && !str_contains($file->getPathname(), 'vendor')
+                && ! str_contains($file->getPathname(), 'vendor')
                 && fnmatch($pattern, $file->getPathname())
             ) {
                 $matchingFiles[] = $file->getPathname();
