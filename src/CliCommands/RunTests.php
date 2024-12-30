@@ -25,7 +25,7 @@ class RunTests extends Command
         /** @var TestMaster $commander */
         $commander = $this->getCommander();
 
-        if (!($commander instanceof TestMaster)) {
+        if (! ($commander instanceof TestMaster)) {
             throw new LogicException('Is not testMaster');
         }
 
@@ -55,9 +55,9 @@ class RunTests extends Command
 
     private function requirePreloadFile(string $root, string $preloadFile): void
     {
-        if (!empty($preloadFile)) {
-            $this->output?->writeLn($root . DIRECTORY_SEPARATOR . $preloadFile, '<green>Preload file</><br><cyan> %s</>');
-            require realpath($root . DIRECTORY_SEPARATOR . $preloadFile);
+        if (! empty($preloadFile)) {
+            $this->output?->writeLn($root.DIRECTORY_SEPARATOR.$preloadFile, '<green>Preload file</><br><cyan> %s</>');
+            require realpath($root.DIRECTORY_SEPARATOR.$preloadFile);
         }
     }
 
@@ -65,17 +65,16 @@ class RunTests extends Command
     {
         $group = new SuiteGroup($file);
 
-        if (!empty($suiteFilter)) {
+        if (! empty($suiteFilter)) {
             $group->filterSuiteByMessage($suiteFilter);
         }
-
 
         $this->suiteGroupList[] = $group;
     }
 
     private function runTests(TestMaster $commander): array
     {
-        if (!($this->output)) {
+        if (! ($this->output)) {
             throw new LogicException('Empty output');
         }
 
