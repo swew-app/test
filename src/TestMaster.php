@@ -20,7 +20,7 @@ class TestMaster extends SwewCommander
 {
     public readonly Config $config;
 
-    /** @var array<LogData> $testResults */
+    /** @var array<LogData> */
     public array $testResults = [];
 
     public float $testingTime = 0;

@@ -28,11 +28,11 @@ class LoadConfig extends Command
     {
         $commander = $this->getCommander();
 
-        if (!($commander instanceof TestMaster)) {
+        if (! ($commander instanceof TestMaster)) {
             throw new LogicException('Is not testMaster');
         }
 
-        if (!($this->output)) {
+        if (! ($this->output)) {
             throw new LogicException('Empty output');
         }
 
@@ -48,9 +48,9 @@ class LoadConfig extends Command
 
         // Search config file
         $configPath = $this->argv('config') ?: 'swew.json';
-        $configFile = $this->getRootPath('', $configPath) . $configPath;
+        $configFile = $this->getRootPath('', $configPath).$configPath;
 
-        if (!empty($configFile)) {
+        if (! empty($configFile)) {
             $this->updateConfig($configFile, $commander->config);
         }
 
@@ -77,10 +77,11 @@ class LoadConfig extends Command
 
         if (empty($root)) {
             $this->output?->error("CONFIG: Can't find root dir with composer.json");
+
             return self::ERROR;
         }
 
-        $configFile = $root . 'swew.json';
+        $configFile = $root.'swew.json';
 
         $this->writeJsonFile($configFile, $config);
 
@@ -95,13 +96,13 @@ class LoadConfig extends Command
     {
         $answer = $this->output?->askYesNo('Add script "test" to composer.json?');
 
-        if (!$answer) {
+        if (! $answer) {
             return;
         }
 
         $root = $this->getRootPath();
 
-        $composerFile = realpath($root . 'composer.json');
+        $composerFile = realpath($root.'composer.json');
 
         $json = json_decode(file_get_contents($composerFile), true);
 
@@ -118,11 +119,12 @@ class LoadConfig extends Command
 
     private function getRootPath(string $dirArg = '', string $searchFile = 'composer.json'): string
     {
-        if (!empty($dirArg)) {
+        if (! empty($dirArg)) {
             if (str_starts_with($dirArg, '/')) {
                 return $dirArg;
             }
-            return realpath(getcwd() . DIRECTORY_SEPARATOR . $dirArg);
+
+            return realpath(getcwd().DIRECTORY_SEPARATOR.$dirArg);
         }
 
         $dirsForSearch = [__DIR__, getcwd()];
@@ -140,7 +142,7 @@ class LoadConfig extends Command
                     break;
                 }
 
-                $composerFile = $path . DIRECTORY_SEPARATOR . $searchFile;
+                $composerFile = $path.DIRECTORY_SEPARATOR.$searchFile;
 
                 if (file_exists($composerFile)) {
                     if ($searchFile === 'composer.json') {
@@ -151,7 +153,7 @@ class LoadConfig extends Command
                         }
                     }
 
-                    return $path . DIRECTORY_SEPARATOR;
+                    return $path.DIRECTORY_SEPARATOR;
                 }
             }
         }
@@ -161,11 +163,11 @@ class LoadConfig extends Command
 
     private function updateConfig(string $configFile, Config $conf): void
     {
-        if (!file_exists($configFile)) {
-            $errorMessage = "<bgRed> CONFIG: Can't find config file: '$configFile' </>" . PHP_EOL . PHP_EOL .
-                '  <b>Try creating a new config by adding the</> <yellow>--init</>' . PHP_EOL . PHP_EOL .
-                '<b>example:</>' . PHP_EOL .
-                '  <yellow>composer exec t -- --init</>' . PHP_EOL . PHP_EOL;
+        if (! file_exists($configFile)) {
+            $errorMessage = "<bgRed> CONFIG: Can't find config file: '$configFile' </>".PHP_EOL.PHP_EOL.
+                '  <b>Try creating a new config by adding the</> <yellow>--init</>'.PHP_EOL.PHP_EOL.
+                '<b>example:</>'.PHP_EOL.
+                '  <yellow>composer exec t -- --init</>'.PHP_EOL.PHP_EOL;
 
             $this->output?->writeLn($errorMessage);
             exit(self::ERROR);
@@ -187,13 +189,13 @@ class LoadConfig extends Command
         $conf->logShort = $jsonConfig['log']['short'] ?? $conf->logShort;
         $conf->logTraceReverse = $jsonConfig['log']['traceReverse'] ?? $conf->logTraceReverse;
 
-        if (!empty($jsonConfig['env'])) {
-            if (!is_array($jsonConfig['env'])) {
+        if (! empty($jsonConfig['env'])) {
+            if (! is_array($jsonConfig['env'])) {
                 throw new \Exception('In the “swew.json” config, the field “test.env” - should have a key-value view');
             }
 
             // TODO: Добавить ключ для загрузки .env файла
-            foreach($jsonConfig['env'] as $key => $value) {
+            foreach ($jsonConfig['env'] as $key => $value) {
                 putenv("$key=$value");
             }
         }
@@ -201,7 +203,7 @@ class LoadConfig extends Command
 
     private function checkKey(string $key, array $arr, string $file): void
     {
-        if (!array_key_exists($key, $arr)) {
+        if (! array_key_exists($key, $arr)) {
             $this->output?->error("Key '$key' not found in file $file");
             exit(self::ERROR);
         }
@@ -211,7 +213,7 @@ class LoadConfig extends Command
     {
         $jsonStr = json_encode($json, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
-        $file = fopen($filePath, 'w') or die("Unable to open file '$filePath'!");
+        $file = fopen($filePath, 'w') or exit("Unable to open file '$filePath'!");
         fwrite($file, $jsonStr);
         fclose($file);
     }

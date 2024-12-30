@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "swew/cli",
-            "version": "v1.1.17",
+            "version": "v1.1.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swew-app/cli.git",
-                "reference": "f01b44b6b3458e1661b4add5b31c93654ed4b60f"
+                "reference": "96bb46245dfca7468c404bb20a276f91331fad0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swew-app/cli/zipball/f01b44b6b3458e1661b4add5b31c93654ed4b60f",
-                "reference": "f01b44b6b3458e1661b4add5b31c93654ed4b60f",
+                "url": "https://api.github.com/repos/swew-app/cli/zipball/96bb46245dfca7468c404bb20a276f91331fad0a",
+                "reference": "96bb46245dfca7468c404bb20a276f91331fad0a",
                 "shasum": ""
             },
             "require": {
@@ -70,9 +70,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swew-app/cli/issues",
-                "source": "https://github.com/swew-app/cli/tree/v1.1.17"
+                "source": "https://github.com/swew-app/cli/tree/v1.1.21"
             },
-            "time": "2024-01-05T18:39:45+00:00"
+            "time": "2024-12-30T13:24:41+00:00"
         },
         {
             "name": "swew/dd",
@@ -181,16 +181,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.59",
+            "version": "1.12.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "e607609388d3a6d418a50a49f7940e8086798281"
+                "reference": "9b469068840cfa031e1deaf2fa1886d00e20680f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e607609388d3a6d418a50a49f7940e8086798281",
-                "reference": "e607609388d3a6d418a50a49f7940e8086798281",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9b469068840cfa031e1deaf2fa1886d00e20680f",
+                "reference": "9b469068840cfa031e1deaf2fa1886d00e20680f",
                 "shasum": ""
             },
             "require": {
@@ -233,13 +233,9 @@
                 {
                     "url": "https://github.com/phpstan",
                     "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
-                    "type": "tidelift"
                 }
             ],
-            "time": "2024-02-20T13:59:13+00:00"
+            "time": "2024-12-17T17:00:20+00:00"
         },
         {
             "name": "psalm/phar",
@@ -279,7 +275,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -287,6 +283,6 @@
         "ext-json": "*",
         "ext-mbstring": "*"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
