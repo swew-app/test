@@ -22,11 +22,17 @@ class ShowTestResults extends Command
     private bool $isShort = false;
 
     private int $allTests = 0;
+
     private int $allTestFilesCount = 0;
+
     private int $passedTests = 0;
+
     private int $exceptedTests = 0;
+
     private int $skippedTests = 0;
+
     private int $todoTests = 0;
+
     private int $finishAt = 0;
 
     public function __invoke(): int
@@ -34,11 +40,11 @@ class ShowTestResults extends Command
         /** @var TestMaster $commander */
         $commander = $this->getCommander();
 
-        if (!($commander instanceof TestMaster)) {
+        if (! ($commander instanceof TestMaster)) {
             throw new LogicException('Is not testMaster');
         }
 
-        if (!($this->output)) {
+        if (! ($this->output)) {
             throw new LogicException('Empty output');
         }
 
@@ -86,7 +92,7 @@ class ShowTestResults extends Command
             '      .-. .-. .-. .-.      ',
             '       |  |-  `-.  |       ',
             '     \'  `-\' `-\'  \'     ',
-            'php: ' . PHP_VERSION . ';',
+            'php: '.PHP_VERSION.';',
             '</>',
         ];
 
@@ -101,7 +107,7 @@ class ShowTestResults extends Command
 
     private function showFiles(array $logDataList): void
     {
-        if (!($this->output)) {
+        if (! ($this->output)) {
             throw new LogicException('Empty output');
         }
 
@@ -123,7 +129,7 @@ class ShowTestResults extends Command
                 $this->output->writeLn(CliStr::vm()->trimPath($filePath), '<cyan>%s</>');
             }
 
-            if (!$this->isShort) {
+            if (! $this->isShort) {
                 $line = DataConverter::getTestSuiteLine($item);
                 $this->output->writeLn($line);
             }
@@ -154,7 +160,7 @@ class ShowTestResults extends Command
 
     private function showExceptions(array $logDataList, bool $traceReverse): void
     {
-        if (!($this->output)) {
+        if (! ($this->output)) {
             throw new LogicException('Empty output');
         }
 
@@ -162,11 +168,11 @@ class ShowTestResults extends Command
 
         /** @var LogData $item */
         foreach ($logDataList as $item) {
-            if (!$item->isExcepted || is_null($item->exception)) {
+            if (! $item->isExcepted || is_null($item->exception)) {
                 continue;
             }
 
-            ++$exceptNumber;
+            $exceptNumber++;
             $suitTitle = DataConverter::getMessage($item);
 
             $this->output->writeLn(
@@ -197,11 +203,10 @@ class ShowTestResults extends Command
 
             $this->output->writeLn($msg);
 
-
             $filePath = DataConverter::getExceptionTraceLine($item->exception->getTrace()[0]);
             $this->output->writeLn($filePath, '<cyan>%s</>');
 
-            $this->output->writeLn(DataConverter::getIcon($item) . ' <red>' . $suitTitle . '</>');
+            $this->output->writeLn(DataConverter::getIcon($item).' <red>'.$suitTitle.'</>');
 
             $this->output->writeLn($item->exception->getMessage());
         }
@@ -213,15 +218,15 @@ class ShowTestResults extends Command
         $suiteFilter = $commander->config->getSuite();
         $startAt = $commander->startAt;
 
-        if (!($this->output)) {
+        if (! ($this->output)) {
             throw new LogicException('Empty output');
         }
 
-        if (!empty($filePattern)) {
+        if (! empty($filePattern)) {
             $this->output->writeLn("<cyan>Filtered by file pattern (--filter): <yellow>$filePattern</>");
         }
 
-        if (!empty($suiteFilter)) {
+        if (! empty($suiteFilter)) {
             $this->output->writeLn("<cyan>Filtered by suite pattern (--suite):<yellow> {$suiteFilter}</>");
         }
 
@@ -247,16 +252,15 @@ class ShowTestResults extends Command
         $duration = DataConverter::formatMicrotime($startAt - $this->finishAt);
         $memory = DataConverter::memorySize(memory_get_peak_usage());
 
-
         $lines = [
             CliStr::vm()->getLine(),
             " Test Files  <cyan>{$this->allTestFilesCount}</>",
             "      Tests  $tst <green>({$this->allTests})</>",
-            "",
+            '',
             " Max memory  <yellow>{$memory}</>",
             "   Start at  <gray>{$timeSrt}</>",
             "   Duration  <cyan>{$duration}</><gray> s</>",
-            ""
+            '',
         ];
 
         $this->output->writeLn(implode("\n", $lines));

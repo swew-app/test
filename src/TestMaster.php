@@ -15,6 +15,7 @@ use Swew\Test\Config\Config;
 use Swew\Test\LogMaster\Log\LogData;
 use Swew\Test\Utils\CliStr;
 use Swew\Test\Utils\DataConverter;
+use Swew\Test\Utils\Hash;
 
 class TestMaster extends SwewCommander
 {
@@ -27,6 +28,8 @@ class TestMaster extends SwewCommander
 
     public float $startAt = 0;
 
+    public static string $hashWatchFiles = '';
+
     protected array $commands = [
         LoadConfig::class,
         SearchFiles::class,
@@ -35,7 +38,7 @@ class TestMaster extends SwewCommander
     ];
 
     public function __construct(
-        array $argvLocal = [],
+        array                   $argvLocal = [],
         private readonly Output $output = new Output(),
     ) {
         global $argv;
@@ -55,14 +58,55 @@ class TestMaster extends SwewCommander
         set_exception_handler(function ($e) {
             $msg = DataConverter::getParsedException($e, '[ Error outside of tests ]');
             CliStr::vm()->output->writeLn($msg);
+            exit(1);
         });
 
         parent::__construct($argvLocal, $output);
     }
 
-    public static function runTest(): void
+    public static function runTest(array $arg = []): void
     {
-        (new self())->run();
+        global $argv;
+
+        $argList = count($arg) > 0 ? $arg : $argv;
+
+        $isWatchMode = in_array('--watch', $argList) || in_array('-w', $argList);
+
+        if ($isWatchMode) {
+            $pid = \pcntl_fork();
+
+            if ($pid == -1) {
+                // Ошибка при создании дочернего процесса
+                throw new \RuntimeException('Fork failed');
+            } elseif ($pid) {
+                // Родительский процесс
+                // Ждем завершения дочернего процесса
+                pcntl_wait($status);
+
+                self::runTest($argList);
+
+                // Что бы не было форка родителя
+                exit();
+
+            } else {
+                $master = new self($argList);
+                // Дочерний процесс
+                $master->run();
+
+                self::$hashWatchFiles = Hash::fromFiles($master->config->getTestFiles());
+
+                while (true) {
+                    sleep(1);
+
+                    if (self::$hashWatchFiles !== Hash::fromFiles($master->config->getTestFiles())) {
+                        break;
+                    }
+                }
+            }
+
+        } else {
+            (new self($argList))->run();
+        }
     }
 
     public function run(): void

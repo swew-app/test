@@ -49,7 +49,7 @@ final class SuiteGroup
 
     public static function getCurrentSuite(): ?Suite
     {
-        return  self::$currentSuite;
+        return self::$currentSuite;
     }
 
     public function getCount(): int
@@ -62,14 +62,14 @@ final class SuiteGroup
         $hookMethod = $hook->value;
         $fn = $this->$hookMethod;
 
-        if (!is_null($fn)) {
+        if (! is_null($fn)) {
             $fn();
         }
     }
 
     public function runSuiteTests(
         array &$results,
-        bool  $isFilteredByOnly,
+        bool $isFilteredByOnly,
         bool $isStopOnException,
         Closure $callback
     ): void {
@@ -107,6 +107,7 @@ final class SuiteGroup
                 return true;
             }
         }
+
         return false;
     }
 

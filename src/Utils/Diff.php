@@ -19,7 +19,7 @@ final class Diff
         }
 
         if ($s2 === '') {
-            return "<yellow> value:</>" . PHP_EOL . CliStr::vm()->getWithPrefix($s1, false);
+            return '<yellow> value:</>'.PHP_EOL.CliStr::vm()->getWithPrefix($s1, false);
         }
 
         $res = [];
@@ -60,11 +60,11 @@ final class Diff
 
         if (\is_object($value)) {
             if (\method_exists($value, '__toString')) {
-                return \get_class($value) . ': ' . self::valueToString($value->__toString());
+                return \get_class($value).': '.self::valueToString($value->__toString());
             }
 
             if ($value instanceof DateTime || $value instanceof DateTimeImmutable) {
-                return \get_class($value) . ': ' . self::valueToString($value->format('c'));
+                return \get_class($value).': '.self::valueToString($value->format('c'));
             }
 
             return \get_class($value);
@@ -74,6 +74,6 @@ final class Diff
             return 'resource';
         }
 
-        return (string)$value;
+        return (string) $value;
     }
 }
