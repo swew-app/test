@@ -44,7 +44,7 @@ final class CliStr
         if ($this->widthSize) {
             return $this->widthSize;
         }
-        return $this->widthSize = max($this->output->width(), 60);
+        return $this->widthSize = max($this->output->width() - 3, 60);
     }
 
     public function getWithPrefix(string $text, bool $isGood): string

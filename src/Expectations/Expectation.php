@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Swew\Test\Expectations;
 
+use Closure;
 use Swew\Test\Exceptions\Exception;
 use Swew\Test\Exceptions\ExpectException;
 use Swew\Test\Suite\SuiteGroup;
 use Traversable;
-use Closure;
 
 /**
  * @property Expectation $not
@@ -850,9 +850,9 @@ final class Expectation
                 );
             }
         } else {
-            if ($length !== strlen($this->expectValue)) {
+            if ($length !== mb_strlen($this->expectValue, 'UTF-8')) {
                 throw new ExpectException(
-                    strlen($this->expectValue),
+                    mb_strlen($this->expectValue, 'UTF-8'),
                     $length,
                     $this->message ?: "Expected a value to contain $length characters"
                 );
@@ -1025,7 +1025,7 @@ final class Expectation
         return $this;
     }
 
-    public function each(callable $callback = null): self
+    public function each(callable $callback): self
     {
         if ($this->isNot) {
             throw new Exception('The method "each" cannot be used with "not()"');

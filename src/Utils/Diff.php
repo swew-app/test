@@ -22,18 +22,40 @@ final class Diff
             return '<yellow> value:</>'.PHP_EOL.CliStr::vm()->getWithPrefix($s1, false);
         }
 
-        $res = [];
-        if ($isShowTitle) {
-            $res[] = '<yellow> actual:</>';
-        }
-        $res[] = $s1;
+        return CliStr::vm()->output->format(
+            PHP_EOL . '<yellow>compare:</>' .PHP_EOL.PHP_EOL . self::compare($s1, $s2)
+        );
+    }
 
-        if ($isShowTitle) {
-            $res[] = '<yellow> expected:</>';
-        }
-        $res[] = $s2;
+    private static function compare(string $first, string $second): string
+    {
+        $firstLines = explode("\n", $first);
+        $secondLines = explode("\n", $second);
 
-        return CliStr::vm()->output->format(implode(PHP_EOL, $res));
+        $result = [];
+        $maxLines = max(count($firstLines), count($secondLines));
+
+        $prefix = '<bgGray>❯</>';
+
+        for ($i = 0; $i < $maxLines; $i++) {
+            $firstLine = $firstLines[$i] ?? '';
+            $secondLine = $secondLines[$i] ?? '';
+
+            if ($firstLine === $secondLine) {
+                $result[] = $firstLine;
+                continue;
+            }
+
+            if (strlen($secondLine) > strlen($firstLine)) {
+                // Extra characters in second line
+                $result[] = $prefix . $firstLine . "\n$prefix<red>" . $secondLine . '</>';
+            } else {
+                // Missing characters in second line
+                $result[] = $prefix . '<red>' . $firstLine . "</>\n$prefix" . $secondLine;
+            }
+        }
+
+        return implode("\n", $result);
     }
 
     private static function valueToString(mixed $value): string

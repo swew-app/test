@@ -25,29 +25,25 @@ final class DataConverter
         };
     }
 
-    public static function getTime(float|int $time): string
+    public static function getTime(float $time): string
     {
-        $len = strlen(strval(intval($time)));
-
-        if ($len > 1) {
-            $decimals = 0;
-        } else {
-            $decimals = 4;
+        // Определяем пороги для разных единиц измерения
+        if ($time >= 1) {
+            // Секунды: >= 1
+            return number_format($time, 2, '.', '') . '<gray>s</>';
+        } elseif ($time >= 0.001) {
+            // Миллисекунды: >= 0.001 (1 ms)
+            return number_format($time * 1000, 2, '.', '') . '<gray>ms</>';
         }
-
-        $isMs = $time < 0.001;
-
-        if ($isMs) {
-            $time = $time * 1000;
-        }
-
-        $val = substr(number_format($time, $decimals), 0, 8);
-
-        return $val . ($isMs ? '<gray>ms</>' : '<gray>s </>');
+        // Микросекунды: < 0.001
+        return number_format($time * 1000000, 2, '.', '') . '<gray>µs</>';
     }
 
     public static function formatMicrotime(float $microtime): string
     {
+        if ($microtime < 0) {
+            $microtime *= -1;
+        }
         $seconds = (int) $microtime; // Получаем число полных секунд
         $microseconds = $microtime - $seconds; // Получаем дробную часть (миллисекунды)
         $minutes = (int) ($seconds / 60); // Конвертируем секунды в минуты
@@ -80,7 +76,7 @@ final class DataConverter
     {
         $fileLine = self::getExceptionTraceLine($v);
 
-        $width = CliStr::vm()->width() - 1;
+        $width = CliStr::vm()->width();
 
         $methodLine = '';
 
@@ -102,18 +98,45 @@ final class DataConverter
         if (isset($v['args']) && count($v['args']) > 0) {
             $params[] = '<bgPurple> ' . str_pad('Passed arguments', $width, ' ', STR_PAD_BOTH) . '</>';
             foreach ($v['args'] as $param) {
-                $params[] = '<bgPurple> </><purple> ❯ </>' . print_r($param, true);
+                $params[] = '<bgPurple> </><purple> ❯ </>' . self::highlightSting(print_r($param, true));
             }
             $params[] = '<bgPurple> </>';
             $params[] = '';
         }
 
         return PHP_EOL . "<red>❯</> $fileLine </>" . PHP_EOL
-        . $methodLine
-        . implode(PHP_EOL, $params)
-        . (empty($v['line']) ? '' : self::getContentByLine($v['file'], $v['line']))
+            . $methodLine
+            . implode(PHP_EOL, $params)
+            . (empty($v['line']) ? '' : self::getContentByLine($v['file'], $v['line']))
             . PHP_EOL
             . "</>";
+    }
+
+    public static function highlightSting(string $text)
+    {
+        // reduce spaces
+        $text = preg_replace('/[ ]{2}/sm', ' ', $text);
+
+        // Array (...) => [ ]
+        $text = preg_replace('/Array\n\s*\(([^\)\S]*)\)/sm', '[$1]', $text);
+        $text = preg_replace('/Array\n\s*\(([^\)]*)\)/sm', '[$1]', $text);
+        $text = preg_replace('/\s*\[\s+\]\s/sm', ' [ ]', $text);
+
+        // Object
+        $text = preg_replace('/(\sClosure Object)\s*\(\s*\)/sm', '<blue>Closure Object ()</>', $text);
+        $text = preg_replace('/(\sClosure Object\s)/sm', '<blue>$1</>', $text);
+        $text = preg_replace('/\sObject\s+\(/sm', ' Object (', $text);
+        $text = preg_replace('/\s(Object)\s+(\*RECURSION\*)/sm', ' <red>$1 $2</>', $text);
+        $text = preg_replace('/\s(Resource id #\d+)/sm', ' <green>$1</>', $text);
+
+        // =>
+        $text = preg_replace('/(=>)/mi', '<gray>$1</>', $text);
+        // [key]
+        $text = preg_replace('/(\[)([^\]]*)(\])/sm', '<red>$1<green>$2<red>$3</>', $text);
+
+        $text = trim($text);
+
+        return $text;
     }
 
     private static function getContentByLine(string $filePath, int $line): string
@@ -153,9 +176,12 @@ final class DataConverter
         $right = ' ' . self::memorySize($item->memoryUsage) . '  ' . self::getTime($item->timeUsage);
         $width = CliStr::vm()->width();
 
-        $delimiterWidth = 2 + $width - strlen(strip_tags($icon)) - strlen(strip_tags($msg)) - strlen(strip_tags($right));
+        $delimiterWidth = $width
+                            - mb_strlen(strip_tags($icon), 'UTF-8')
+                            - mb_strlen(strip_tags($msg), 'UTF-8')
+                            - mb_strlen(strip_tags($right), 'UTF-8');
 
-        if ($delimiterWidth > 4) {
+        if ($delimiterWidth > 2) {
             $delimiter = str_pad(' ', $delimiterWidth, '.');
         }
 
@@ -184,10 +210,21 @@ final class DataConverter
         $trace = array_reverse($exception->getTrace());
 
         foreach ($trace as $t) {
+            if (
+                isset($t['file']) &&
+                (
+                    str_contains($t['file'], 'vendor/swew/test') ||
+                    str_contains($t['file'], 'swew/test/src') ||
+                    str_contains($t['file'], 'swew/test/bin') ||
+                    str_contains($t['file'], 'vendor/bin/t')
+                )
+            ) {
+                continue;
+            }
             $text .= DataConverter::parseTraceItem($t);
         }
 
-        $text .= '<red>❯❯</> ' .$exception->getFile() . ':' . $exception->getLine() . PHP_EOL;
+        $text .= '<red>❯❯</> ' . $exception->getFile() . ':' . $exception->getLine() . PHP_EOL;
         $text .= self::getContentByLine($exception->getFile(), $exception->getLine());
 
         $text .= "<br><br><bgYellow> </> <bgRed> " . trim($exception->getMessage(), PHP_EOL) . '</>';

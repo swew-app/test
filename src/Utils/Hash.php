@@ -14,6 +14,10 @@ final class Hash
     {
         $hashes = [];
 
+        if (count($files) === 0) {
+            return '';
+        }
+
         foreach ($files as $file) {
             $hashes[] = self::path(dirname($file, 2));
         }

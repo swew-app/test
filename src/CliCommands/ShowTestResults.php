@@ -190,7 +190,12 @@ class ShowTestResults extends Command
             foreach ($trace as $t) {
                 if (
                     isset($t['file']) &&
-                    (str_contains($t['file'], 'vendor/swew/test') || str_contains($t['file'], 'vendor/bin/t'))
+                    (
+                        str_contains($t['file'], 'vendor/swew/test') ||
+                        str_contains($t['file'], 'swew/test/src') ||
+                        str_contains($t['file'], 'swew/test/bin') ||
+                        str_contains($t['file'], 'vendor/bin/t')
+                    )
                 ) {
                     continue;
                 }
@@ -208,7 +213,7 @@ class ShowTestResults extends Command
 
             $this->output->writeLn(DataConverter::getIcon($item).' <red>'.$suitTitle.'</>');
 
-            $this->output->writeLn($item->exception->getMessage());
+            $this->output->writeLn($item->exception->getMessage(), "<yellow>Exception:</><bgRed>\n %s \n</>");
         }
     }
 

@@ -43,6 +43,10 @@ class TestMaster extends SwewCommander
     ) {
         global $argv;
 
+        if (isset($GLOBALS['_composer_autoload_path'])) {
+            require_once $GLOBALS['_composer_autoload_path'];
+        }
+
         if (count($argvLocal) === 0) {
             $argvLocal = $argv;
         }
@@ -72,7 +76,11 @@ class TestMaster extends SwewCommander
 
         $isWatchMode = in_array('--watch', $argList) || in_array('-w', $argList);
 
-        if ($isWatchMode) {
+        if ($isWatchMode === false) {
+            (new self($argList))->run();
+        } else {
+            // WATCH MODE
+
             $pid = \pcntl_fork();
 
             if ($pid == -1) {
@@ -83,14 +91,15 @@ class TestMaster extends SwewCommander
                 // Ждем завершения дочернего процесса
                 pcntl_wait($status);
 
+                if ($status > 0) {
+                    exit($status);
+                }
+
+                sleep(1);
                 self::runTest($argList);
-
-                // Что бы не было форка родителя
-                exit();
-
             } else {
-                $master = new self($argList);
                 // Дочерний процесс
+                $master = new self($argList);
                 $master->run();
 
                 self::$hashWatchFiles = Hash::fromFiles($master->config->getTestFiles());
@@ -103,9 +112,6 @@ class TestMaster extends SwewCommander
                     }
                 }
             }
-
-        } else {
-            (new self($argList))->run();
         }
     }
 

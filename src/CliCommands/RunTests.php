@@ -29,6 +29,10 @@ class RunTests extends Command
             throw new LogicException('Is not testMaster');
         }
 
+        if (!empty($commander->config->timezone)) {
+            \date_default_timezone_set($commander->config->timezone);
+        }
+
         // Preload file
         $this->requirePreloadFile(
             $commander->config->getRoot(),

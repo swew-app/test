@@ -8,6 +8,8 @@ use JsonSerializable;
 
 class Config implements JsonSerializable
 {
+    public string $timezone = 'Europe/Moscow';
+
     public string $preloadFile = '';
 
     public array $paths = ['*.spec.php', '*.test.php'];
@@ -40,6 +42,7 @@ class Config implements JsonSerializable
     {
         return [
             'test' => [
+                'timezone' => $this->timezone,
                 'preloadFile' => $this->preloadFile,
                 'paths' => $this->paths,
                 'bail' => $this->bail,
