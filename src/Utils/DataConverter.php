@@ -224,7 +224,7 @@ final class DataConverter
             $text .= DataConverter::parseTraceItem($t);
         }
 
-        $text .= '<red>❯❯</> ' . $exception->getFile() . ':' . $exception->getLine() . PHP_EOL;
+        $text .= "\n" . '<red>❯❯</> ' . $exception->getFile() . ':' . $exception->getLine() . PHP_EOL;
         $text .= self::getContentByLine($exception->getFile(), $exception->getLine());
 
         $text .= "<br><br><bgYellow> </> <bgRed> " . trim($exception->getMessage(), PHP_EOL) . '</>';

@@ -17,6 +17,8 @@ final class Expectation
 {
     private bool $isNot = false;
 
+    private bool $isNeedDump = false;
+
     /**
      * @var array <string, Closure>
      */
@@ -24,12 +26,20 @@ final class Expectation
 
     public function __construct(
         private readonly mixed $expectValue,
-        private string         $message = ''
+        private string $message = '',
     ) {
         $suite = SuiteGroup::getCurrentSuite();
 
         if (!is_null($suite)) {
             $suite->stopLogData();
+        }
+    }
+
+    function __destruct()
+    {
+        if ($this->isNeedDump) {
+            /** @phpstan-ignore-next-line */
+            __dump($this->expectValue);
         }
     }
 
@@ -67,7 +77,6 @@ final class Expectation
         self::$extends[$name] = $extend;
     }
 
-
     public function not(): self
     {
         $this->isNot = true;
@@ -86,18 +95,14 @@ final class Expectation
     {
         if ($this->isNot) {
             if ($this->expectValue === $value) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    $value,
-                    $this->message ?: 'Expected a value identical:'
-                );
+                throw new ExpectException($this->expectValue, $value, $this->message ?: 'Expected a value identical:');
             }
         } else {
             if ($this->expectValue !== $value) {
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: 'Expected a value not identical:'
+                    $this->message ?: 'Expected a value not identical:',
                 );
             }
         }
@@ -109,19 +114,11 @@ final class Expectation
     {
         if ($this->isNot) {
             if (is_array($this->expectValue)) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    'Not Array',
-                    $this->message ?: 'Expected not an array.'
-                );
+                throw new ExpectException($this->expectValue, 'Not Array', $this->message ?: 'Expected not an array.');
             }
         } else {
             if (!is_array($this->expectValue)) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    'Array',
-                    $this->message ?: 'Expected an array.'
-                );
+                throw new ExpectException($this->expectValue, 'Array', $this->message ?: 'Expected an array.');
             }
         }
 
@@ -135,7 +132,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     'Non-empty empty value',
-                    $this->message ?: 'Expected a non-empty value.'
+                    $this->message ?: 'Expected a non-empty value.',
                 );
             }
         } else {
@@ -143,7 +140,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     'Empty value',
-                    $this->message ?: 'Expected an empty value.'
+                    $this->message ?: 'Expected an empty value.',
                 );
             }
         }
@@ -155,19 +152,11 @@ final class Expectation
     {
         if ($this->isNot) {
             if ($this->expectValue === true) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    false,
-                    $this->message ?: 'Expected a value to be false.'
-                );
+                throw new ExpectException($this->expectValue, false, $this->message ?: 'Expected a value to be false.');
             }
         } else {
             if ($this->expectValue !== true) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    true,
-                    $this->message ?: 'Expected a value to be true.'
-                );
+                throw new ExpectException($this->expectValue, true, $this->message ?: 'Expected a value to be true.');
             }
         }
 
@@ -181,7 +170,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     'Falsy value',
-                    $this->message ?: 'Expected an falsy value.'
+                    $this->message ?: 'Expected an falsy value.',
                 );
             }
         } else {
@@ -189,7 +178,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     'Truthy value',
-                    $this->message ?: 'Expected a truthy value.'
+                    $this->message ?: 'Expected a truthy value.',
                 );
             }
         }
@@ -201,19 +190,11 @@ final class Expectation
     {
         if ($this->isNot) {
             if ($this->expectValue === false) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    true,
-                    $this->message ?: 'Expected a value to be true.'
-                );
+                throw new ExpectException($this->expectValue, true, $this->message ?: 'Expected a value to be true.');
             }
         } else {
             if ($this->expectValue !== false) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    false,
-                    $this->message ?: 'Expected a value to be false.'
-                );
+                throw new ExpectException($this->expectValue, false, $this->message ?: 'Expected a value to be false.');
             }
         }
 
@@ -227,7 +208,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     'Non-Falsy value',
-                    $this->message ?: 'Expected a non-empty value.'
+                    $this->message ?: 'Expected a non-empty value.',
                 );
             }
         } else {
@@ -235,7 +216,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     'Falsy value',
-                    $this->message ?: 'Expected an empty value.'
+                    $this->message ?: 'Expected an empty value.',
                 );
             }
         }
@@ -250,7 +231,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value less than: $value"
+                    $this->message ?: "Expected a value less than: $value",
                 );
             }
         } else {
@@ -258,7 +239,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value greater than: $value"
+                    $this->message ?: "Expected a value greater than: $value",
                 );
             }
         }
@@ -273,7 +254,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value less than or equal to: $value"
+                    $this->message ?: "Expected a value less than or equal to: $value",
                 );
             }
         } else {
@@ -281,7 +262,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value greater than or equal to: $value"
+                    $this->message ?: "Expected a value greater than or equal to: $value",
                 );
             }
         }
@@ -296,7 +277,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value greater than: $value"
+                    $this->message ?: "Expected a value greater than: $value",
                 );
             }
         } else {
@@ -304,7 +285,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value less than: $value"
+                    $this->message ?: "Expected a value less than: $value",
                 );
             }
         }
@@ -319,7 +300,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value greater than or equal to: $value"
+                    $this->message ?: "Expected a value greater than or equal to: $value",
                 );
             }
         } else {
@@ -327,7 +308,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value less than or equal to: $value"
+                    $this->message ?: "Expected a value less than or equal to: $value",
                 );
             }
         }
@@ -342,7 +323,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Was not expected to be contained in a value: '$value'"
+                    $this->message ?: "Was not expected to be contained in a value: '$value'",
                 );
             }
         } else {
@@ -350,7 +331,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value to contain: '$value'"
+                    $this->message ?: "Expected a value to contain: '$value'",
                 );
             }
         }
@@ -365,7 +346,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $number,
-                    $this->message ?: "Expected an array to contain not $number elements"
+                    $this->message ?: "Expected an array to contain not $number elements",
                 );
             }
         } else {
@@ -373,7 +354,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $number,
-                    $this->message ?: "Expected an array to contain $number elements"
+                    $this->message ?: "Expected an array to contain $number elements",
                 );
             }
         }
@@ -388,7 +369,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $property,
-                    $this->message ?: "Expected the property '$property' to not exist."
+                    $this->message ?: "Expected the property '$property' to not exist.",
                 );
             }
         } else {
@@ -396,7 +377,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $property,
-                    $this->message ?: "Expected the property '$property' to exist."
+                    $this->message ?: "Expected the property '$property' to exist.",
                 );
             }
         }
@@ -413,15 +394,23 @@ final class Expectation
         if (is_object($this->expectValue) && method_exists($this->expectValue, 'toArray')) {
             $valueAsArray = $this->expectValue->toArray();
         } else {
-            $valueAsArray = (array)$this->expectValue;
+            $valueAsArray = (array) $this->expectValue;
         }
 
         foreach ($array as $key => $value) {
-            if (!(isset($value) || \array_key_exists($key, $array))) {
+            if (!isset($value) || !array_key_exists($key, $valueAsArray)) {
+                $keys = array_keys($valueAsArray);
+                $keyCount = count($keys);
+                $keyList =
+                    "\n  has keys:\n  [" .
+                    implode('', array_map(fn($k) => "\n   '$k',", array_slice($keys, 0, 9))) .
+                    ($keyCount > 9 ? "\n   ..." : '') .
+                    "\n  ]";
+
                 throw new ExpectException(
                     $this->expectValue,
                     $key,
-                    $this->message ?: "Expected the key '$key' to exist."
+                    $this->message ?: ("Expected the key '$key' to exist." . $keyList),
                 );
             }
 
@@ -429,7 +418,8 @@ final class Expectation
                 throw new ExpectException(
                     $valueAsArray,
                     $array,
-                    $this->message ?: "Failed asserting that an array has a key $key with the value $value."
+                    $this->message ?:
+                        "Failed asserting that an array has a key '$key':  '$value' != '$valueAsArray[$key]'",
                 );
             }
         }
@@ -444,16 +434,12 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $object,
-                    $this->message ?: "Expected a different value than"
+                    $this->message ?: 'Expected a different value than',
                 );
             }
         } else {
             if ($this->expectValue != $object) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    $object,
-                    $this->message ?: "Expected a value equal"
-                );
+                throw new ExpectException($this->expectValue, $object, $this->message ?: 'Expected a value equal');
             }
         }
 
@@ -467,16 +453,12 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a different value than"
+                    $this->message ?: 'Expected a different value than',
                 );
             }
         } else {
             if ($this->expectValue != $value) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    $value,
-                    $this->message ?: "Expected a value equal"
-                );
+                throw new ExpectException($this->expectValue, $value, $this->message ?: 'Expected a value equal');
             }
         }
 
@@ -495,14 +477,14 @@ final class Expectation
             throw new ExpectException(
                 $this->expectValue,
                 $min,
-                $this->message ?: "Expected a value between $min and $maxVal."
+                $this->message ?: "Expected a value between $min and $maxVal.",
             );
         }
         if ($this->expectValue > $maxVal) {
             throw new ExpectException(
                 $this->expectValue,
                 $maxVal,
-                $this->message ?: "Expected a value between $min and $maxVal."
+                $this->message ?: "Expected a value between $min and $maxVal.",
             );
         }
 
@@ -516,7 +498,7 @@ final class Expectation
                 throw new ExpectException(
                     $array,
                     '',
-                    $this->message ?: "Expected not to be in the array: " . $this->expectValue
+                    $this->message ?: ('Expected not to be in the array: ' . $this->expectValue),
                 );
             }
         } else {
@@ -524,7 +506,7 @@ final class Expectation
                 throw new ExpectException(
                     $array,
                     '',
-                    $this->message ?: "Expected availability: " . $this->expectValue
+                    $this->message ?: ('Expected availability: ' . $this->expectValue),
                 );
             }
         }
@@ -535,28 +517,16 @@ final class Expectation
     public function toBeInstanceOf(mixed $class): self
     {
         if (!class_exists($class) && !interface_exists($class)) {
-            throw new ExpectException(
-                $class,
-                '',
-                'An invalid value is passed'
-            );
+            throw new ExpectException($class, '', 'An invalid value is passed');
         }
 
         if ($this->isNot) {
             if ($this->expectValue instanceof $class) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    $class,
-                    $this->message ?: 'Expected an instance other'
-                );
+                throw new ExpectException($this->expectValue, $class, $this->message ?: 'Expected an instance other');
             }
         } else {
             if (!($this->expectValue instanceof $class)) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    $class,
-                    $this->message ?: 'Expected an instance of'
-                );
+                throw new ExpectException($this->expectValue, $class, $this->message ?: 'Expected an instance of');
             }
         }
 
@@ -570,11 +540,7 @@ final class Expectation
         }
 
         if (!\is_bool($this->expectValue)) {
-            throw new ExpectException(
-                $this->expectValue,
-                '',
-                $this->message ?: 'Expected a boolean.'
-            );
+            throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected a boolean.');
         }
 
         return $this;
@@ -587,11 +553,7 @@ final class Expectation
         }
 
         if (!\is_callable($this->expectValue)) {
-            throw new ExpectException(
-                $this->expectValue,
-                'Callable',
-                $this->message ?: 'Expected a callable.'
-            );
+            throw new ExpectException($this->expectValue, 'Callable', $this->message ?: 'Expected a callable.');
         }
 
         return $this;
@@ -604,11 +566,7 @@ final class Expectation
         }
 
         if (!\is_float($this->expectValue)) {
-            throw new ExpectException(
-                $this->expectValue,
-                '',
-                $this->message ?: 'Expected a float.'
-            );
+            throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected a float.');
         }
 
         return $this;
@@ -621,11 +579,7 @@ final class Expectation
         }
 
         if (!\is_int($this->expectValue)) {
-            throw new ExpectException(
-                $this->expectValue,
-                '',
-                $this->message ?: 'Expected an integer.'
-            );
+            throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected an integer.');
         }
 
         return $this;
@@ -638,11 +592,7 @@ final class Expectation
         }
 
         if (!\is_array($this->expectValue) && !($this->expectValue instanceof Traversable)) {
-            throw new ExpectException(
-                $this->expectValue,
-                '',
-                $this->message ?: 'Expected an iterable.'
-            );
+            throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected an iterable.');
         }
 
         return $this;
@@ -655,11 +605,7 @@ final class Expectation
         }
 
         if (!\is_numeric($this->expectValue)) {
-            throw new ExpectException(
-                $this->expectValue,
-                '',
-                $this->message ?: 'Expected a numeric.'
-            );
+            throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected a numeric.');
         }
 
         return $this;
@@ -672,11 +618,7 @@ final class Expectation
         }
 
         if (!\is_object($this->expectValue)) {
-            throw new ExpectException(
-                $this->expectValue,
-                '',
-                $this->message ?: 'Expected an object.'
-            );
+            throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected an object.');
         }
 
         return $this;
@@ -689,19 +631,11 @@ final class Expectation
         }
 
         if (!\is_resource($this->expectValue)) {
-            throw new ExpectException(
-                $this->expectValue,
-                '',
-                $this->message ?: 'Expected a resource.'
-            );
+            throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected a resource.');
         }
 
         if ($type && $type !== \get_resource_type($this->expectValue)) {
-            throw new ExpectException(
-                $this->expectValue,
-                '',
-                $this->message ?: "Expected a resource of type $type"
-            );
+            throw new ExpectException($this->expectValue, '', $this->message ?: "Expected a resource of type $type");
         }
 
         return $this;
@@ -711,19 +645,11 @@ final class Expectation
     {
         if ($this->isNot) {
             if (\is_scalar($this->expectValue)) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    '',
-                    $this->message ?: 'Expected a non-scalar.'
-                );
+                throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected a non-scalar.');
             }
         } else {
             if (!\is_scalar($this->expectValue)) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    '',
-                    $this->message ?: 'Expected a scalar.'
-                );
+                throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected a scalar.');
             }
         }
 
@@ -734,19 +660,11 @@ final class Expectation
     {
         if ($this->isNot) {
             if (\is_string($this->expectValue)) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    '',
-                    $this->message ?: 'Expected a non-string.'
-                );
+                throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected a non-string.');
             }
         } else {
             if (!\is_string($this->expectValue)) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    '',
-                    $this->message ?: 'Expected a string.'
-                );
+                throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected a string.');
             }
         }
 
@@ -760,21 +678,13 @@ final class Expectation
         }
 
         if (!\is_string($this->expectValue)) {
-            throw new ExpectException(
-                $this->expectValue,
-                '',
-                $this->message ?: 'Expected a JSON string.'
-            );
+            throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected a JSON string.');
         }
 
         $json = json_decode($this->expectValue, true);
 
         if (is_null($json)) {
-            throw new ExpectException(
-                $this->expectValue,
-                '',
-                $this->message ?: 'Expected JSON'
-            );
+            throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected JSON');
         }
 
         return $this;
@@ -787,16 +697,12 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     null,
-                    $this->message ?: 'Expected a value other than null.'
+                    $this->message ?: 'Expected a value other than null.',
                 );
             }
         } else {
             if (null !== $this->expectValue) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    null,
-                    $this->message ?: 'Expected null.'
-                );
+                throw new ExpectException($this->expectValue, null, $this->message ?: 'Expected null.');
             }
         }
 
@@ -810,16 +716,12 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     '',
-                    $this->message ?: "Expected the key '$key' to not exist."
+                    $this->message ?: "Expected the key '$key' to not exist.",
                 );
             }
         } else {
             if (!(isset($this->expectValue[$key]) || \array_key_exists($key, $this->expectValue))) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    '',
-                    $this->message ?: "Expected the key '$key' to exist"
-                );
+                throw new ExpectException($this->expectValue, '', $this->message ?: "Expected the key '$key' to exist");
             }
         }
 
@@ -846,7 +748,7 @@ final class Expectation
                 throw new ExpectException(
                     count($this->expectValue),
                     $length,
-                    $this->message ?: "Expected an array to contain $length elements"
+                    $this->message ?: "Expected an array to contain $length elements",
                 );
             }
         } else {
@@ -854,7 +756,7 @@ final class Expectation
                 throw new ExpectException(
                     mb_strlen($this->expectValue, 'UTF-8'),
                     $length,
-                    $this->message ?: "Expected a value to contain $length characters"
+                    $this->message ?: "Expected a value to contain $length characters",
                 );
             }
         }
@@ -869,11 +771,7 @@ final class Expectation
         }
 
         if (!\is_readable($this->expectValue)) {
-            throw new ExpectException(
-                $this->expectValue,
-                '',
-                $this->message ?: "The path is not readable."
-            );
+            throw new ExpectException($this->expectValue, '', $this->message ?: 'The path is not readable.');
         }
 
         return $this;
@@ -886,11 +784,7 @@ final class Expectation
         }
 
         if (!\is_writable($this->expectValue)) {
-            throw new ExpectException(
-                $this->expectValue,
-                '',
-                $this->message ?: "The path is not writable."
-            );
+            throw new ExpectException($this->expectValue, '', $this->message ?: 'The path is not writable.');
         }
 
         return $this;
@@ -903,7 +797,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     '',
-                    $this->message ?: "Expected a value not to start with '$prefix'"
+                    $this->message ?: "Expected a value not to start with '$prefix'",
                 );
             }
         } else {
@@ -911,7 +805,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     '',
-                    $this->message ?: "Expected a value to start with '$prefix'"
+                    $this->message ?: "Expected a value to start with '$prefix'",
                 );
             }
         }
@@ -931,7 +825,7 @@ final class Expectation
                     throw new ExpectException(
                         get_class($e),
                         '',
-                        $this->message ?: "Expected an instance other than $class"
+                        $this->message ?: "Expected an instance other than $class",
                     );
                 }
             }
@@ -942,15 +836,13 @@ final class Expectation
         if (class_exists($class, false)) {
             try {
                 $expression = $this->expectValue;
-                $expression();
+                $r = $expression();
+
+                throw new ExpectException(get_class($r), $class, $this->message ?: "Expected to throw $class");
             } catch (Exception|\Throwable $e) {
                 /** @var class-string<Exception> $class */
                 if (!($e instanceof $class)) {
-                    throw new ExpectException(
-                        get_class($e),
-                        $class,
-                        $this->message ?: "Expected to throw $class"
-                    );
+                    throw new ExpectException(get_class($e), $class, $this->message ?: "Expected to throw $class");
                 }
             }
         } elseif ($message === '') {
@@ -971,7 +863,7 @@ final class Expectation
                 throw new ExpectException(
                     $errorMessage,
                     $message,
-                    $this->message ?: "Expect the messages to be identical"
+                    $this->message ?: 'Expect the messages to be identical',
                 );
             }
         }
@@ -986,7 +878,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $suffix,
-                    $this->message ?: "Expected a value not to end with '$suffix'"
+                    $this->message ?: "Expected a value not to end with '$suffix'",
                 );
             }
         } else {
@@ -994,7 +886,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $suffix,
-                    $this->message ?: "Expected a value to end with"
+                    $this->message ?: 'Expected a value to end with',
                 );
             }
         }
@@ -1009,7 +901,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     '',
-                    $this->message ?: "The value matches the pattern $pattern."
+                    $this->message ?: "The value matches the pattern $pattern.",
                 );
             }
         } else {
@@ -1017,7 +909,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     '',
-                    $this->message ?: "The value does not match the expected pattern: $pattern"
+                    $this->message ?: "The value does not match the expected pattern: $pattern",
                 );
             }
         }
@@ -1044,10 +936,11 @@ final class Expectation
         return $this;
     }
 
-    public function dd(): void
+    public function dd(): self
     {
-        /** @phpstan-ignore-next-line */
-        __dump($this->expectValue);
+        $this->isNeedDump = true;
+
+        return $this;
     }
 
     public function json(): self
@@ -1056,21 +949,21 @@ final class Expectation
         return $this;
     }
 
-//    public function sequence(): self
-//    {
-//        throw new Exception('// TODO');
-//        return $this;
-//    }
-//
-//    public function unless(): self
-//    {
-//        throw new Exception('// TODO');
-//        return $this;
-//    }
-//
-//    public function when(): self
-//    {
-//        throw new Exception('// TODO');
-//        return $this;
-//    }
+    //    public function sequence(): self
+    //    {
+    //        throw new Exception('// TODO');
+    //        return $this;
+    //    }
+    //
+    //    public function unless(): self
+    //    {
+    //        throw new Exception('// TODO');
+    //        return $this;
+    //    }
+    //
+    //    public function when(): self
+    //    {
+    //        throw new Exception('// TODO');
+    //        return $this;
+    //    }
 }
