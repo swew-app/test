@@ -1,0 +1,23 @@
+php-version = "8.2"
+
+[source]
+paths = ["src", "tests"]
+includes = ["vendor"]
+
+[analyzer]
+excludes = ["tests"]
+
+[linter.rules]
+disallowed-functions = { level = "error", functions = ["dd"] }
+# Style and aggregate class-size rules are advisory, not correctness failures.
+cyclomatic-complexity = { level = "warning" }
+kan-defect = { level = "warning" }
+too-many-methods = { level = "warning" }
+too-many-properties = { level = "warning" }
+excessive-parameter-list = { level = "warning" }
+no-empty = { level = "warning" }
+no-global = { level = "warning" }
+no-error-control-operator = { level = "warning" }
+
+[formatter]
+preset = "psr-12"

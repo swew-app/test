@@ -89,6 +89,19 @@ declare(strict_types=1);
  })->skip();
 ```
 
+## Development
+
+```sh
+composer install
+composer test
+composer check   # Mago analysis, linting, and formatting checks; does not rewrite files
+composer format  # Apply Mago formatting
+```
+
+Mago downloads its platform-specific binary on first use, so that run needs network access.
+Analyzer errors, lint errors (including `dd()`), and formatting differences fail `composer check`.
+Style and class-size recommendations remain visible as warnings in `mago.toml`.
+
 ---
 
 License MIT.

@@ -62,7 +62,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "ext-json": "*",
         "swew/cli": "*",
         "swew/dd": "*",
@@ -70,18 +70,17 @@
         "ext-pcntl": "*"
     },
     "require-dev": {
-        "laravel/pint": "v1.10.0",
-        "phpstan/phpstan": "^1.10.54",
-        "psalm/phar": "5.10.0"
+        "carthage-software/mago": "1.59.0"
     },
     "scripts": {
         "test": "@php bin/t --dir=tests --config=tests/config.json",
-        "static": "./vendor/psalm/phar/psalm.phar --no-cache",
-        "stan": "vendor/bin/phpstan analyse src --level=3",
-        "code-check": "./vendor/bin/pint",
+        "static": "mago analyze",
+        "lint": "mago lint",
+        "code-check": "mago format --check",
+        "format": "mago format",
         "check": [
             "@static",
-            "@stan",
+            "@lint",
             "@code-check"
         ]
     }

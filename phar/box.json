@@ -14,6 +14,8 @@
                 "laravel",
                 "psalm",
                 "phpstan",
+                "carthage-software",
+                "revolt",
                 "composer",
                 "bin"
             ],
