@@ -75,7 +75,7 @@
         "psalm/phar": "5.10.0"
     },
     "scripts": {
-        "test": "t",
+        "test": "@php bin/t --dir=tests --config=tests/config.json",
         "static": "./vendor/psalm/phar/psalm.phar --no-cache",
         "stan": "vendor/bin/phpstan analyse src --level=3",
         "code-check": "./vendor/bin/pint",

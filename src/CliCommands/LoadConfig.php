@@ -50,9 +50,7 @@ class LoadConfig extends Command
         $configPath = $this->argv('config') ?: 'swew.json';
         $configFile = $this->getRootPath('', $configPath).$configPath;
 
-        if (! empty($configFile)) {
-            $this->updateConfig($configFile, $commander->config);
-        }
+        $this->updateConfig($configFile, $commander->config);
 
         if ($this->argv('short')) {
             $commander->config->logShort = true;

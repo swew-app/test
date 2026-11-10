@@ -30,11 +30,13 @@ class TestMaster extends SwewCommander
 
     public static string $hashWatchFiles = '';
 
+    private bool $isWatchMode = false;
+
     protected array $commands = [
-        LoadConfig::class,
-        SearchFiles::class,
-        RunTests::class,
-        ShowTestResults::class,
+        LoadConfig::NAME => LoadConfig::class,
+        SearchFiles::NAME => SearchFiles::class,
+        RunTests::NAME => RunTests::class,
+        ShowTestResults::NAME => ShowTestResults::class,
     ];
 
     public function __construct(
@@ -92,7 +94,7 @@ class TestMaster extends SwewCommander
                 pcntl_wait($status);
 
                 if ($status > 0) {
-                    exit($status);
+                    exit(pcntl_wifexited($status) ? pcntl_wexitstatus($status) : 1);
                 }
 
                 sleep(1);
@@ -100,6 +102,7 @@ class TestMaster extends SwewCommander
             } else {
                 // Дочерний процесс
                 $master = new self($argList);
+                $master->isWatchMode = true;
                 $master->run();
 
                 self::$hashWatchFiles = Hash::fromFiles($master->config->getTestFiles());
@@ -133,7 +136,7 @@ class TestMaster extends SwewCommander
                 // кастомный ответ, когда надо досрочно завершить работу без ошибки
                 exit();
             }
-            if ($result > 0) {
+            if ($result > 0 && ! ($this->isWatchMode && $command instanceof ShowTestResults)) {
                 // Handle error
                 exit($result);
             }

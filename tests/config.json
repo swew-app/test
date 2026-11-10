@@ -1,0 +1,10 @@
+{
+    "test": {
+        "paths": ["*.spec.php"],
+        "log": {
+            "logo": false,
+            "color": false,
+            "clear": false
+        }
+    }
+}

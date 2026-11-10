@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Swew\Test\LogMaster\Log;
 
-use Exception;
+use Throwable;
 
 final class LogData
 {
@@ -24,7 +24,7 @@ final class LogData
 
     public bool $isExcepted = false;
 
-    public ?Exception $exception = null;
+    public ?Throwable $exception = null;
 
     public string $testFilePath = '';
 
@@ -46,7 +46,7 @@ final class LogData
         return $this;
     }
 
-    public function setException(Exception $exception): self
+    public function setException(Throwable $exception): self
     {
         $this->exception = $exception;
         $this->isExcepted = true;

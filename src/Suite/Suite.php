@@ -65,7 +65,7 @@ final class Suite
             } else {
                 $this->executeTestCase();
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->isExcepted = true;
 
             return $this->logData->setException($e);
@@ -90,11 +90,9 @@ final class Suite
     private function executeTestCase(array $params = []): void
     {
         $fn = $this->testCase;
-        $boundFn = $fn->bindTo($this);
+        $boundFn = (new \ReflectionFunction($fn))->isStatic() ? $fn : $fn->bindTo($this);
 
-        if (!empty($boundFn)) {
-            $boundFn(...$params);
-        }
+        $boundFn(...$params);
     }
 
 

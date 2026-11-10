@@ -79,7 +79,7 @@ class ShowTestResults extends Command
         // отображение summary
         $this->showSummary($commander);
 
-        return self::SUCCESS;
+        return $this->hasException ? self::ERROR : self::SUCCESS;
     }
 
     private function showLogo(): void
