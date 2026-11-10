@@ -19,11 +19,11 @@ final class Diff
         }
 
         if ($s2 === '') {
-            return ($isShowTitle ? '<yellow> value:</>'.PHP_EOL : '').CliStr::vm()->getWithPrefix($s1, false);
+            return ( $isShowTitle ? '<yellow> value:</>' . PHP_EOL : '' ) . CliStr::vm()->getWithPrefix($s1, false);
         }
 
         return CliStr::vm()->output->format(
-            ($isShowTitle ? PHP_EOL.'<yellow>compare:</>'.PHP_EOL.PHP_EOL : '').self::compare($s1, $s2)
+            ( $isShowTitle ? PHP_EOL . '<yellow>compare:</>' . PHP_EOL . PHP_EOL : '' ) . self::compare($s1, $s2)
         );
     }
 
@@ -82,11 +82,11 @@ final class Diff
 
         if (\is_object($value)) {
             if (\method_exists($value, '__toString')) {
-                return \get_class($value).': '.self::valueToString($value->__toString());
+                return \get_class($value) . ': ' . self::valueToString($value->__toString());
             }
 
             if ($value instanceof DateTime || $value instanceof DateTimeImmutable) {
-                return \get_class($value).': '.self::valueToString($value->format('c'));
+                return \get_class($value) . ': ' . self::valueToString($value->format('c'));
             }
 
             return \get_class($value);

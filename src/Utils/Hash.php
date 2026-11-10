@@ -10,6 +10,7 @@ use RecursiveIteratorIterator;
 
 final class Hash
 {
+    /** @param array<string> $files */
     public static function fromFiles(array $files, string $algorithm = 'sha256'): string
     {
         $hashes = [];
@@ -35,15 +36,16 @@ final class Hash
 
         $hashes = [];
 
+        /** @var \SplFileInfo $file */
         foreach ($files as $file) {
             if ($file->isFile()) {
-                $filePath = $file->getRealPath();
+                $filePath = $file->getPathname();
                 $fileHash = hash_file($algorithm, $filePath);
                 $metadata = [
                     'name' => $file->getFilename(),
                     'size' => $file->getSize(),
                     'mtime' => $file->getMTime(),
-                    'hash' => $fileHash,
+                    'hash' => $fileHash
                 ];
                 $hashes[] = serialize($metadata);
             }

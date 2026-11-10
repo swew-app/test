@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Swew\Test\Suite;
 
 use Closure;
+use Swew\Test\LogMaster\Log\LogData;
 
 final class SuiteGroup
 {
@@ -16,6 +17,7 @@ final class SuiteGroup
 
     private ?Closure $afterAll = null;
 
+    /** @var array<Suite> */
     private array $suiteList = [];
 
     public static ?SuiteGroup $currentGroupInstance = null;
@@ -42,9 +44,13 @@ final class SuiteGroup
 
     public static function addHook(SuiteHook $hook, Closure $hookFunction): void
     {
+        $group = self::$currentGroupInstance;
+        if ($group === null) {
+            throw new \LogicException('Empty $currentGroupInstance');
+        }
         $hookMethod = $hook->value;
 
-        self::$currentGroupInstance->$hookMethod = $hookFunction;
+        $group->$hookMethod = $hookFunction;
     }
 
     public static function getCurrentSuite(): ?Suite
@@ -62,11 +68,12 @@ final class SuiteGroup
         $hookMethod = $hook->value;
         $fn = $this->$hookMethod;
 
-        if (! is_null($fn)) {
+        if (!is_null($fn)) {
             $fn();
         }
     }
 
+    /** @param array<LogData> $results */
     public function runSuiteTests(
         array &$results,
         bool $isFilteredByOnly,
@@ -113,16 +120,15 @@ final class SuiteGroup
 
     public function filterSuiteByMessage(string $messageFilter): void
     {
-        $this->suiteList = array_filter(
-            $this->suiteList,
-            fn (Suite $suite) => str_contains($suite->message, $messageFilter)
-        );
+        $this->suiteList = array_filter($this->suiteList, fn(Suite $suite) => str_contains(
+            $suite->message,
+            $messageFilter
+        ));
     }
 
+    /** @return array<Suite> */
     private function getSuites(bool $isFilteredByOnly): array
     {
-        return $isFilteredByOnly
-            ? array_filter($this->suiteList, fn ($s): bool => $s->isOnly)
-            : $this->suiteList;
+        return $isFilteredByOnly ? array_filter($this->suiteList, fn(Suite $s): bool => $s->isOnly) : $this->suiteList;
     }
 }

@@ -63,7 +63,7 @@ final class CliStr
     {
         $width = $this->width();
 
-        return $color . str_pad($message, $width, $delimiter, STR_PAD_BOTH) . "</>";
+        return $color . str_pad($message, $width, $delimiter, STR_PAD_BOTH) . '</>';
     }
 
     /**

@@ -11,7 +11,8 @@ use Swew\Test\Suite\SuiteGroup;
 use Traversable;
 
 /**
- * @property Expectation $not
+ * @template TValue
+ * @property Expectation<TValue> $not
  */
 final class Expectation
 {
@@ -24,9 +25,10 @@ final class Expectation
      */
     private static array $extends = [];
 
+    /** @param TValue $expectValue */
     public function __construct(
         private readonly mixed $expectValue,
-        private string $message = '',
+        private string $message = ''
     ) {
         $suite = SuiteGroup::getCurrentSuite();
 
@@ -35,7 +37,7 @@ final class Expectation
         }
     }
 
-    function __destruct()
+    public function __destruct()
     {
         if ($this->isNeedDump) {
             __dump($this->expectValue);
@@ -102,7 +104,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: 'Expected a value not identical:',
+                    $this->message ?: 'Expected a value not identical:'
                 );
             }
         }
@@ -132,7 +134,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     'Non-empty empty value',
-                    $this->message ?: 'Expected a non-empty value.',
+                    $this->message ?: 'Expected a non-empty value.'
                 );
             }
         } else {
@@ -140,7 +142,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     'Empty value',
-                    $this->message ?: 'Expected an empty value.',
+                    $this->message ?: 'Expected an empty value.'
                 );
             }
         }
@@ -170,7 +172,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     'Falsy value',
-                    $this->message ?: 'Expected an falsy value.',
+                    $this->message ?: 'Expected an falsy value.'
                 );
             }
         } else {
@@ -178,7 +180,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     'Truthy value',
-                    $this->message ?: 'Expected a truthy value.',
+                    $this->message ?: 'Expected a truthy value.'
                 );
             }
         }
@@ -208,7 +210,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     'Non-Falsy value',
-                    $this->message ?: 'Expected a non-empty value.',
+                    $this->message ?: 'Expected a non-empty value.'
                 );
             }
         } else {
@@ -216,7 +218,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     'Falsy value',
-                    $this->message ?: 'Expected an empty value.',
+                    $this->message ?: 'Expected an empty value.'
                 );
             }
         }
@@ -224,6 +226,10 @@ final class Expectation
         return $this;
     }
 
+    /**
+     * @template TExpected
+     * @param TExpected $value
+     */
     public function toBeGreaterThan(mixed $value): self
     {
         if ($this->isNot) {
@@ -231,7 +237,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value less than or equal to: $value",
+                    $this->message ?: "Expected a value less than or equal to: $value"
                 );
             }
         } else {
@@ -239,7 +245,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value greater than: $value",
+                    $this->message ?: "Expected a value greater than: $value"
                 );
             }
         }
@@ -247,6 +253,10 @@ final class Expectation
         return $this;
     }
 
+    /**
+     * @template TExpected
+     * @param TExpected $value
+     */
     public function toBeGreaterThanOrEqual(mixed $value): self
     {
         if ($this->isNot) {
@@ -254,7 +264,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value less than: $value",
+                    $this->message ?: "Expected a value less than: $value"
                 );
             }
         } else {
@@ -262,7 +272,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value greater than or equal to: $value",
+                    $this->message ?: "Expected a value greater than or equal to: $value"
                 );
             }
         }
@@ -270,6 +280,10 @@ final class Expectation
         return $this;
     }
 
+    /**
+     * @template TExpected
+     * @param TExpected $value
+     */
     public function toBeLessThan(mixed $value): self
     {
         if ($this->isNot) {
@@ -277,7 +291,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value greater than or equal to: $value",
+                    $this->message ?: "Expected a value greater than or equal to: $value"
                 );
             }
         } else {
@@ -285,7 +299,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value less than: $value",
+                    $this->message ?: "Expected a value less than: $value"
                 );
             }
         }
@@ -293,6 +307,10 @@ final class Expectation
         return $this;
     }
 
+    /**
+     * @template TExpected
+     * @param TExpected $value
+     */
     public function toBeLessThanOrEqual(mixed $value): self
     {
         if ($this->isNot) {
@@ -300,7 +318,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value greater than: $value",
+                    $this->message ?: "Expected a value greater than: $value"
                 );
             }
         } else {
@@ -308,7 +326,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value less than or equal to: $value",
+                    $this->message ?: "Expected a value less than or equal to: $value"
                 );
             }
         }
@@ -323,7 +341,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Was not expected to be contained in a value: '$value'",
+                    $this->message ?: "Was not expected to be contained in a value: '$value'"
                 );
             }
         } else {
@@ -331,7 +349,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value to contain: '$value'",
+                    $this->message ?: "Expected a value to contain: '$value'"
                 );
             }
         }
@@ -341,20 +359,26 @@ final class Expectation
 
     public function toHaveCount(int $number): self
     {
+        $value = $this->expectValue;
+        if (!is_countable($value)) {
+            throw new ExpectException($value, 'Countable', $this->message ?: 'Expected an array or Countable.');
+        }
+        $count = count($value);
+
         if ($this->isNot) {
-            if (count($this->expectValue) === $number) {
+            if ($count === $number) {
                 throw new ExpectException(
-                    $this->expectValue,
+                    $count,
                     $number,
-                    $this->message ?: "Expected an array to contain not $number elements",
+                    $this->message ?: "Expected an array to contain not $number elements"
                 );
             }
         } else {
-            if (count($this->expectValue) !== $number) {
+            if ($count !== $number) {
                 throw new ExpectException(
-                    $this->expectValue,
+                    $count,
                     $number,
-                    $this->message ?: "Expected an array to contain $number elements",
+                    $this->message ?: "Expected an array to contain $number elements"
                 );
             }
         }
@@ -364,20 +388,30 @@ final class Expectation
 
     public function toHaveProperty(string $property): self
     {
+        $value = $this->expectValue;
+        if (!is_object($value) && !( is_string($value) && class_exists($value) )) {
+            throw new ExpectException(
+                $value,
+                'Object or class',
+                $this->message ?: 'Expected an object or existing class.'
+            );
+        }
+        /** @var object|class-string $value */
+
         if ($this->isNot) {
-            if (\property_exists($this->expectValue, $property)) {
+            if (\property_exists($value, $property)) {
                 throw new ExpectException(
                     $this->expectValue,
                     $property,
-                    $this->message ?: "Expected the property '$property' to not exist.",
+                    $this->message ?: "Expected the property '$property' to not exist."
                 );
             }
         } else {
-            if (!\property_exists($this->expectValue, $property)) {
+            if (!\property_exists($value, $property)) {
                 throw new ExpectException(
                     $this->expectValue,
                     $property,
-                    $this->message ?: "Expected the property '$property' to exist.",
+                    $this->message ?: "Expected the property '$property' to exist."
                 );
             }
         }
@@ -391,35 +425,45 @@ final class Expectation
             throw new Exception('The method "toMatchArray" cannot be used with "not()"');
         }
 
-        if (is_object($this->expectValue) && method_exists($this->expectValue, 'toArray')) {
-            $valueAsArray = $this->expectValue->toArray();
+        $value = $this->expectValue;
+        if (is_object($value) && method_exists($value, 'toArray')) {
+            $valueAsArray = $value->toArray();
+        } elseif (is_array($value) || is_object($value)) {
+            /** @var array|object $value */
+            $valueAsArray = (array) $value;
         } else {
-            $valueAsArray = (array) $this->expectValue;
+            throw new ExpectException($value, 'Array or object', $this->message ?: 'Expected an array or object.');
+        }
+        if (!is_array($valueAsArray)) {
+            throw new ExpectException(
+                $valueAsArray,
+                'Array',
+                $this->message ?: 'Expected toArray() to return an array.'
+            );
         }
 
         foreach ($array as $key => $value) {
-            if (!isset($value) || !array_key_exists($key, $valueAsArray)) {
+            if (!array_key_exists($key, $valueAsArray)) {
                 $keys = array_keys($valueAsArray);
                 $keyCount = count($keys);
                 $keyList =
-                    "\n  has keys:\n  [" .
-                    implode('', array_map(fn($k) => "\n   '$k',", array_slice($keys, 0, 9))) .
-                    ($keyCount > 9 ? "\n   ..." : '') .
-                    "\n  ]";
+                    "\n  has keys:\n  ["
+                    . implode('', array_map(fn($k) => "\n   '$k',", array_slice($keys, 0, 9)))
+                    . ( $keyCount > 9 ? "\n   ..." : '' )
+                    . "\n  ]";
 
                 throw new ExpectException(
                     $this->expectValue,
                     $key,
-                    $this->message ?: ("Expected the key '$key' to exist." . $keyList),
+                    $this->message ?: "Expected the key '$key' to exist." . $keyList
                 );
             }
 
-            if ($value != $valueAsArray[$key]) {
+            if ($value !== $valueAsArray[$key]) {
                 throw new ExpectException(
                     $valueAsArray,
                     $array,
-                    $this->message ?:
-                        "Failed asserting that an array has a key '$key':  '$value' != '$valueAsArray[$key]'",
+                    $this->message ?: "Failed asserting that an array has a matching value for key '$key'."
                 );
             }
         }
@@ -427,6 +471,10 @@ final class Expectation
         return $this;
     }
 
+    /**
+     * @template TExpected
+     * @param TExpected $object
+     */
     public function toMatchObject(mixed $object): self
     {
         if ($this->isNot) {
@@ -434,7 +482,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $object,
-                    $this->message ?: 'Expected a different value than',
+                    $this->message ?: 'Expected a different value than'
                 );
             }
         } else {
@@ -446,6 +494,10 @@ final class Expectation
         return $this;
     }
 
+    /**
+     * @template TExpected
+     * @param TExpected $value
+     */
     public function toEqual(mixed $value): self
     {
         if ($this->isNot) {
@@ -453,7 +505,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: 'Expected a different value than',
+                    $this->message ?: 'Expected a different value than'
                 );
             }
         } else {
@@ -477,14 +529,14 @@ final class Expectation
             throw new ExpectException(
                 $this->expectValue,
                 $min,
-                $this->message ?: "Expected a value between $min and $maxVal.",
+                $this->message ?: "Expected a value between $min and $maxVal."
             );
         }
         if ($this->expectValue > $maxVal) {
             throw new ExpectException(
                 $this->expectValue,
                 $maxVal,
-                $this->message ?: "Expected a value between $min and $maxVal.",
+                $this->message ?: "Expected a value between $min and $maxVal."
             );
         }
 
@@ -496,17 +548,17 @@ final class Expectation
         if ($this->isNot) {
             if (\in_array($this->expectValue, $array, true)) {
                 throw new ExpectException(
+                    $this->expectValue,
                     $array,
-                    '',
-                    $this->message ?: ('Expected not to be in the array: ' . $this->expectValue),
+                    $this->message ?: 'Expected the value not to be in the array.'
                 );
             }
         } else {
             if (!\in_array($this->expectValue, $array, true)) {
                 throw new ExpectException(
+                    $this->expectValue,
                     $array,
-                    '',
-                    $this->message ?: ('Expected availability: ' . $this->expectValue),
+                    $this->message ?: 'Expected the value to be in the array.'
                 );
             }
         }
@@ -516,7 +568,7 @@ final class Expectation
 
     public function toBeInstanceOf(mixed $class): self
     {
-        if (!class_exists($class) && !interface_exists($class)) {
+        if (!is_string($class) || !class_exists($class) && !interface_exists($class)) {
             throw new ExpectException($class, '', 'An invalid value is passed');
         }
 
@@ -525,7 +577,7 @@ final class Expectation
                 throw new ExpectException($this->expectValue, $class, $this->message ?: 'Expected an instance other');
             }
         } else {
-            if (!($this->expectValue instanceof $class)) {
+            if (!$this->expectValue instanceof $class) {
                 throw new ExpectException($this->expectValue, $class, $this->message ?: 'Expected an instance of');
             }
         }
@@ -591,7 +643,7 @@ final class Expectation
             throw new Exception('The method "toBeIterable" cannot be used with "not()"');
         }
 
-        if (!\is_array($this->expectValue) && !($this->expectValue instanceof Traversable)) {
+        if (!\is_array($this->expectValue) && !$this->expectValue instanceof Traversable) {
             throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected an iterable.');
         }
 
@@ -624,7 +676,7 @@ final class Expectation
         return $this;
     }
 
-    public function toBeResource(mixed $type = null): self
+    public function toBeResource(?string $type = null): self
     {
         if ($this->isNot) {
             throw new Exception('The method "toBeResource" cannot be used with "not()"');
@@ -643,14 +695,12 @@ final class Expectation
 
     public function toBeScalar(): self
     {
-        if ($this->isNot) {
-            if (\is_scalar($this->expectValue)) {
-                throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected a non-scalar.');
-            }
-        } else {
-            if (!\is_scalar($this->expectValue)) {
-                throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected a scalar.');
-            }
+        if (is_scalar($this->expectValue) === $this->isNot) {
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message ?: ( $this->isNot ? 'Expected a non-scalar.' : 'Expected a scalar.' )
+            );
         }
 
         return $this;
@@ -697,7 +747,7 @@ final class Expectation
                 throw new ExpectException(
                     $this->expectValue,
                     null,
-                    $this->message ?: 'Expected a value other than null.',
+                    $this->message ?: 'Expected a value other than null.'
                 );
             }
         } else {
@@ -711,16 +761,21 @@ final class Expectation
 
     public function toHaveKey(string|int $key): self
     {
+        $value = $this->expectValue;
+        if (!is_array($value)) {
+            throw new ExpectException($value, 'Array', $this->message ?: 'Expected an array.');
+        }
+
         if ($this->isNot) {
-            if (isset($this->expectValue[$key]) || \array_key_exists($key, $this->expectValue)) {
+            if (isset($value[$key]) || \array_key_exists($key, $value)) {
                 throw new ExpectException(
                     $this->expectValue,
                     '',
-                    $this->message ?: "Expected the key '$key' to not exist.",
+                    $this->message ?: "Expected the key '$key' to not exist."
                 );
             }
         } else {
-            if (!(isset($this->expectValue[$key]) || \array_key_exists($key, $this->expectValue))) {
+            if (!( isset($value[$key]) || \array_key_exists($key, $value) )) {
                 throw new ExpectException($this->expectValue, '', $this->message ?: "Expected the key '$key' to exist");
             }
         }
@@ -728,6 +783,7 @@ final class Expectation
         return $this;
     }
 
+    /** @param array<int|string> $keys */
     public function toHaveKeys(array $keys): self
     {
         foreach ($keys as $key) {
@@ -748,15 +804,15 @@ final class Expectation
                 throw new ExpectException(
                     count($this->expectValue),
                     $length,
-                    $this->message ?: "Expected an array to contain $length elements",
+                    $this->message ?: "Expected an array to contain $length elements"
                 );
             }
         } else {
-            if ($length !== mb_strlen($this->expectValue, 'UTF-8')) {
+            if ($length !== mb_strlen($this->stringValue(), 'UTF-8')) {
                 throw new ExpectException(
-                    mb_strlen($this->expectValue, 'UTF-8'),
+                    mb_strlen($this->stringValue(), 'UTF-8'),
                     $length,
-                    $this->message ?: "Expected a value to contain $length characters",
+                    $this->message ?: "Expected a value to contain $length characters"
                 );
             }
         }
@@ -770,7 +826,7 @@ final class Expectation
             throw new Exception('The method "toBeReadableDirectory" cannot be used with "not()"');
         }
 
-        if (!\is_readable($this->expectValue)) {
+        if (!\is_readable($this->stringValue())) {
             throw new ExpectException($this->expectValue, '', $this->message ?: 'The path is not readable.');
         }
 
@@ -783,7 +839,7 @@ final class Expectation
             throw new Exception('The method "toBeWritableDirectory" cannot be used with "not()"');
         }
 
-        if (!\is_writable($this->expectValue)) {
+        if (!\is_writable($this->stringValue())) {
             throw new ExpectException($this->expectValue, '', $this->message ?: 'The path is not writable.');
         }
 
@@ -793,19 +849,19 @@ final class Expectation
     public function toStartWith(string $prefix): self
     {
         if ($this->isNot) {
-            if (str_starts_with($this->expectValue, $prefix)) {
+            if (str_starts_with($this->stringValue(), $prefix)) {
                 throw new ExpectException(
                     $this->expectValue,
                     '',
-                    $this->message ?: "Expected a value not to start with '$prefix'",
+                    $this->message ?: "Expected a value not to start with '$prefix'"
                 );
             }
         } else {
-            if (!str_starts_with($this->expectValue, $prefix)) {
+            if (!str_starts_with($this->stringValue(), $prefix)) {
                 throw new ExpectException(
                     $this->expectValue,
                     '',
-                    $this->message ?: "Expected a value to start with '$prefix'",
+                    $this->message ?: "Expected a value to start with '$prefix'"
                 );
             }
         }
@@ -815,33 +871,37 @@ final class Expectation
 
     public function toThrow(string $class = 'Exception', string $message = ''): self
     {
-        if (! is_callable($this->expectValue)) {
+        if (!is_callable($this->expectValue)) {
             throw new Exception('The method "toThrow" requires a callable.');
         }
 
         $isClass = class_exists($class) || interface_exists($class);
-        if (! $isClass && $message === '') {
+        if (!$isClass && $message === '') {
             $message = $class;
         }
 
         $exception = null;
         try {
-            ($this->expectValue)();
+            ( $this->expectValue )();
         } catch (\Throwable $e) {
             $exception = $e;
         }
 
-        $matches = $exception !== null
-            && (! $isClass || $exception instanceof $class)
-            && ($message === '' || $exception->getMessage() === $message);
+        $matches =
+            $exception !== null
+            && ( !$isClass || $exception instanceof $class )
+            && ( $message === '' || $exception->getMessage() === $message );
 
         if ($matches === $this->isNot) {
             throw new ExpectException(
-                $exception === null ? 'No exception' : get_class($exception).': '.$exception->getMessage(),
+                $exception === null ? 'No exception' : get_class($exception) . ': ' . $exception->getMessage(),
                 $isClass ? "$class: $message" : $message,
-                $this->message ?: ($this->isNot
-                    ? 'Expected not to throw the matching exception.'
-                    : 'Expected to throw the matching exception.'),
+                $this->message
+                ?: (
+                    $this->isNot
+                        ? 'Expected not to throw the matching exception.'
+                        : 'Expected to throw the matching exception.'
+                )
             );
         }
 
@@ -851,19 +911,19 @@ final class Expectation
     public function toEndWith(string $suffix): self
     {
         if ($this->isNot) {
-            if (str_ends_with($this->expectValue, $suffix)) {
+            if (str_ends_with($this->stringValue(), $suffix)) {
                 throw new ExpectException(
                     $this->expectValue,
                     $suffix,
-                    $this->message ?: "Expected a value not to end with '$suffix'",
+                    $this->message ?: "Expected a value not to end with '$suffix'"
                 );
             }
         } else {
-            if (!str_ends_with($this->expectValue, $suffix)) {
+            if (!str_ends_with($this->stringValue(), $suffix)) {
                 throw new ExpectException(
                     $this->expectValue,
                     $suffix,
-                    $this->message ?: 'Expected a value to end with',
+                    $this->message ?: 'Expected a value to end with'
                 );
             }
         }
@@ -873,22 +933,26 @@ final class Expectation
 
     public function toMatch(string $pattern): self
     {
-        if ($this->isNot) {
-            if (\preg_match($pattern, $this->expectValue, $matches, PREG_OFFSET_CAPTURE)) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    '',
-                    $this->message ?: "The value matches the pattern $pattern.",
-                );
-            }
-        } else {
-            if (!\preg_match($pattern, $this->expectValue)) {
-                throw new ExpectException(
-                    $this->expectValue,
-                    '',
-                    $this->message ?: "The value does not match the expected pattern: $pattern",
-                );
-            }
+        if ($pattern === '') {
+            throw new Exception('The regular expression cannot be empty.');
+        }
+
+        $matches = @preg_match($pattern, $this->stringValue());
+        if ($matches === false) {
+            throw new Exception('Invalid regular expression: ' . preg_last_error_msg());
+        }
+
+        if (( $matches === 1 ) === $this->isNot) {
+            throw new ExpectException(
+                $this->expectValue,
+                '',
+                $this->message
+                ?: (
+                    $this->isNot
+                        ? "The value matches the pattern $pattern."
+                        : "The value does not match the expected pattern: $pattern"
+                )
+            );
         }
 
         return $this;
@@ -904,13 +968,21 @@ final class Expectation
             throw new Exception('Expectation value is not iterable.');
         }
 
-        if (is_callable($callback)) {
-            foreach ($this->expectValue as $item) {
-                $callback(expect($item));
-            }
+        foreach ($this->expectValue as $item) {
+            $callback(expect($item));
         }
 
         return $this;
+    }
+
+    private function stringValue(): string
+    {
+        $value = $this->expectValue;
+        if (!is_string($value)) {
+            throw new ExpectException($value, 'String', $this->message ?: 'Expected a string.');
+        }
+
+        return $value;
     }
 
     public function dd(): self

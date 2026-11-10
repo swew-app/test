@@ -32,25 +32,27 @@ class TestMaster extends SwewCommander
 
     private bool $isWatchMode = false;
 
+    /** @var array<string, class-string<Command>> */
     protected array $commands = [
         LoadConfig::NAME => LoadConfig::class,
         SearchFiles::NAME => SearchFiles::class,
         RunTests::NAME => RunTests::class,
-        ShowTestResults::NAME => ShowTestResults::class,
+        ShowTestResults::NAME => ShowTestResults::class
     ];
 
     public function __construct(
-        array                   $argvLocal = [],
-        private readonly Output $output = new Output(),
+        array $argvLocal = [],
+        private readonly Output $output = new Output()
     ) {
         global $argv;
 
-        if (isset($GLOBALS['_composer_autoload_path'])) {
-            require_once $GLOBALS['_composer_autoload_path'];
+        $autoloadPath = $GLOBALS['_composer_autoload_path'] ?? null;
+        if (is_string($autoloadPath)) {
+            require_once $autoloadPath;
         }
 
         if (count($argvLocal) === 0) {
-            $argvLocal = $argv;
+            $argvLocal = $argv ?? [];
         }
 
         if (empty(getenv('__TEST__'))) {
@@ -61,7 +63,7 @@ class TestMaster extends SwewCommander
 
         $this->startAt = microtime(true);
 
-        set_exception_handler(function ($e) {
+        set_exception_handler(function (\Throwable $e) {
             $msg = DataConverter::getParsedException($e, '[ Error outside of tests ]');
             CliStr::vm()->output->writeLn($msg);
             exit(1);
@@ -74,12 +76,12 @@ class TestMaster extends SwewCommander
     {
         global $argv;
 
-        $argList = count($arg) > 0 ? $arg : $argv;
+        $argList = count($arg) > 0 ? $arg : $argv ?? [];
 
         $isWatchMode = in_array('--watch', $argList) || in_array('-w', $argList);
 
         if ($isWatchMode === false) {
-            (new self($argList))->run();
+            ( new self($argList) )->run();
         } else {
             // WATCH MODE
 
@@ -94,7 +96,8 @@ class TestMaster extends SwewCommander
                 pcntl_wait($status);
 
                 if ($status > 0) {
-                    exit(pcntl_wifexited($status) ? pcntl_wexitstatus($status) : 1);
+                    $exitCode = pcntl_wifexited($status) ? pcntl_wexitstatus($status) : false;
+                    exit($exitCode === false ? 1 : $exitCode);
                 }
 
                 sleep(1);
@@ -118,6 +121,7 @@ class TestMaster extends SwewCommander
         }
     }
 
+    #[\Override]
     public function run(): void
     {
         if ($this->isNeedHelp()) {
@@ -136,13 +140,14 @@ class TestMaster extends SwewCommander
                 // кастомный ответ, когда надо досрочно завершить работу без ошибки
                 exit();
             }
-            if ($result > 0 && ! ($this->isWatchMode && $command instanceof ShowTestResults)) {
+            if ($result > 0 && !( $this->isWatchMode && $command instanceof ShowTestResults )) {
                 // Handle error
                 exit($result);
             }
         }
     }
 
+    #[\Override]
     protected function showHelp(): void
     {
         // TODO: собирать только опции

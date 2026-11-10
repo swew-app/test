@@ -26,7 +26,7 @@ final class Suite
     private ?LogData $logData = null;
 
     public function __construct(
-        public readonly string  $message,
+        public readonly string $message,
         private readonly Closure $testCase
     ) {
     }
@@ -84,17 +84,19 @@ final class Suite
 
         //        CliStr::vm()->write(DataConverter::getIcon($log));
 
-        return  $log;
+        return $log;
     }
 
     private function executeTestCase(array $params = []): void
     {
         $fn = $this->testCase;
-        $boundFn = (new \ReflectionFunction($fn))->isStatic() ? $fn : $fn->bindTo($this);
+        $boundFn = ( new \ReflectionFunction($fn) )->isStatic() ? $fn : $fn->bindTo($this);
 
+        if ($boundFn === null) {
+            throw new \LogicException('Unable to bind the test callback.');
+        }
         $boundFn(...$params);
     }
-
 
     public function with(array $dateset): self
     {
@@ -103,6 +105,7 @@ final class Suite
         return $this;
     }
 
+    /** @param (Closure(): bool)|null $closure */
     public function skip(?Closure $closure = null): self
     {
         if (is_null($closure)) {

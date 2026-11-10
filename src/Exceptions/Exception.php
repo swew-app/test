@@ -9,7 +9,7 @@ use Throwable;
 
 final class Exception extends RuntimeException implements Throwable
 {
-    public function __construct(string $message = "", int $code = 0, \Throwable|null $previous = null)
+    public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null)
     {
         if (!empty($message)) {
             $red = "\033[31m";

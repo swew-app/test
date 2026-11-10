@@ -33,22 +33,23 @@ class ShowTestResults extends Command
 
     private int $todoTests = 0;
 
-    private int $finishAt = 0;
+    private float $finishAt = 0;
 
+    #[\Override]
     public function __invoke(): int
     {
         /** @var TestMaster $commander */
         $commander = $this->getCommander();
 
-        if (! ($commander instanceof TestMaster)) {
+        if (!$commander instanceof TestMaster) {
             throw new LogicException('Is not testMaster');
         }
 
-        if (! ($this->output)) {
+        if (!$this->output) {
             throw new LogicException('Empty output');
         }
 
-        $this->finishAt = time();
+        $this->finishAt = microtime(true);
 
         // clear
         if ($commander->config->logClear) {
@@ -70,10 +71,7 @@ class ShowTestResults extends Command
 
         // лог ошибок показываем в конце если они произошли
         if ($this->hasException) {
-            $this->showExceptions(
-                $commander->testResults,
-                $commander->config->logTraceReverse
-            );
+            $this->showExceptions($commander->testResults, $commander->config->logTraceReverse);
         }
 
         // отображение summary
@@ -92,8 +90,8 @@ class ShowTestResults extends Command
             '      .-. .-. .-. .-.      ',
             '       |  |-  `-.  |       ',
             '     \'  `-\' `-\'  \'     ',
-            'php: '.PHP_VERSION.';',
-            '</>',
+            'php: ' . PHP_VERSION . ';',
+            '</>'
         ];
 
         $width = $this->output?->width() ?? 80;
@@ -107,7 +105,8 @@ class ShowTestResults extends Command
 
     private function showFiles(array $logDataList): void
     {
-        if (! ($this->output)) {
+        $output = $this->output;
+        if ($output === null) {
             throw new LogicException('Empty output');
         }
 
@@ -126,12 +125,12 @@ class ShowTestResults extends Command
 
                 $filePath = $item->testFilePath;
 
-                $this->output->writeLn(CliStr::vm()->trimPath($filePath), '<cyan>%s</>');
+                $output->writeLn(CliStr::vm()->trimPath($filePath), '<cyan>%s</>');
             }
 
-            if (! $this->isShort) {
+            if (!$this->isShort) {
                 $line = DataConverter::getTestSuiteLine($item);
-                $this->output->writeLn($line);
+                $output->writeLn($line);
             }
 
             $this->setCount($item);
@@ -160,7 +159,8 @@ class ShowTestResults extends Command
 
     private function showExceptions(array $logDataList, bool $traceReverse): void
     {
-        if (! ($this->output)) {
+        $output = $this->output;
+        if ($output === null) {
             throw new LogicException('Empty output');
         }
 
@@ -168,18 +168,19 @@ class ShowTestResults extends Command
 
         /** @var LogData $item */
         foreach ($logDataList as $item) {
-            if (! $item->isExcepted || is_null($item->exception)) {
+            $exception = $item->exception;
+            if (!$item->isExcepted || $exception === null) {
                 continue;
             }
 
             $exceptNumber++;
             $suitTitle = DataConverter::getMessage($item);
 
-            $this->output->writeLn(
-                CliStr::vm()->getLine("[ $exceptNumber | $suitTitle ]", '<red>')
-            );
+            $output->writeLn(CliStr::vm()->getLine("[ $exceptNumber | $suitTitle ]", '<red>'));
 
-            $trace = $item->exception->getTrace();
+            /** @var list<array{file?: string, line?: int, class?: string, type?: string, function?: string, args?: array}> $trace */
+            $trace = $exception->getTrace();
+            $filePath = DataConverter::getExceptionTraceLine($trace[0] ?? null);
 
             if ($traceReverse) {
                 $trace = array_reverse($trace);
@@ -189,12 +190,12 @@ class ShowTestResults extends Command
 
             foreach ($trace as $t) {
                 if (
-                    isset($t['file']) &&
-                    (
-                        str_contains($t['file'], 'vendor/swew/test') ||
-                        str_contains($t['file'], 'swew/test/src') ||
-                        str_contains($t['file'], 'swew/test/bin') ||
-                        str_contains($t['file'], 'vendor/bin/t')
+                    isset($t['file'])
+                    && (
+                        str_contains($t['file'], 'vendor/swew/test')
+                        || str_contains($t['file'], 'swew/test/src')
+                        || str_contains($t['file'], 'swew/test/bin')
+                        || str_contains($t['file'], 'vendor/bin/t')
                     )
                 ) {
                     continue;
@@ -203,17 +204,16 @@ class ShowTestResults extends Command
             }
 
             if (empty($msg)) {
-                $msg = strval($item->exception);
+                $msg = strval($exception);
             }
 
-            $this->output->writeLn($msg);
+            $output->writeLn($msg);
 
-            $filePath = DataConverter::getExceptionTraceLine($item->exception->getTrace()[0]);
-            $this->output->writeLn($filePath, '<cyan>%s</>');
+            $output->writeLn($filePath, '<cyan>%s</>');
 
-            $this->output->writeLn(DataConverter::getIcon($item).' <red>'.$suitTitle.'</>');
+            $output->writeLn(DataConverter::getIcon($item) . ' <red>' . $suitTitle . '</>');
 
-            $this->output->writeLn($item->exception->getMessage(), "<yellow>Exception:</><bgRed>\n %s \n</>");
+            $output->writeLn($exception->getMessage(), "<yellow>Exception:</><bgRed>\n %s \n</>");
         }
     }
 
@@ -223,15 +223,15 @@ class ShowTestResults extends Command
         $suiteFilter = $commander->config->getSuite();
         $startAt = $commander->startAt;
 
-        if (! ($this->output)) {
+        if (!$this->output) {
             throw new LogicException('Empty output');
         }
 
-        if (! empty($filePattern)) {
+        if (!empty($filePattern)) {
             $this->output->writeLn("<cyan>Filtered by file pattern (--filter): <yellow>$filePattern</>");
         }
 
-        if (! empty($suiteFilter)) {
+        if (!empty($suiteFilter)) {
             $this->output->writeLn("<cyan>Filtered by suite pattern (--suite):<yellow> {$suiteFilter}</>");
         }
 
@@ -254,7 +254,7 @@ class ShowTestResults extends Command
         $tst = implode(' | ', $tests);
 
         $timeSrt = date('Y.m.d H:i:s', intval($startAt));
-        $duration = DataConverter::formatMicrotime($startAt - $this->finishAt);
+        $duration = DataConverter::formatMicrotime($this->finishAt - $startAt);
         $memory = DataConverter::memorySize(memory_get_peak_usage());
 
         $lines = [
@@ -265,7 +265,7 @@ class ShowTestResults extends Command
             " Max memory  <yellow>{$memory}</>",
             "   Start at  <gray>{$timeSrt}</>",
             "   Duration  <cyan>{$duration}</><gray> s</>",
-            '',
+            ''
         ];
 
         $this->output->writeLn(implode("\n", $lines));

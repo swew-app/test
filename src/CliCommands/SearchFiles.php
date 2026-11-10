@@ -19,13 +19,14 @@ class SearchFiles extends Command
 
     public const DESCRIPTION = 'Search and filtering';
 
+    #[\Override]
     public function __invoke(): int
     {
         $matchingFiles = [];
 
         $commander = $this->getCommander();
 
-        if (! ($commander instanceof TestMaster)) {
+        if (!$commander instanceof TestMaster) {
             throw new LogicException('Is not testMaster');
         }
 
@@ -71,7 +72,7 @@ class SearchFiles extends Command
 
         $suite = $this->argv('suite');
 
-        if (! empty($suite)) {
+        if (!empty($suite)) {
             if (gettype($suite) !== 'string') {
                 throw new LogicException('Passed wrong type');
             }
@@ -83,6 +84,7 @@ class SearchFiles extends Command
         return self::SUCCESS;
     }
 
+    /** @param array<string> $matchingFiles */
     private function searchFilePath(string $directory, string $pattern, array &$matchingFiles): void
     {
         $iterator = new RecursiveIteratorIterator(
@@ -91,13 +93,14 @@ class SearchFiles extends Command
         );
 
         if ($pattern[0] !== '*') {
-            $pattern = '*'.$pattern;
+            $pattern = '*' . $pattern;
         }
 
+        /** @var \SplFileInfo $file */
         foreach ($iterator as $file) {
             if (
                 $file->isFile()
-                && ! str_contains($file->getPathname(), 'vendor')
+                && !str_contains($file->getPathname(), 'vendor')
                 && fnmatch($pattern, $file->getPathname())
             ) {
                 $matchingFiles[] = $file->getPathname();
@@ -105,8 +108,17 @@ class SearchFiles extends Command
         }
     }
 
+    /**
+     * @param array<string> $matchingFiles
+     * @return array<string>
+     */
     private function filterFiles(string $filter, array $matchingFiles): array
     {
-        return preg_grep("/$filter/", $matchingFiles);
+        $result = @preg_grep("/$filter/", $matchingFiles);
+        if ($result === false) {
+            throw new LogicException("Invalid file filter: $filter");
+        }
+
+        return $result;
     }
 }

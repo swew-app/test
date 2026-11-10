@@ -16,16 +16,18 @@ class RunTests extends Command
 
     public const DESCRIPTION = 'Run tests';
 
+    /** @var list<SuiteGroup> */
     private array $suiteGroupList = [];
 
     private float $testingTime = 0;
 
+    #[\Override]
     public function __invoke(): int
     {
         /** @var TestMaster $commander */
         $commander = $this->getCommander();
 
-        if (! ($commander instanceof TestMaster)) {
+        if (!$commander instanceof TestMaster) {
             throw new LogicException('Is not testMaster');
         }
 
@@ -34,10 +36,7 @@ class RunTests extends Command
         }
 
         // Preload file
-        $this->requirePreloadFile(
-            $commander->config->getRoot(),
-            $commander->config->preloadFile
-        );
+        $this->requirePreloadFile($commander->config->getRoot(), $commander->config->preloadFile);
 
         // Filter Suite
         $suiteFilter = $commander->config->getSuite();
@@ -59,9 +58,12 @@ class RunTests extends Command
 
     private function requirePreloadFile(string $root, string $preloadFile): void
     {
-        if (! empty($preloadFile)) {
-            $this->output?->writeLn($root.DIRECTORY_SEPARATOR.$preloadFile, '<green>Preload file</><br><cyan> %s</>');
-            require realpath($root.DIRECTORY_SEPARATOR.$preloadFile);
+        if (!empty($preloadFile)) {
+            $this->output?->writeLn(
+                $root . DIRECTORY_SEPARATOR . $preloadFile,
+                '<green>Preload file</><br><cyan> %s</>'
+            );
+            require $root . DIRECTORY_SEPARATOR . $preloadFile;
         }
     }
 
@@ -69,16 +71,18 @@ class RunTests extends Command
     {
         $group = new SuiteGroup($file);
 
-        if (! empty($suiteFilter)) {
+        if (!empty($suiteFilter)) {
             $group->filterSuiteByMessage($suiteFilter);
         }
 
         $this->suiteGroupList[] = $group;
     }
 
+    /** @return array<LogData> */
     private function runTests(TestMaster $commander): array
     {
-        if (! ($this->output)) {
+        $output = $this->output;
+        if ($output === null) {
             throw new LogicException('Empty output');
         }
 
@@ -86,7 +90,7 @@ class RunTests extends Command
 
         $testsCount = $this->getCount();
 
-        $bar = $this->output->createProgressBar($testsCount);
+        $bar = $output->createProgressBar($testsCount);
         $bar->start(); // show progress bar
 
         $startTime = microtime(true);

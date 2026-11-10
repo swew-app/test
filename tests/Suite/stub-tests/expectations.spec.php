@@ -83,6 +83,7 @@ it('toContain', function () {
 it('toHaveCount', function () {
     expect([0, 1, 2])->toHaveCount(3);
     expect([0, 1, 2])->not()->toHaveCount(1);
+    expect(new ArrayObject([1, 2]))->toHaveCount(2);
 });
 
 it('toHaveProperty', function () {
@@ -94,6 +95,7 @@ it('toHaveProperty', function () {
     $item = new MyClass();
 
     expect($item)->toHaveProperty('test');
+    expect(MyClass::class)->toHaveProperty('test');
     expect($item)->not()->toHaveProperty('test-x');
 });
 
@@ -102,6 +104,13 @@ it('toMatchArray', function () {
     $arr2 = [1, 2];
 
     expect($arr1)->toMatchArray($arr2);
+    expect((object) ['name' => 'value'])->toMatchArray(['name' => 'value']);
+    expect(new class {
+        public function toArray(): array
+        {
+            return ['name' => 'value'];
+        }
+    })->toMatchArray(['name' => 'value']);
 });
 
 it('toMatchObject', function () {
@@ -125,6 +134,10 @@ it('toMatchObject', function () {
 it('toEqual', function () {
     expect(1)->toEqual(1);
     expect(1)->not()->toEqual(12);
+    expect('1')->toEqual(1);
+    expect(null)->toEqual(false);
+    expect([1, 2])->toEqual([1, 2]);
+    expect(new DateTimeImmutable('2020-01-01'))->toBeLessThan(new DateTimeImmutable('2021-01-01'));
 });
 
 it('toEqualWithDelta', function () {
@@ -150,7 +163,7 @@ it('toBeBool', function () {
 });
 
 it('toBeCallable', function () {
-    $controller = fn () => '1';
+    $controller = fn() => '1';
 
     expect($controller)->toBeCallable();
 });
@@ -231,17 +244,17 @@ it('toStartWith', function () {
 });
 
 it('toThrow', function () {
-    expect(fn () => throw new Exception('Something happened.'))->toThrow(Exception::class);
+    expect(fn() => throw new Exception('Something happened.'))->toThrow(Exception::class);
 
-    expect(fn () => throw new Exception('Something happened.'))->toThrow('Something happened.');
+    expect(fn() => throw new Exception('Something happened.'))->toThrow('Something happened.');
 
-    expect(fn () => throw new Exception('Something happened.'))->toThrow(Exception::class, 'Something happened.');
+    expect(fn() => throw new Exception('Something happened.'))->toThrow(Exception::class, 'Something happened.');
 
-    expect(fn () => 3)->not()->toThrow(Exception::class);
-    expect(fn () => throw new TypeError('boom'))->toThrow(Throwable::class);
-    expect(fn () => throw new RuntimeException('boom'))->not()->toThrow('other');
-    expect(fn () => throw new RuntimeException('boom'))->not()->toThrow(LogicException::class);
-    expect(fn () => throw new RuntimeException('boom'))->not()->toThrow(RuntimeException::class, 'other');
+    expect(fn() => 3)->not()->toThrow(Exception::class);
+    expect(fn() => throw new TypeError('boom'))->toThrow(Throwable::class);
+    expect(fn() => throw new RuntimeException('boom'))->not()->toThrow('other');
+    expect(fn() => throw new RuntimeException('boom'))->not()->toThrow(LogicException::class);
+    expect(fn() => throw new RuntimeException('boom'))->not()->toThrow(RuntimeException::class, 'other');
 });
 
 it('toThrow executes the callback once', function () {
@@ -262,20 +275,50 @@ it('rejects invalid expectations', function (Closure $assertion, string $excepti
     }
     expect($caught)->toBe($exceptionClass);
 })->with([
-    [fn () => expect(1)->misspelledMatcher(), InvalidExpectation::class],
-    [fn () => expect(1)->misspelledProperty, InvalidExpectation::class],
-    [fn () => expect(1)->not()->toBeGreaterThanOrEqual(1), ExpectException::class],
-    [fn () => expect(1)->not()->toBeLessThanOrEqual(1), ExpectException::class],
-    [fn () => expect('{')->toBeJson(), ExpectException::class],
-    [fn () => expect(fn () => new stdClass())->toThrow(Exception::class), ExpectException::class],
-    [fn () => expect(fn () => throw new Exception(stdClass::class))->toThrow(stdClass::class), ExpectException::class],
-    [fn () => expect(fn () => null)->toThrow(Throwable::class), ExpectException::class],
-    [fn () => expect(fn () => 1)->toThrow('boom'), ExpectException::class],
-    [fn () => expect(fn () => throw new LogicException('boom'))->toThrow(RuntimeException::class), ExpectException::class],
-    [fn () => expect(fn () => throw new RuntimeException('other'))->toThrow(RuntimeException::class, 'boom'), ExpectException::class],
-    [fn () => expect(fn () => throw new RuntimeException('boom'))->not()->toThrow('boom'), ExpectException::class],
-    [fn () => expect(fn () => throw new RuntimeException('boom'))->not()->toThrow(RuntimeException::class, 'boom'), ExpectException::class],
-    [fn () => expect(1)->not()->toThrow(), InvalidExpectation::class],
+    [fn() => expect(1)->misspelledMatcher(), InvalidExpectation::class],
+    [fn() => expect(1)->misspelledProperty, InvalidExpectation::class],
+    [fn() => expect(1)->not()->toBeGreaterThanOrEqual(1), ExpectException::class],
+    [fn() => expect(1)->not()->toBeLessThanOrEqual(1), ExpectException::class],
+    [fn() => expect('{')->toBeJson(), ExpectException::class],
+    [fn() => expect(fn() => new stdClass())->toThrow(Exception::class), ExpectException::class],
+    [fn() => expect(fn() => throw new Exception(stdClass::class))->toThrow(stdClass::class), ExpectException::class],
+    [fn() => expect(fn() => null)->toThrow(Throwable::class), ExpectException::class],
+    [fn() => expect(fn() => 1)->toThrow('boom'), ExpectException::class],
+    [
+        fn() => expect(fn() => throw new LogicException('boom'))->toThrow(RuntimeException::class),
+        ExpectException::class
+    ],
+    [
+        fn() => expect(fn() => throw new RuntimeException('other'))->toThrow(RuntimeException::class, 'boom'),
+        ExpectException::class
+    ],
+    [fn() => expect(fn() => throw new RuntimeException('boom'))->not()->toThrow('boom'), ExpectException::class],
+    [
+        fn() => expect(fn() => throw new RuntimeException('boom'))->not()->toThrow(RuntimeException::class, 'boom'),
+        ExpectException::class
+    ],
+    [fn() => expect(1)->not()->toThrow(), InvalidExpectation::class],
+    [fn() => expect('value')->toMatch(''), InvalidExpectation::class],
+    [fn() => expect('value')->not()->toMatch(''), InvalidExpectation::class],
+    [fn() => expect('value')->toMatch('/[/'), InvalidExpectation::class],
+    [fn() => expect('value')->not()->toMatch('/[/'), InvalidExpectation::class],
+    [fn() => expect(null)->toMatchArray([]), ExpectException::class],
+    [fn() => expect(1)->toHaveCount(1), ExpectException::class],
+    [fn() => expect(1)->toHaveProperty('name'), ExpectException::class],
+    [fn() => expect(1)->toHaveKey('name'), ExpectException::class],
+    [fn() => expect(1)->toStartWith('1'), ExpectException::class],
+    [fn() => expect(1)->toHaveLength(1), ExpectException::class],
+    [fn() => expect(new stdClass())->toBeIn([]), ExpectException::class],
+    [fn() => expect(new stdClass())->toBeInstanceOf([]), ExpectException::class],
+    [
+        fn() => expect(new class {
+            public function toArray(): string
+            {
+                return 'invalid';
+            }
+        })->toMatchArray([]),
+        ExpectException::class
+    ]
 ]);
 
 it('toEndWith', function () {
@@ -291,15 +334,11 @@ it('toMatch', function () {
 });
 
 it('each', function () {
-    expect([1, 2, 3])->each(fn ($number) => $number->toBeLessThan(4));
+    expect([1, 2, 3])->each(fn($number) => $number->toBeLessThan(4));
 });
 
 it('json', function () {
     $json = '{"name":"Nuno","credit":1000.00}';
 
-    expect($json)
-        ->json()
-        ->toHaveCount(2)
-        ->name->toBe('Nuno')
-        ->credit->toBeFloat();
+    expect($json)->json()->toHaveCount(2)->name->toBe('Nuno')->credit->toBeFloat();
 })->todo();

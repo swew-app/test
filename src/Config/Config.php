@@ -12,6 +12,7 @@ class Config implements JsonSerializable
 
     public string $preloadFile = '';
 
+    /** @var array<string> */
     public array $paths = ['*.spec.php', '*.test.php'];
 
     public bool $bail = false;
@@ -38,6 +39,7 @@ class Config implements JsonSerializable
 
     private array $env = [];
 
+    #[\Override]
     public function jsonSerialize(): array
     {
         return [
@@ -51,12 +53,12 @@ class Config implements JsonSerializable
                     'color' => $this->logColor,
                     'traceReverse' => $this->logTraceReverse,
                     'clear' => $this->logClear,
-                    'short' => $this->logShort,
+                    'short' => $this->logShort
                 ],
                 'env' => [
-                    "__TEST__" => true,
-                ],
-            ],
+                    '__TEST__' => true
+                ]
+            ]
         ];
     }
 
@@ -67,18 +69,24 @@ class Config implements JsonSerializable
 
     public function setRoot(string $root): void
     {
-        $this->root = realpath($root);
+        $path = realpath($root);
+        if ($path === false || !is_dir($path)) {
+            throw new \InvalidArgumentException("Invalid test directory: $root");
+        }
+        $this->root = $path;
     }
 
     public function getSuite(): string
     {
         return $this->suite;
     }
+
     public function setSuite(string $suite): void
     {
         $this->suite = $suite;
     }
 
+    /** @return array<string> */
     public function getTestFiles(): array
     {
         return $this->testFiles;
@@ -94,6 +102,7 @@ class Config implements JsonSerializable
         $this->filter = $filter;
     }
 
+    /** @param array<string> $testFiles */
     public function setTestFiles(array $testFiles): void
     {
         $this->testFiles = $testFiles;

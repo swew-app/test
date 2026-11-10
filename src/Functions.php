@@ -8,16 +8,23 @@ use Swew\Test\Suite\SuiteGroup;
 use Swew\Test\Suite\SuiteHook;
 
 $_exit = function (string $name): void {
-    fwrite(STDERR, "The global function `{$name}()`s can't be created because of some naming collisions with another library.\n");
+    fwrite(
+        STDERR,
+        "The global function `{$name}()`s can't be created because of some naming collisions with another library.\n"
+    );
 };
-
 
 if (!function_exists('__getFilePath')) {
     function __getFilePath(): string
     {
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
 
-        return $backtrace[1]['file'];
+        $file = $backtrace[1]['file'] ?? null;
+        if (!is_string($file)) {
+            throw new LogicException('Unable to determine the test file path.');
+        }
+
+        return $file;
     }
 } else {
     $_exit('__getFilePath');
@@ -27,8 +34,7 @@ if (!function_exists('it')) {
     function it(string $message, ?Closure $closure = null): Suite
     {
         if (is_null($closure)) {
-            $suite = new Suite($message, function () {
-            });
+            $suite = new Suite($message, function () {});
             $suite->todo();
         } else {
             $suite = new Suite($message, $closure);
@@ -79,6 +85,11 @@ if (!function_exists('fit')) {
 }
 
 if (!function_exists('expect')) {
+    /**
+     * @template TValue
+     * @param TValue $value
+     * @return Expectation<TValue>
+     */
     function expect(mixed $value = null, string $message = ''): Expectation
     {
         return new Expectation($value, $message);

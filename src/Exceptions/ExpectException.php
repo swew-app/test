@@ -12,19 +12,16 @@ use Throwable;
 final class ExpectException extends RuntimeException implements Throwable
 {
     public function __construct(
-        mixed  $expectedValue,
-        mixed  $gotValue,
-        string $message = '',
+        mixed $expectedValue,
+        mixed $gotValue,
+        string $message = ''
     ) {
-
         $width = CliStr::vm()->width();
 
-        $msg = "<bgRed>" .str_pad(" $message ", $width, ' ', STR_PAD_BOTH) . "</><br>";
+        $msg = '<bgRed>' . str_pad(" $message ", $width, ' ', STR_PAD_BOTH) . '</><br>';
 
         $diff = Diff::diff($expectedValue, $gotValue);
 
-        parent::__construct(
-            CliStr::vm()->output->format($msg . $diff)
-        );
+        parent::__construct(CliStr::vm()->output->format($msg . $diff));
     }
 }
