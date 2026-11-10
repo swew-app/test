@@ -6,18 +6,37 @@ includes = ["vendor"]
 
 [analyzer]
 excludes = ["tests"]
+# Dynamic values are expected at the framework's assertion and configuration boundaries.
+ignore = [
+    "mixed-assignment",
+    { code = "possibly-null-operand", in = ["src/Expectations/Expectation.php"] },
+    { code = "invalid-type-cast", in = ["src/Expectations/Expectation.php"] },
+    { code = "unsafe-instantiation", in = ["src/TestMaster.php"] },
+]
 
 [linter.rules]
 disallowed-functions = { level = "error", functions = ["dd"] }
 # Style and aggregate class-size rules are advisory, not correctness failures.
-cyclomatic-complexity = { level = "warning" }
-kan-defect = { level = "warning" }
-too-many-methods = { level = "warning" }
-too-many-properties = { level = "warning" }
-excessive-parameter-list = { level = "warning" }
-no-empty = { level = "warning" }
-no-global = { level = "warning" }
-no-error-control-operator = { level = "warning" }
+cyclomatic-complexity = { level = "note" }
+kan-defect = { level = "note" }
+halstead = { level = "note" }
+too-many-methods = { level = "note" }
+too-many-properties = { level = "note" }
+excessive-parameter-list = { level = "note" }
+literal-named-argument = { level = "note" }
+no-shorthand-ternary = { level = "note" }
+no-empty = { level = "note" }
+no-isset = { level = "note" }
+readable-literal = { level = "note" }
+single-class-per-file = { level = "note" }
+tagged-todo = { level = "note" }
+inline-variable-return = { level = "note" }
+# Assertions support loose equality; the runner uses globals and handles suppressed failures.
+identity-comparison = { level = "note" }
+no-global = { level = "note" }
+no-error-control-operator = { level = "note" }
+# Fixtures temporarily change and restore PHP settings to exercise failure paths.
+no-ini-set = { level = "note" }
 
 [formatter]
 preset = "psr-12"

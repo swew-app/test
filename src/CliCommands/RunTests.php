@@ -24,7 +24,6 @@ class RunTests extends Command
     #[\Override]
     public function __invoke(): int
     {
-        /** @var TestMaster $commander */
         $commander = $this->getCommander();
 
         if (!$commander instanceof TestMaster) {
@@ -103,7 +102,6 @@ class RunTests extends Command
         $isStoppedByException = false;
 
         // Run tests
-        /** @var SuiteGroup $suiteGroup */
         foreach ($this->suiteGroupList as $suiteGroup) {
             if ($isStoppedByException) {
                 break;
@@ -135,7 +133,6 @@ class RunTests extends Command
     {
         $count = 0;
 
-        /** @var SuiteGroup $group */
         foreach ($this->suiteGroupList as $group) {
             $count += $group->getCount();
         }
@@ -145,7 +142,6 @@ class RunTests extends Command
 
     private function hasTestWithOnly(): bool
     {
-        /** @var SuiteGroup $suiteGroup */
         foreach ($this->suiteGroupList as $suiteGroup) {
             $isFilteredByOnly = $suiteGroup->hasOnly();
 

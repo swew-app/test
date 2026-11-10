@@ -84,7 +84,6 @@ final class SuiteGroup
 
         $this->callHook(SuiteHook::BeforeAll);
 
-        /** @var Suite $suite */
         foreach ($list as $suite) {
             self::$currentSuite = $suite;
 
@@ -108,7 +107,6 @@ final class SuiteGroup
 
     public function hasOnly(): bool
     {
-        /** @var Suite $suite */
         foreach ($this->suiteList as $suite) {
             if ($suite->isOnly) {
                 return true;

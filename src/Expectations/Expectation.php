@@ -57,7 +57,6 @@ final class Expectation
     public function __call(string $name, array $arguments): self
     {
         if (array_key_exists($name, self::$extends)) {
-            /** @var Closure $fn */
             $fn = self::$extends[$name];
 
             $boundFn = $fn->bindTo($this);
@@ -995,7 +994,6 @@ final class Expectation
     public function json(): self
     {
         throw new Exception('// TODO');
-        return $this;
     }
 
     //    public function sequence(): self

@@ -78,7 +78,7 @@ class TestMaster extends SwewCommander
 
         $argList = count($arg) > 0 ? $arg : $argv ?? [];
 
-        $isWatchMode = in_array('--watch', $argList) || in_array('-w', $argList);
+        $isWatchMode = in_array('--watch', $argList, true) || in_array('-w', $argList, true);
 
         if ($isWatchMode === false) {
             ( new self($argList) )->run();
@@ -87,12 +87,13 @@ class TestMaster extends SwewCommander
 
             $pid = \pcntl_fork();
 
-            if ($pid == -1) {
+            if ($pid === -1) {
                 // Ошибка при создании дочернего процесса
                 throw new \RuntimeException('Fork failed');
             } elseif ($pid) {
                 // Родительский процесс
                 // Ждем завершения дочернего процесса
+                $status = 0;
                 pcntl_wait($status);
 
                 if ($status > 0) {
@@ -154,7 +155,6 @@ class TestMaster extends SwewCommander
         $result = [];
 
         foreach ($this->commands as $commandClass) {
-            /** @var Command $class */
             $class = new $commandClass();
             $this->fillCommandArguments($class, []);
 

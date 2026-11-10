@@ -38,7 +38,6 @@ class ShowTestResults extends Command
     #[\Override]
     public function __invoke(): int
     {
-        /** @var TestMaster $commander */
         $commander = $this->getCommander();
 
         if (!$commander instanceof TestMaster) {

@@ -77,7 +77,7 @@ final class Diff
         }
 
         if (\is_array($value)) {
-            return var_export($value, true) ?? 'array';
+            return var_export($value, true);
         }
 
         if (\is_object($value)) {

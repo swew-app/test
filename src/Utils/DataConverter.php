@@ -62,7 +62,7 @@ final class DataConverter
         $power = $size > 0 ? intval(log($size, 1024)) : 0;
 
         $unit = '<gray>' . $units[$power] . '</>';
-        $val = number_format($size / pow(1024, $power), 1, '.', '\'');
+        $val = number_format($size / ( 1024 ** $power ), 1, '.', '\'');
 
         return "$val$unit";
     }

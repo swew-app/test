@@ -6,8 +6,6 @@ namespace Swew\Test\Suite;
 
 use Closure;
 use Swew\Test\LogMaster\Log\LogData;
-use Swew\Test\Utils\CliStr;
-use Swew\Test\Utils\DataConverter;
 
 final class Suite
 {

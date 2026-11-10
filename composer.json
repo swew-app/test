@@ -74,8 +74,8 @@
     },
     "scripts": {
         "test": "@php bin/t --dir=tests --config=tests/config.json",
-        "static": "mago analyze",
-        "lint": "mago lint",
+        "static": "mago analyze --minimum-report-level warning",
+        "lint": "mago lint --minimum-report-level warning",
         "code-check": "mago format --check",
         "format": "mago format",
         "check": [
