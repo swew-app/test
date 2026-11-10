@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Swew\Test\Exceptions\ExpectException;
+use Swew\Test\Exceptions\Exception as InvalidExpectation;
+
 it('toBe', function () {
     expect(10)->toBe(10);
     expect(10)->not->toBe(1);
@@ -50,24 +53,24 @@ it('toBeFalsy', function () {
 it('toBeGreaterThan', function () {
     expect(0)->toBeGreaterThan(-1);
     expect(0)->not()->toBeGreaterThan(1);
+    expect(1)->not()->toBeGreaterThan(1);
 });
 
 it('toBeGreaterThanOrEqual', function () {
     expect(0)->toBeGreaterThanOrEqual(-1);
     expect(0)->toBeGreaterThanOrEqual(0);
     expect(0)->not()->toBeGreaterThanOrEqual(1);
-    expect(1)->not()->toBeGreaterThanOrEqual(1);
 });
 
 it('toBeLessThan', function () {
     expect(0)->toBeLessThan(1);
     expect(0)->not()->toBeLessThan(-1);
+    expect(0)->not()->toBeLessThan(0);
 });
 
 it('toBeLessThanOrEqual', function () {
     expect(0)->toBeLessThanOrEqual(0);
     expect(0)->toBeLessThanOrEqual(1);
-    expect(0)->not()->toBeLessThanOrEqual(0);
     expect(0)->not()->toBeLessThanOrEqual(-1);
 });
 
@@ -193,6 +196,7 @@ it('toBeString', function () {
 
 it('toBeJson', function () {
     expect('{"hello":"world"}')->toBeJson();
+    expect('null')->toBeJson();
 });
 
 it('toBeNull', function () {
@@ -233,8 +237,46 @@ it('toThrow', function () {
 
     expect(fn () => throw new Exception('Something happened.'))->toThrow(Exception::class, 'Something happened.');
 
-    expect(fn ($x, $y) => $x + $y)->not()->toThrow(Exception::class);
+    expect(fn () => 3)->not()->toThrow(Exception::class);
+    expect(fn () => throw new TypeError('boom'))->toThrow(Throwable::class);
+    expect(fn () => throw new RuntimeException('boom'))->not()->toThrow('other');
+    expect(fn () => throw new RuntimeException('boom'))->not()->toThrow(LogicException::class);
+    expect(fn () => throw new RuntimeException('boom'))->not()->toThrow(RuntimeException::class, 'other');
 });
+
+it('toThrow executes the callback once', function () {
+    $calls = 0;
+    expect(function () use (&$calls) {
+        ++$calls;
+        throw new RuntimeException('boom');
+    })->toThrow(RuntimeException::class, 'boom');
+    expect($calls)->toBe(1);
+});
+
+it('rejects invalid expectations', function (Closure $assertion, string $exceptionClass) {
+    $caught = null;
+    try {
+        $assertion();
+    } catch (Throwable $e) {
+        $caught = get_class($e);
+    }
+    expect($caught)->toBe($exceptionClass);
+})->with([
+    [fn () => expect(1)->misspelledMatcher(), InvalidExpectation::class],
+    [fn () => expect(1)->misspelledProperty, InvalidExpectation::class],
+    [fn () => expect(1)->not()->toBeGreaterThanOrEqual(1), ExpectException::class],
+    [fn () => expect(1)->not()->toBeLessThanOrEqual(1), ExpectException::class],
+    [fn () => expect('{')->toBeJson(), ExpectException::class],
+    [fn () => expect(fn () => new stdClass())->toThrow(Exception::class), ExpectException::class],
+    [fn () => expect(fn () => throw new Exception(stdClass::class))->toThrow(stdClass::class), ExpectException::class],
+    [fn () => expect(fn () => null)->toThrow(Throwable::class), ExpectException::class],
+    [fn () => expect(fn () => 1)->toThrow('boom'), ExpectException::class],
+    [fn () => expect(fn () => throw new LogicException('boom'))->toThrow(RuntimeException::class), ExpectException::class],
+    [fn () => expect(fn () => throw new RuntimeException('other'))->toThrow(RuntimeException::class, 'boom'), ExpectException::class],
+    [fn () => expect(fn () => throw new RuntimeException('boom'))->not()->toThrow('boom'), ExpectException::class],
+    [fn () => expect(fn () => throw new RuntimeException('boom'))->not()->toThrow(RuntimeException::class, 'boom'), ExpectException::class],
+    [fn () => expect(1)->not()->toThrow(), InvalidExpectation::class],
+]);
 
 it('toEndWith', function () {
     expect('Hello World')->toEndWith('World');

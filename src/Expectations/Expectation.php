@@ -38,7 +38,6 @@ final class Expectation
     function __destruct()
     {
         if ($this->isNeedDump) {
-            /** @phpstan-ignore-next-line */
             __dump($this->expectValue);
         }
     }
@@ -50,8 +49,7 @@ final class Expectation
             return $this;
         }
 
-        trigger_error('Call unimplemented property');
-        return $this;
+        throw new Exception("Unknown expectation property: $name");
     }
 
     public function __call(string $name, array $arguments): self
@@ -65,8 +63,10 @@ final class Expectation
             if (is_callable($boundFn)) {
                 $boundFn($this->expectValue, ...$arguments);
             } else {
-                trigger_error('Call unimplemented method');
+                throw new Exception("Cannot call expectation: $name");
             }
+        } else {
+            throw new Exception("Unknown expectation: $name");
         }
 
         return $this;
@@ -227,11 +227,11 @@ final class Expectation
     public function toBeGreaterThan(mixed $value): self
     {
         if ($this->isNot) {
-            if ($this->expectValue >= $value) {
+            if ($this->expectValue > $value) {
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value less than: $value",
+                    $this->message ?: "Expected a value less than or equal to: $value",
                 );
             }
         } else {
@@ -250,11 +250,11 @@ final class Expectation
     public function toBeGreaterThanOrEqual(mixed $value): self
     {
         if ($this->isNot) {
-            if ($this->expectValue > $value) {
+            if ($this->expectValue >= $value) {
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value less than or equal to: $value",
+                    $this->message ?: "Expected a value less than: $value",
                 );
             }
         } else {
@@ -273,11 +273,11 @@ final class Expectation
     public function toBeLessThan(mixed $value): self
     {
         if ($this->isNot) {
-            if ($this->expectValue <= $value) {
+            if ($this->expectValue < $value) {
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value greater than: $value",
+                    $this->message ?: "Expected a value greater than or equal to: $value",
                 );
             }
         } else {
@@ -296,11 +296,11 @@ final class Expectation
     public function toBeLessThanOrEqual(mixed $value): self
     {
         if ($this->isNot) {
-            if ($this->expectValue < $value) {
+            if ($this->expectValue <= $value) {
                 throw new ExpectException(
                     $this->expectValue,
                     $value,
-                    $this->message ?: "Expected a value greater than or equal to: $value",
+                    $this->message ?: "Expected a value greater than: $value",
                 );
             }
         } else {
@@ -681,9 +681,9 @@ final class Expectation
             throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected a JSON string.');
         }
 
-        $json = json_decode($this->expectValue, true);
+        json_decode($this->expectValue, true);
 
-        if (is_null($json)) {
+        if (json_last_error() !== JSON_ERROR_NONE) {
             throw new ExpectException($this->expectValue, '', $this->message ?: 'Expected JSON');
         }
 
@@ -815,57 +815,34 @@ final class Expectation
 
     public function toThrow(string $class = 'Exception', string $message = ''): self
     {
-        if ($this->isNot) {
-            try {
-                $expression = $this->expectValue;
-                $expression();
-            } catch (Exception|\Throwable $e) {
-                /** @var class-string<Exception> $class */
-                if ($e instanceof $class) {
-                    throw new ExpectException(
-                        get_class($e),
-                        '',
-                        $this->message ?: "Expected an instance other than $class",
-                    );
-                }
-            }
+        if (! is_callable($this->expectValue)) {
+            throw new Exception('The method "toThrow" requires a callable.');
+        }
 
-            return $this;
-        } // END NOT
-
-        if (class_exists($class, false)) {
-            try {
-                $expression = $this->expectValue;
-                $r = $expression();
-
-                throw new ExpectException(get_class($r), $class, $this->message ?: "Expected to throw $class");
-            } catch (Exception|\Throwable $e) {
-                /** @var class-string<Exception> $class */
-                if (!($e instanceof $class)) {
-                    throw new ExpectException(get_class($e), $class, $this->message ?: "Expected to throw $class");
-                }
-            }
-        } elseif ($message === '') {
+        $isClass = class_exists($class) || interface_exists($class);
+        if (! $isClass && $message === '') {
             $message = $class;
         }
 
-        if ($message !== '') {
-            $errorMessage = '';
+        $exception = null;
+        try {
+            ($this->expectValue)();
+        } catch (\Throwable $e) {
+            $exception = $e;
+        }
 
-            try {
-                $expression = $this->expectValue;
-                $expression();
-            } catch (Exception|\Throwable $e) {
-                $errorMessage = $e->getMessage();
-            }
+        $matches = $exception !== null
+            && (! $isClass || $exception instanceof $class)
+            && ($message === '' || $exception->getMessage() === $message);
 
-            if ($errorMessage !== $message) {
-                throw new ExpectException(
-                    $errorMessage,
-                    $message,
-                    $this->message ?: 'Expect the messages to be identical',
-                );
-            }
+        if ($matches === $this->isNot) {
+            throw new ExpectException(
+                $exception === null ? 'No exception' : get_class($exception).': '.$exception->getMessage(),
+                $isClass ? "$class: $message" : $message,
+                $this->message ?: ($this->isNot
+                    ? 'Expected not to throw the matching exception.'
+                    : 'Expected to throw the matching exception.'),
+            );
         }
 
         return $this;
