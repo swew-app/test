@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace Swew\Test\CliCommands;
 
 use LogicException;
-use Swew\Cli\Command;
+use Swew\Cli\Args\CliCommand;
+use Swew\Cli\Args\CliCtx;
+use Swew\Cli\CommandCtx;
 use Swew\Test\LogMaster\Log\LogData;
 use Swew\Test\TestMaster;
 use Swew\Test\Utils\CliStr;
 use Swew\Test\Utils\DataConverter;
 
-class ShowTestResults extends Command
+#[CliCommand(name: 'log-tests', desc: 'Log test results')]
+class ShowTestResults
 {
-    public const NAME = 'log-tests';
-
-    public const DESCRIPTION = 'Log test results';
+    #[CliCtx]
+    private CommandCtx $ctx;
 
     private bool $hasException = false;
 
@@ -35,24 +37,19 @@ class ShowTestResults extends Command
 
     private float $finishAt = 0;
 
-    #[\Override]
     public function __invoke(): int
     {
-        $commander = $this->getCommander();
+        $commander = $this->ctx->getCommander();
 
         if (!$commander instanceof TestMaster) {
             throw new LogicException('Is not testMaster');
-        }
-
-        if (!$this->output) {
-            throw new LogicException('Empty output');
         }
 
         $this->finishAt = microtime(true);
 
         // clear
         if ($commander->config->logClear) {
-            $this->output->clear();
+            $this->ctx->output->clear();
         }
 
         // logo
@@ -76,7 +73,7 @@ class ShowTestResults extends Command
         // отображение summary
         $this->showSummary($commander);
 
-        return $this->hasException ? self::ERROR : self::SUCCESS;
+        return $this->hasException ? 1 : 0;
     }
 
     private function showLogo(): void
@@ -93,21 +90,18 @@ class ShowTestResults extends Command
             '</>'
         ];
 
-        $width = $this->output?->width() ?? 80;
+        $width = $this->ctx->output->width();
 
         foreach ($logo as &$v) {
             $v = str_pad($v, $width - 3, ' ', STR_PAD_BOTH);
         }
 
-        $this->output?->writeLn(implode("\n", $logo));
+        $this->ctx->output->writeLn(implode("\n", $logo));
     }
 
     private function showFiles(array $logDataList): void
     {
-        $output = $this->output;
-        if ($output === null) {
-            throw new LogicException('Empty output');
-        }
+        $output = $this->ctx->output;
 
         $this->allTests = count($logDataList);
 
@@ -158,10 +152,7 @@ class ShowTestResults extends Command
 
     private function showExceptions(array $logDataList, bool $traceReverse): void
     {
-        $output = $this->output;
-        if ($output === null) {
-            throw new LogicException('Empty output');
-        }
+        $output = $this->ctx->output;
 
         $exceptNumber = 0;
 
@@ -222,16 +213,12 @@ class ShowTestResults extends Command
         $suiteFilter = $commander->config->getSuite();
         $startAt = $commander->startAt;
 
-        if (!$this->output) {
-            throw new LogicException('Empty output');
-        }
-
         if (!empty($filePattern)) {
-            $this->output->writeLn("<cyan>Filtered by file pattern (--filter): <yellow>$filePattern</>");
+            $this->ctx->output->writeLn("<cyan>Filtered by file pattern (--filter): <yellow>$filePattern</>");
         }
 
         if (!empty($suiteFilter)) {
-            $this->output->writeLn("<cyan>Filtered by suite pattern (--suite):<yellow> {$suiteFilter}</>");
+            $this->ctx->output->writeLn("<cyan>Filtered by suite pattern (--suite):<yellow> {$suiteFilter}</>");
         }
 
         $tests = [];
@@ -267,6 +254,6 @@ class ShowTestResults extends Command
             ''
         ];
 
-        $this->output->writeLn(implode("\n", $lines));
+        $this->ctx->output->writeLn(implode("\n", $lines));
     }
 }

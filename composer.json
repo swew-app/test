@@ -62,9 +62,9 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.3",
         "ext-json": "*",
-        "swew/cli": "*",
+        "swew/cli": "^2.0@dev",
         "swew/dd": "*",
         "ext-mbstring": "*",
         "ext-pcntl": "*"

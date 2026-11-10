@@ -7,24 +7,29 @@ namespace Swew\Test\CliCommands;
 use LogicException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use Swew\Cli\Command;
+use Swew\Cli\Args\Argument;
+use Swew\Cli\Args\CliCommand;
+use Swew\Cli\Args\CliCtx;
+use Swew\Cli\CommandCtx;
 use Swew\Test\TestMaster;
 
-class SearchFiles extends Command
+#[CliCommand(name: 'searchSuite', desc: 'Search and filtering')]
+class SearchFiles
 {
-    public const NAME = 'searchSuite
-        {--filter|-f= (str): Filter by file name}
-        {--suite|-sf= (str): Filter by test title}
-        ';
+    #[CliCtx]
+    private CommandCtx $ctx;
 
-    public const DESCRIPTION = 'Search and filtering';
+    #[Argument(aliases: ['f'], desc: 'Filter by file name')]
+    private string $filter = '';
 
-    #[\Override]
+    #[Argument(aliases: ['sf'], desc: 'Filter by test title')]
+    private string $suite = '';
+
     public function __invoke(): int
     {
         $matchingFiles = [];
 
-        $commander = $this->getCommander();
+        $commander = $this->ctx->getCommander();
 
         if (!$commander instanceof TestMaster) {
             throw new LogicException('Is not testMaster');
@@ -35,8 +40,8 @@ class SearchFiles extends Command
         $patterns = $commander->config->paths;
 
         if (count($patterns) === 0) {
-            $this->output?->error('Empty search patterns');
-            exit(self::ERROR);
+            $this->ctx->output->error('Empty search patterns');
+            exit(1);
         }
 
         // Делаем поиск файлов
@@ -45,11 +50,11 @@ class SearchFiles extends Command
         }
 
         // Получаем аргументы для фильтрации списка fileName SuiteName
-        $filter = $this->argv('filter');
+        $filter = $this->filter;
 
         // Если фильтр пуст, а последним аргументом передали название файла
         if (empty($filter)) {
-            $args = $this->getArgs();
+            $args = array_slice($this->ctx->getArgs(), 1);
 
             if (count($args) === 1) {
                 // Проверяем, что последний аргумент подходит
@@ -63,25 +68,19 @@ class SearchFiles extends Command
 
         // Фильтруем список файлов относительно аргументов
         if ($filter) {
-            if (gettype($filter) !== 'string') {
-                throw new LogicException('Passed wrong type');
-            }
             $commander->config->setFilter($filter);
             $matchingFiles = $this->filterFiles($filter, $matchingFiles);
         }
 
-        $suite = $this->argv('suite');
+        $suite = $this->suite;
 
         if (!empty($suite)) {
-            if (gettype($suite) !== 'string') {
-                throw new LogicException('Passed wrong type');
-            }
             $commander->config->setSuite($suite);
         }
 
         $commander->config->setTestFiles($matchingFiles);
 
-        return self::SUCCESS;
+        return 0;
     }
 
     /** @param array<string> $matchingFiles */

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Swew\Test;
 
-use Swew\Cli\Command;
 use Swew\Cli\SwewCommander;
 use Swew\Cli\Terminal\Output;
 use Swew\Test\CliCommands\LoadConfig;
@@ -32,14 +31,15 @@ class TestMaster extends SwewCommander
 
     private bool $isWatchMode = false;
 
-    /** @var array<string, class-string<Command>> */
+    /** @var array<class-string> */
     protected array $commands = [
-        LoadConfig::NAME => LoadConfig::class,
-        SearchFiles::NAME => SearchFiles::class,
-        RunTests::NAME => RunTests::class,
-        ShowTestResults::NAME => ShowTestResults::class
+        LoadConfig::class,
+        SearchFiles::class,
+        RunTests::class,
+        ShowTestResults::class
     ];
 
+    /** @param list<string> $argvLocal */
     public function __construct(
         array $argvLocal = [],
         private readonly Output $output = new Output()
@@ -72,6 +72,7 @@ class TestMaster extends SwewCommander
         parent::__construct($argvLocal, $output);
     }
 
+    /** @param list<string> $arg */
     public static function runTest(array $arg = []): void
     {
         global $argv;
@@ -133,15 +134,13 @@ class TestMaster extends SwewCommander
         // RUN
 
         foreach ($this->commands as $commandClass) {
-            $command = $this->getCommand($commandClass);
-
-            $result = $command();
+            $result = $this->call($commandClass, $this->argList);
 
             if ($result === -1) {
                 // кастомный ответ, когда надо досрочно завершить работу без ошибки
                 exit();
             }
-            if ($result > 0 && !( $this->isWatchMode && $command instanceof ShowTestResults )) {
+            if ($result > 0 && !( $this->isWatchMode && $commandClass === ShowTestResults::class )) {
                 // Handle error
                 exit($result);
             }
@@ -155,10 +154,7 @@ class TestMaster extends SwewCommander
         $result = [];
 
         foreach ($this->commands as $commandClass) {
-            $class = new $commandClass();
-            $this->fillCommandArguments($class, []);
-
-            $result[] = $class->getHelpMessage('{options}');
+            $result[] = $this->getCommandHelpMessage($commandClass, '{options}');
         }
 
         $this->output->writeLn('╭──────────────────────────────────╮');

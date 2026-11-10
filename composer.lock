@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "42063f20cec7acdbb9375fb1792f0f12",
+    "content-hash": "35efbd108a7aeca71398b6bd25df5009",
     "packages": [
         {
             "name": "swew/cli",
@@ -12,19 +12,22 @@
             "dist": {
                 "type": "path",
                 "url": "../swew-cli",
-                "reference": "96bb46245dfca7468c404bb20a276f91331fad0a"
+                "reference": "b2f871ad4c1d562641cb86a160e589c5eaf3ce06"
             },
             "require": {
-                "php": ">=8.1"
+                "php": ">=8.3"
             },
             "require-dev": {
-                "laravel/pint": "1.9.0",
-                "phpstan/phpstan": "^1.10.53",
-                "psalm/phar": "^5.18.0",
-                "swew/dd": "^1.3.1",
-                "swew/test.phar": "^1.5.13"
+                "carthage-software/mago": "1.59.0",
+                "swew/dd": "^1.4.2",
+                "swew/test": "dev-master"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.0.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Swew\\Cli\\": "src/"
@@ -49,18 +52,22 @@
                     "t"
                 ],
                 "static": [
-                    "./vendor/psalm/phar/psalm.phar --no-cache"
+                    "mago analyze --minimum-report-level=warning --reporting-format=short"
                 ],
-                "stan": [
-                    "vendor/bin/phpstan analyse src --level=5"
+                "lint": [
+                    "mago lint --minimum-report-level=warning --minimum-fail-level=warning --reporting-format=short"
                 ],
                 "code-check": [
-                    "./vendor/bin/pint"
+                    "mago format --check"
+                ],
+                "format": [
+                    "mago format"
                 ],
                 "check": [
                     "@static",
-                    "@stan",
-                    "@code-check"
+                    "@lint",
+                    "@code-check",
+                    "@test"
                 ]
             },
             "license": [
@@ -259,11 +266,13 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {},
-    "prefer-stable": true,
+    "stability-flags": {
+        "swew/cli": 20
+    },
+    "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.2",
+        "php": ">=8.3",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pcntl": "*"

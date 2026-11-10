@@ -1,4 +1,4 @@
-php-version = "8.2"
+php-version = "8.3"
 
 [source]
 paths = ["src", "tests"]
@@ -11,7 +11,6 @@ ignore = [
     "mixed-assignment",
     { code = "possibly-null-operand", in = ["src/Expectations/Expectation.php"] },
     { code = "invalid-type-cast", in = ["src/Expectations/Expectation.php"] },
-    { code = "unsafe-instantiation", in = ["src/TestMaster.php"] },
 ]
 
 [linter.rules]

@@ -5,26 +5,27 @@ declare(strict_types=1);
 namespace Swew\Test\CliCommands;
 
 use LogicException;
-use Swew\Cli\Command;
+use Swew\Cli\Args\CliCommand;
+use Swew\Cli\Args\CliCtx;
+use Swew\Cli\CommandCtx;
 use Swew\Test\LogMaster\Log\LogData;
 use Swew\Test\Suite\SuiteGroup;
 use Swew\Test\TestMaster;
 
-class RunTests extends Command
+#[CliCommand(name: 'runTests', desc: 'Run tests')]
+class RunTests
 {
-    public const NAME = 'runTests';
-
-    public const DESCRIPTION = 'Run tests';
+    #[CliCtx]
+    private CommandCtx $ctx;
 
     /** @var list<SuiteGroup> */
     private array $suiteGroupList = [];
 
     private float $testingTime = 0;
 
-    #[\Override]
     public function __invoke(): int
     {
-        $commander = $this->getCommander();
+        $commander = $this->ctx->getCommander();
 
         if (!$commander instanceof TestMaster) {
             throw new LogicException('Is not testMaster');
@@ -52,13 +53,13 @@ class RunTests extends Command
 
         $commander->testingTime = $this->testingTime;
 
-        return self::SUCCESS;
+        return 0;
     }
 
     private function requirePreloadFile(string $root, string $preloadFile): void
     {
         if (!empty($preloadFile)) {
-            $this->output?->writeLn(
+            $this->ctx->output->writeLn(
                 $root . DIRECTORY_SEPARATOR . $preloadFile,
                 '<green>Preload file</><br><cyan> %s</>'
             );
@@ -80,10 +81,7 @@ class RunTests extends Command
     /** @return array<LogData> */
     private function runTests(TestMaster $commander): array
     {
-        $output = $this->output;
-        if ($output === null) {
-            throw new LogicException('Empty output');
-        }
+        $output = $this->ctx->output;
 
         $isStopOnException = $commander->config->bail;
 

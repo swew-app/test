@@ -10,13 +10,11 @@ use Swew\Test\TestMaster;
     // Used when SWEW-test maintainers are running SWEW-test tests.
     $localPath = dirname(__DIR__).'/vendor/autoload.php';
 
-    if (file_exists($vendorPath)) {
-        include_once $vendorPath;
-        $autoloadPath = $vendorPath;
-    } else {
-        include_once $localPath;
-        $autoloadPath = $localPath;
+    $autoloadPath = $GLOBALS['_composer_autoload_path'] ?? null;
+    if (!is_string($autoloadPath)) {
+        $autoloadPath = file_exists($vendorPath) ? $vendorPath : $localPath;
     }
+    require_once $autoloadPath;
 
     TestMaster::runTest();
 

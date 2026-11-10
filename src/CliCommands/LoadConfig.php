@@ -5,60 +5,68 @@ declare(strict_types=1);
 namespace Swew\Test\CliCommands;
 
 use LogicException;
-use Swew\Cli\Command;
+use Swew\Cli\Args\Argument;
+use Swew\Cli\Args\CliCommand;
+use Swew\Cli\Args\CliCtx;
+use Swew\Cli\CommandCtx;
 use Swew\Test\Config\Config;
 use Swew\Test\TestMaster;
 use Swew\Test\Utils\CliStr;
 
-class LoadConfig extends Command
+#[CliCommand(name: 'config', desc: 'Configuration manager')]
+class LoadConfig
 {
     public const CUSTOM_SUCCESS = -1;
 
-    public const NAME = 'config
-        {--init= (bool): Create new config file}
-        {--config|-c= (str): Path to config file}
-        {--dir= (str): Directory to scan for the test files}
-        {--no-color=false (bool): Disable color output}
-        {--short|-s=false (bool): Short output}
-        ';
+    #[CliCtx]
+    private CommandCtx $ctx;
 
-    public const DESCRIPTION = 'Configuration manager';
+    #[Argument(name: 'init', desc: 'Create new config file')]
+    private bool $initialize = false;
 
-    #[\Override]
+    #[Argument(aliases: ['c'], desc: 'Path to config file')]
+    private string $config = '';
+
+    #[Argument(desc: 'Directory to scan for the test files')]
+    private string $dir = '';
+
+    #[Argument(name: 'no-color', desc: 'Disable color output')]
+    private bool $noColor = false;
+
+    #[Argument(aliases: ['s'], desc: 'Short output')]
+    private bool $short = false;
+
     public function __invoke(): int
     {
-        $commander = $this->getCommander();
+        $commander = $this->ctx->getCommander();
 
         if (!$commander instanceof TestMaster) {
             throw new LogicException('Is not testMaster');
         }
 
-        $output = $this->output;
-        if ($output === null) {
-            throw new LogicException('Empty output');
-        }
+        $output = $this->ctx->output;
 
         // Create config if not exists
-        $needCreateConfig = $this->argv('init');
+        $needCreateConfig = $this->initialize;
         if ($needCreateConfig) {
             return $this->createNewConfigFile($commander->config);
         }
 
         // Search root dir
-        $dirPath = $this->stringOption($this->argv('dir') ?? '', 'dir');
+        $dirPath = $this->dir;
         $commander->config->setRoot($this->getRootPath($dirPath));
 
         // Search config file
-        $configPath = $this->stringOption($this->argv('config') ?: 'swew.json', 'config');
+        $configPath = $this->config ?: 'swew.json';
         $configFile = $this->getRootPath('', $configPath) . $configPath;
 
         $this->updateConfig($configFile, $commander->config);
 
-        if ($this->argv('short')) {
+        if ($this->short) {
             $commander->config->logShort = true;
         }
 
-        if ($this->argv('no-color')) {
+        if ($this->noColor) {
             $output->setAnsi(false);
         } else {
             $output->setAnsi($commander->config->logColor);
@@ -68,7 +76,7 @@ class LoadConfig extends Command
         CliStr::vm()->setOutput($output);
         CliStr::vm()->setRootPath($commander->config->getRoot());
 
-        return self::SUCCESS;
+        return 0;
     }
 
     private function createNewConfigFile(Config $config): int
@@ -76,16 +84,16 @@ class LoadConfig extends Command
         $root = $this->getRootPath();
 
         if (empty($root)) {
-            $this->output?->error("CONFIG: Can't find root dir with composer.json");
+            $this->ctx->output->error("CONFIG: Can't find root dir with composer.json");
 
-            return self::ERROR;
+            return 1;
         }
 
         $configFile = $root . 'swew.json';
 
         $this->writeJsonFile($configFile, $config);
 
-        $this->output?->info("File: '$configFile' created");
+        $this->ctx->output->info("File: '$configFile' created");
 
         $this->addScriptToComposerJson();
 
@@ -94,7 +102,7 @@ class LoadConfig extends Command
 
     private function addScriptToComposerJson(): void
     {
-        $answer = $this->output?->askYesNo('Add script "test" to composer.json?');
+        $answer = $this->ctx->output->askYesNo('Add script "test" to composer.json?');
 
         if (!$answer) {
             return;
@@ -115,7 +123,7 @@ class LoadConfig extends Command
 
         $this->writeJsonFile($composerFile, $json);
 
-        $this->output?->info('script "test" added to composer.json');
+        $this->ctx->output->info('script "test" added to composer.json');
     }
 
     private function getRootPath(string $dirArg = '', string $searchFile = 'composer.json'): string
@@ -178,8 +186,8 @@ class LoadConfig extends Command
                 . PHP_EOL
                 . PHP_EOL;
 
-            $this->output?->writeLn($errorMessage);
-            exit(self::ERROR);
+            $this->ctx->output->writeLn($errorMessage);
+            exit(1);
         }
 
         $json = $this->readJsonFile($configFile);
@@ -252,8 +260,8 @@ class LoadConfig extends Command
     private function checkKey(string $key, array $arr, string $file): void
     {
         if (!array_key_exists($key, $arr)) {
-            $this->output?->error("Key '$key' not found in file $file");
-            exit(self::ERROR);
+            $this->ctx->output->error("Key '$key' not found in file $file");
+            exit(1);
         }
     }
 
