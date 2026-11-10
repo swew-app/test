@@ -19,11 +19,11 @@ final class Diff
         }
 
         if ($s2 === '') {
-            return '<yellow> value:</>'.PHP_EOL.CliStr::vm()->getWithPrefix($s1, false);
+            return ($isShowTitle ? '<yellow> value:</>'.PHP_EOL : '').CliStr::vm()->getWithPrefix($s1, false);
         }
 
         return CliStr::vm()->output->format(
-            PHP_EOL . '<yellow>compare:</>' .PHP_EOL.PHP_EOL . self::compare($s1, $s2)
+            ($isShowTitle ? PHP_EOL.'<yellow>compare:</>'.PHP_EOL.PHP_EOL : '').self::compare($s1, $s2)
         );
     }
 
